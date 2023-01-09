@@ -12,10 +12,10 @@ class FcsDirectus {
   }
 
   /// Initialise a new Instance of [FcsDirectus].
-  /// [token] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.
-  FcsDirectus({String? serverUrl, String? token}) {
+  /// [staticToken] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.
+  FcsDirectus({String? serverUrl, String? staticToken}) {
     _requestManager.setServerUrl(url: serverUrl);
-    _requestManager.setToken(token: token);
+    _requestManager.setStaticToken(staticToken: staticToken);
   }
 
   /// For authentification request

@@ -3,8 +3,8 @@ class FcsDirectusRequestManager {
   String? _renewToken;
   String? _serverUrl;
 
-  void setToken({required String? token}) {
-    _token = token;
+  void setStaticToken({required String? staticToken}) {
+    _token = staticToken;
   }
 
   void setServerUrl({required String? url}) {

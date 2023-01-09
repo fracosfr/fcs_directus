@@ -6,7 +6,7 @@ class FcsDirectusAuthentification {
   FcsDirectusAuthentification(this._requestManager);
 
   void setToken({required String token}) {
-    _requestManager.setToken(token: token);
+    _requestManager.setStaticToken(staticToken: token);
   }
 
   bool login({required String login, required String password}) {
