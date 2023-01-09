@@ -13,11 +13,17 @@ class FcsDirectus {
 
   /// Initialise a new Instance of [FcsDirectus].
   /// [token] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.
-  FcsDirectus({String? token}) {
-    if (token != null) _requestManager.setToken(token: token);
+  FcsDirectus({String? serverUrl, String? token}) {
+    _requestManager.setServerUrl(url: serverUrl);
+    _requestManager.setToken(token: token);
   }
 
   /// For authentification request
   FcsDirectusAuthentification get auth =>
       FcsDirectusAuthentification(_requestManager);
+
+  /// Set the server url if you dont done it with constructor, or if you are using singleton.
+  void setServerUrl({required String url}) {
+    _requestManager.setServerUrl(url: url);
+  }
 }
