@@ -37,6 +37,7 @@ class RequestManager {
       headers: headers ?? {},
       data: data,
       token: authentification ? _token : null,
+      debugMode: debugMode,
     );
 
     final response = await request.execute();
