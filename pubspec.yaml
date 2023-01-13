@@ -12,3 +12,6 @@ environment:
 dev_dependencies:
   lints: ^2.0.0
   test: ^1.21.0
+dependencies:
+  http: ^0.13.5
+  reflectable: ^4.0.4

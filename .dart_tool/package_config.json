@@ -32,6 +32,66 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "build",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build-2.3.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "build_config",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build_config-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "build_daemon",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build_daemon-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "build_resolvers",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build_resolvers-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "build_runner",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build_runner-2.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "build_runner_core",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/build_runner_core-7.2.7",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "built_collection",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/built_collection-5.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "built_value",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/built_value-8.4.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "checked_yaml",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/checked_yaml-2.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
+      "name": "code_builder",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/code_builder-4.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "collection",
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.0",
       "packageUri": "lib/",
@@ -56,8 +116,20 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "dart_style",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/dart_style-2.2.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "file",
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/file-6.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "fixnum",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/fixnum-1.0.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -72,6 +144,18 @@
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/glob-2.1.1",
       "packageUri": "lib/",
       "languageVersion": "2.15"
+    },
+    {
+      "name": "graphs",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/graphs-2.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "http",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/http-0.13.5",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
     },
     {
       "name": "http_multi_server",
@@ -96,6 +180,12 @@
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.6",
       "packageUri": "lib/",
       "languageVersion": "2.19"
+    },
+    {
+      "name": "json_annotation",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/json_annotation-4.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "lints",
@@ -158,6 +248,18 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "pubspec_parse",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/pubspec_parse-1.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
+      "name": "reflectable",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/reflectable-4.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.18"
+    },
+    {
       "name": "shelf",
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/shelf-1.4.0",
       "packageUri": "lib/",
@@ -212,6 +314,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "stream_transform",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/stream_transform-2.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.14"
+    },
+    {
       "name": "string_scanner",
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/string_scanner-1.2.0",
       "packageUri": "lib/",
@@ -240,6 +348,12 @@
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_core-0.4.21",
       "packageUri": "lib/",
       "languageVersion": "2.18"
+    },
+    {
+      "name": "timing",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/timing-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "typed_data",
@@ -284,7 +398,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-01-09T12:34:31.278045Z",
+  "generated": "2023-01-10T12:15:17.169408Z",
   "generator": "pub",
   "generatorVersion": "2.19.0-444.2.beta"
 }

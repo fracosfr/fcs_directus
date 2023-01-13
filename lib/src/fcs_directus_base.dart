@@ -1,8 +1,9 @@
-import 'package:fcs_directus/src/internal/request_manager.dart';
+import 'package:fcs_directus/src/modules/item/item.dart';
+import 'package:fcs_directus/src/request/request_manager.dart';
 import 'package:fcs_directus/src/modules/auth/authentification.dart';
 
 class FcsDirectus {
-  final FcsDirectusRequestManager _requestManager = FcsDirectusRequestManager();
+  final RequestManager _requestManager = RequestManager();
   static FcsDirectus? _instance;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
@@ -19,8 +20,10 @@ class FcsDirectus {
   }
 
   /// For authentification request
-  FcsDirectusAuthentification get auth =>
-      FcsDirectusAuthentification(_requestManager);
+  ModAuthentification get auth => ModAuthentification(_requestManager);
+
+  /// For items management
+  ModItem item(String itemName) => ModItem(_requestManager, itemName);
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {

@@ -1,17 +1,20 @@
-import 'package:fcs_directus/src/internal/request_manager.dart';
+import 'package:fcs_directus/src/request/request_manager.dart';
 
-class FcsDirectusAuthentification {
-  final FcsDirectusRequestManager _requestManager;
+class ModAuthentification {
+  final RequestManager _requestManager;
 
-  FcsDirectusAuthentification(this._requestManager);
+  ModAuthentification(this._requestManager);
 
   void setToken({required String token}) {
     _requestManager.setStaticToken(staticToken: token);
   }
 
-  bool login({required String login, required String password}) {
-    print("LOGIN");
-    return false;
+  Future<bool> login({required String login, required String password}) async {
+    try {
+      return await _requestManager.login(login: login, password: password);
+    } catch (e) {
+      rethrow;
+    }
   }
 
   bool logout() {
