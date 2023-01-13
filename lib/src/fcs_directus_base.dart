@@ -5,6 +5,7 @@ import 'package:fcs_directus/src/modules/auth/authentification.dart';
 class FcsDirectus {
   final RequestManager _requestManager = RequestManager();
   static FcsDirectus? _instance;
+  bool debugMode = false;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.instance() {
@@ -20,10 +21,17 @@ class FcsDirectus {
   }
 
   /// For authentification request
-  ModAuthentification get auth => ModAuthentification(_requestManager);
+  ModAuthentification get auth => ModAuthentification(
+        _requestManager,
+        debugMode,
+      );
 
   /// For items management
-  ModItem item(String itemName) => ModItem(_requestManager, itemName);
+  ModItem item(String itemName) => ModItem(
+        _requestManager,
+        itemName,
+        debugMode,
+      );
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {

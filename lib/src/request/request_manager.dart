@@ -29,6 +29,7 @@ class RequestManager {
     Map<String, String>? headers,
     HttpMethod method = HttpMethod.get,
     bool authentification = true,
+    bool debugMode = false,
   }) async {
     final request = DirectusRequest(
       url: "$_serverUrl$url",
@@ -51,13 +52,18 @@ class RequestManager {
     return response;
   }
 
-  Future<bool> login({required String login, required String password}) async {
+  Future<bool> login({
+    required String login,
+    required String password,
+    bool debugMode = false,
+  }) async {
     final data = {"email": login, "password": password};
     final result = await executeRequest(
       url: AuthentificationUrls.login,
       data: data,
       authentification: false,
       method: HttpMethod.post,
+      debugMode: debugMode,
     );
 
     try {

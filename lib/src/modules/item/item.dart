@@ -7,12 +7,14 @@ import 'package:fcs_directus/src/request/request_manager.dart';
 class ModItem {
   final RequestManager _requestManager;
   final String _itemName;
+  final bool debugMode;
 
   String get name => _itemName;
 
   ModItem(
     this._requestManager,
     this._itemName,
+    this.debugMode,
   );
 
   getById({required String id}) {
@@ -27,6 +29,7 @@ class ModItem {
     if (filter == null) {
       final response = await _requestManager.executeRequest(
         url: "/items/$_itemName",
+        debugMode: debugMode,
       );
       ErrorParser(response).sendError();
 
@@ -39,6 +42,7 @@ class ModItem {
     } else {
       final response = await _requestManager.executeRequest(
         url: "/items/$_itemName?filter${_parseFilterUrl(filter)}",
+        debugMode: debugMode,
       );
       ErrorParser(response).sendError();
 
@@ -61,6 +65,7 @@ class ModItem {
       data: {
         "query": {"filter": filter}
       },
+      debugMode: debugMode,
     );
     ErrorParser(response).sendError();
 

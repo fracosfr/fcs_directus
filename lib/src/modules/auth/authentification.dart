@@ -2,8 +2,9 @@ import 'package:fcs_directus/src/request/request_manager.dart';
 
 class ModAuthentification {
   final RequestManager _requestManager;
+  final bool debugMode;
 
-  ModAuthentification(this._requestManager);
+  ModAuthentification(this._requestManager, this.debugMode);
 
   void setToken({required String token}) {
     _requestManager.setStaticToken(staticToken: token);

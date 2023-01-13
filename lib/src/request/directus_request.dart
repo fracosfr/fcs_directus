@@ -17,6 +17,7 @@ class DirectusRequest {
   final String url;
   final Map<String, dynamic>? data;
   final HttpMethod method;
+  final bool debugMode;
   Map<String, String> headers;
 
   DirectusRequest({
@@ -25,6 +26,7 @@ class DirectusRequest {
     this.data,
     this.token,
     this.headers = const {},
+    this.debugMode = false,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
@@ -34,6 +36,7 @@ class DirectusRequest {
     this.data,
     this.token,
     this.headers = const {},
+    this.debugMode = false,
   }) : method = HttpMethod.get;
 
   DirectusRequest.post({
@@ -41,7 +44,16 @@ class DirectusRequest {
     this.data,
     this.token,
     this.headers = const {},
+    this.debugMode = false,
   }) : method = HttpMethod.post;
+
+  DirectusRequest.search({
+    required this.url,
+    this.data,
+    this.token,
+    this.headers = const {},
+    this.debugMode = false,
+  }) : method = HttpMethod.search;
 
   addHeader({required String key, required String value}) {
     headers[key] = value;
@@ -64,6 +76,9 @@ class DirectusRequest {
   Future<DirectusResponse> execute() async {
     headers["Content-Type"] = "application/json";
 
+    if (debugMode) print("$method => $url");
+    if (debugMode && data != null) print(data);
+
     switch (method) {
       case HttpMethod.get:
         return _executeGetRequest();
@@ -77,7 +92,12 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
-      return DirectusResponse.fromRequest(url, res.body, HttpMethod.get);
+      return DirectusResponse.fromRequest(
+        url,
+        res.body,
+        HttpMethod.get,
+        debugMode,
+      );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -93,7 +113,8 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      return DirectusResponse.fromRequest(url, res.body, HttpMethod.post);
+      return DirectusResponse.fromRequest(
+          url, res.body, HttpMethod.post, debugMode);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -112,7 +133,7 @@ class DirectusRequest {
 
       //print(await res.stream.bytesToString());
       return DirectusResponse.fromRequest(
-          url, await res.stream.bytesToString(), HttpMethod.post);
+          url, await res.stream.bytesToString(), HttpMethod.post, debugMode);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {

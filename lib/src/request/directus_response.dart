@@ -11,10 +11,12 @@ class DirectusResponse {
   final String rawData;
   Map<String, dynamic> get data => _data;
 
-  DirectusResponse.fromRequest(this.url, String body, this.method)
+  DirectusResponse.fromRequest(
+      this.url, String body, this.method, bool debugMode)
       : rawData = body {
     try {
       _data = jsonDecode(rawData);
+      if (debugMode) print(data);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
