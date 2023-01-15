@@ -9,7 +9,14 @@ abstract class DirectusError {
   String toString() => "ERROR ($_code) : $_message";
 }
 
-class DirectusErrorPayload extends DirectusError {}
+//class DirectusErrorPayload extends DirectusError {}
+
+class DirectusErrorInternal extends DirectusError {
+  DirectusErrorInternal() {
+    _message = "Internal Directus server error!";
+    _code = 1;
+  }
+}
 
 class DirectusErrorUnknow extends DirectusError {
   DirectusErrorUnknow(String message) {

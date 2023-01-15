@@ -1,16 +1,21 @@
 import 'package:fcs_directus/src/modules/item/item.dart';
+import 'package:fcs_directus/src/modules/server/server.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 import 'package:fcs_directus/src/modules/auth/authentification.dart';
 
 class FcsDirectus {
   final RequestManager _requestManager = RequestManager();
   static FcsDirectus? _instance;
-  bool debugMode = false;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.instance() {
     _instance ??= FcsDirectus();
     return _instance!;
+  }
+
+  bool get debug => _requestManager.debugMode;
+  set debug(bool v) {
+    _requestManager.setDebugMode(v);
   }
 
   /// Initialise a new Instance of [FcsDirectus].
@@ -21,17 +26,16 @@ class FcsDirectus {
   }
 
   /// For authentification request
-  ModAuthentification get auth => ModAuthentification(
-        _requestManager,
-        debugMode,
-      );
+  ModAuthentification get auth => ModAuthentification(_requestManager);
 
   /// For items management
   ModItem item(String itemName) => ModItem(
         _requestManager,
         itemName,
-        debugMode,
       );
+
+  /// Server utilities
+  ModServer get server => ModServer(_requestManager);
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {

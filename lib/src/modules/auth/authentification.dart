@@ -2,13 +2,14 @@ import 'package:fcs_directus/src/request/request_manager.dart';
 
 class ModAuthentification {
   final RequestManager _requestManager;
-  final bool debugMode;
 
-  ModAuthentification(this._requestManager, this.debugMode);
+  ModAuthentification(this._requestManager);
 
   void setToken({required String token}) {
     _requestManager.setStaticToken(staticToken: token);
   }
+
+  Future<bool> restoreSession({required String refreshToken}) async => false;
 
   Future<bool> login({required String login, required String password}) async {
     try {

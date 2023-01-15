@@ -8,16 +8,17 @@ enum HttpMethod {
   get,
   post,
   search,
-  //patch,
-  //delete,
+  patch,
+  delete,
 }
 
 class DirectusRequest {
   final String? token;
   final String url;
-  final Map<String, dynamic>? data;
+  final dynamic data;
   final HttpMethod method;
   final bool debugMode;
+  final bool parseJson;
   Map<String, String> headers;
 
   DirectusRequest({
@@ -27,33 +28,34 @@ class DirectusRequest {
     this.token,
     this.headers = const {},
     this.debugMode = false,
+    this.parseJson = true,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
 
-  DirectusRequest.get({
-    required this.url,
-    this.data,
-    this.token,
-    this.headers = const {},
-    this.debugMode = false,
-  }) : method = HttpMethod.get;
-
-  DirectusRequest.post({
-    required this.url,
-    this.data,
-    this.token,
-    this.headers = const {},
-    this.debugMode = false,
-  }) : method = HttpMethod.post;
-
-  DirectusRequest.search({
-    required this.url,
-    this.data,
-    this.token,
-    this.headers = const {},
-    this.debugMode = false,
-  }) : method = HttpMethod.search;
+  //DirectusRequest.get({
+  //  required this.url,
+  //  this.data,
+  //  this.token,
+  //  this.headers = const {},
+  //  this.debugMode = false,
+  //}) : method = HttpMethod.get;
+//
+  //DirectusRequest.post({
+  //  required this.url,
+  //  this.data,
+  //  this.token,
+  //  this.headers = const {},
+  //  this.debugMode = false,
+  //}) : method = HttpMethod.post;
+//
+  //DirectusRequest.search({
+  //  required this.url,
+  //  this.data,
+  //  this.token,
+  //  this.headers = const {},
+  //  this.debugMode = false,
+  //}) : method = HttpMethod.search;
 
   addHeader({required String key, required String value}) {
     headers[key] = value;
@@ -86,6 +88,10 @@ class DirectusRequest {
         return _executePostRequest();
       case HttpMethod.search:
         return _executeSearchRequest();
+      case HttpMethod.patch:
+        return _executePatchRequest();
+      case HttpMethod.delete:
+        return _executeDeleteRequest();
     }
   }
 
@@ -97,6 +103,7 @@ class DirectusRequest {
         res.body,
         HttpMethod.get,
         debugMode,
+        parseJson,
       );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
@@ -114,7 +121,45 @@ class DirectusRequest {
         headers: headers,
       );
       return DirectusResponse.fromRequest(
-          url, res.body, HttpMethod.post, debugMode);
+          url, res.body, HttpMethod.post, debugMode, parseJson);
+    } on DirectusErrorHttpJsonException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw DirectusErrorHttp(e.toString());
+    }
+  }
+
+  Future<DirectusResponse> _executePatchRequest() async {
+    var client = http.Client();
+    try {
+      final res = await client.patch(
+        Uri.parse(url),
+        body: jsonEncode(data),
+        headers: headers,
+      );
+      return DirectusResponse.fromRequest(
+          url, res.body, HttpMethod.post, debugMode, parseJson);
+    } on DirectusErrorHttpJsonException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw DirectusErrorHttp(e.toString());
+    }
+  }
+
+  Future<DirectusResponse> _executeDeleteRequest() async {
+    try {
+      final res = await http.delete(
+        Uri.parse(url),
+        headers: headers,
+        body: data != null ? jsonEncode(data) : null,
+      );
+      return DirectusResponse.fromRequest(
+        url,
+        res.body,
+        HttpMethod.delete,
+        debugMode,
+        parseJson,
+      );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -133,7 +178,12 @@ class DirectusRequest {
 
       //print(await res.stream.bytesToString());
       return DirectusResponse.fromRequest(
-          url, await res.stream.bytesToString(), HttpMethod.post, debugMode);
+        url,
+        await res.stream.bytesToString(),
+        HttpMethod.post,
+        debugMode,
+        parseJson,
+      );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {

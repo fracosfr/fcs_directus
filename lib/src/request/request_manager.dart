@@ -8,9 +8,16 @@ class RequestManager {
   String? _token;
   String? _renewToken;
   String? _serverUrl;
+  bool _debugMode = false;
+
+  bool get debugMode => _debugMode;
 
   void setStaticToken({required String? staticToken}) {
     _token = staticToken;
+  }
+
+  void setDebugMode(bool debug) {
+    _debugMode = debug;
   }
 
   void setServerUrl({required String? url}) {
@@ -25,11 +32,11 @@ class RequestManager {
 
   Future<DirectusResponse> executeRequest({
     required String url,
-    Map<String, dynamic>? data,
+    dynamic data,
     Map<String, String>? headers,
     HttpMethod method = HttpMethod.get,
     bool authentification = true,
-    bool debugMode = false,
+    bool parseJson = true,
   }) async {
     final request = DirectusRequest(
       url: "$_serverUrl$url",
@@ -37,7 +44,8 @@ class RequestManager {
       headers: headers ?? {},
       data: data,
       token: authentification ? _token : null,
-      debugMode: debugMode,
+      debugMode: _debugMode,
+      parseJson: parseJson,
     );
 
     final response = await request.execute();
@@ -56,7 +64,6 @@ class RequestManager {
   Future<bool> login({
     required String login,
     required String password,
-    bool debugMode = false,
   }) async {
     final data = {"email": login, "password": password};
     final result = await executeRequest(
@@ -64,7 +71,6 @@ class RequestManager {
       data: data,
       authentification: false,
       method: HttpMethod.post,
-      debugMode: debugMode,
     );
 
     try {

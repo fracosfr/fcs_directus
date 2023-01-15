@@ -75,7 +75,7 @@
     },
     {
       "name": "built_value",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/built_value-8.4.2",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/built_value-8.4.3",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -105,7 +105,7 @@
     },
     {
       "name": "coverage",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/coverage-1.6.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/coverage-1.6.2",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
@@ -213,9 +213,9 @@
     },
     {
       "name": "mime",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/mime-1.0.3",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/mime-1.0.4",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "node_preamble",
@@ -333,19 +333,19 @@
     },
     {
       "name": "test",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test-1.22.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test-1.22.2",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_api-0.4.17",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_api-0.4.18",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
     {
       "name": "test_core",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_core-0.4.21",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_core-0.4.22",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -363,7 +363,7 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/vm_service-9.4.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/vm_service-10.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.15"
     },
@@ -375,7 +375,7 @@
     },
     {
       "name": "web_socket_channel",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/web_socket_channel-2.2.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/web_socket_channel-2.3.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -398,7 +398,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-01-13T17:03:50.002497Z",
+  "generated": "2023-01-15T16:19:14.957296Z",
   "generator": "pub",
-  "generatorVersion": "2.19.0-444.2.beta"
+  "generatorVersion": "2.19.0-444.4.beta"
 }

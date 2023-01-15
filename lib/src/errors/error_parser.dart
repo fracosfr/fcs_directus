@@ -14,6 +14,7 @@ class ErrorParser {
 
   ErrorParser(dynamic data) {
     try {
+      _error = null;
       if (data is Map<String, dynamic>) {
         if (data.keys.contains("errors")) {
           final error = data["errors"][0];
@@ -25,7 +26,6 @@ class ErrorParser {
           _error = _getError();
         }
       }
-      _error = null;
     } catch (_) {
       _error = DirectusErrorUnknow(
           "An error was occured when parsing directus errors");
@@ -44,6 +44,8 @@ class ErrorParser {
         return DirectusErrorAuthInvalidPayload(code, message);
       case "FORBIDDEN":
         return DirectusErrorAuthForbidden(code, message);
+      case "INTERNAL_SERVER_ERROR":
+        return DirectusErrorInternal();
       default:
         return DirectusErrorAuthUnknow(code, message);
     }

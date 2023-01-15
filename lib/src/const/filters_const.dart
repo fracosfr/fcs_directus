@@ -1,4 +1,4 @@
-class DirectusFilter {
+class DirectusFilterVar {
   ///Logical operator OR
   ///You can nest or group multiple rules using the _and or _or logical operators. Each logical operator holds an array of Filter Rules, allowing for more complex filtering. Also note in the example that Logical Operators can be sub-nested into Logical Operators. However, they cannot be sub-nested into Filter Rules.
   ///`{
@@ -142,4 +142,18 @@ class DirectusFilter {
 
   ///Value is not in a bounding box
   static String doesntIntersectBoundingBox = "_nintersects_bbox";
+
+  /// The primary key of the currently authenticated user
+  static String currentUser = "\$CURRENT_USER";
+
+  /// The primary key of the role for the currently authenticated user
+  static String currentRole = "\$CURRENT_ROLE";
+
+  /// The current timestamp
+  static String now = "\$NOW";
+
+  /// The current timestamp plus/minus a given distance, for example [nowAjust("-1 year")], [nowAjust("+2 hours")]
+  static String nowAjust(String adjustement) {
+    return "\$NOW($adjustement)";
+  }
 }
