@@ -18,6 +18,7 @@ class DirectusResponse {
       if (debugMode) print(data);
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
     } catch (e) {
+      print(e.toString());
       throw DirectusErrorHttpJsonException();
     }
   }
