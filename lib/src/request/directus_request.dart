@@ -98,6 +98,7 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
+      if (debugMode) print("GET RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
         url,
         res.body,
@@ -120,7 +121,7 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      if (debugMode) print("RAW=> ${res.body}");
+      if (debugMode) print("POST RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, debugMode, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -138,7 +139,7 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      if (debugMode) print("RAW=> ${res.body}");
+      if (debugMode) print("PATCH RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, debugMode, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -155,7 +156,7 @@ class DirectusRequest {
         headers: headers,
         body: data != null ? jsonEncode(data) : null,
       );
-      if (debugMode) print("RAW=> ${res.body}");
+      if (debugMode) print("DELETE RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
         url,
         res.body,

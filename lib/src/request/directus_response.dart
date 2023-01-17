@@ -16,7 +16,7 @@ class DirectusResponse {
       : rawData = body {
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
-      if (debugMode) print(data);
+      if (debugMode) print("Parsed data=> $data");
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
