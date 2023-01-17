@@ -120,6 +120,7 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
+      if (debugMode) print("RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, debugMode, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -137,6 +138,7 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
+      if (debugMode) print("RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, debugMode, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -153,6 +155,7 @@ class DirectusRequest {
         headers: headers,
         body: data != null ? jsonEncode(data) : null,
       );
+      if (debugMode) print("RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
         url,
         res.body,
