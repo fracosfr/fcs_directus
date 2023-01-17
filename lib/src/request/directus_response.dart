@@ -14,6 +14,7 @@ class DirectusResponse {
   DirectusResponse.fromRequest(
       this.url, String body, this.method, bool debugMode, bool parseJson)
       : rawData = body {
+    if (body.isEmpty) return;
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
       if (debugMode) print("Parsed data=> $data");
