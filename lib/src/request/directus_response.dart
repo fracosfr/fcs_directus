@@ -15,8 +15,8 @@ class DirectusResponse {
       this.url, String body, this.method, bool debugMode, bool parseJson)
       : rawData = body {
     try {
-      _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
       if (debugMode) print(data);
+      _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
