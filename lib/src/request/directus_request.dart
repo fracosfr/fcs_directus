@@ -79,7 +79,7 @@ class DirectusRequest {
     headers["Content-Type"] = "application/json";
 
     if (debugMode) print("$method => $url");
-    if (debugMode && data != null) print(data);
+    if (debugMode && data != null) print("Body=> $data");
 
     switch (method) {
       case HttpMethod.get:
