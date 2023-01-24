@@ -1,13 +1,14 @@
 import 'package:fcs_directus/fcs_directus.dart';
 import 'package:test/test.dart';
 
+import 'car_object.dart';
+
 void main() {
   FcsDirectus directus =
       FcsDirectus(serverUrl: "https://sbbwpdpa.directus.app/");
 
   group('Authentification', () {
-    //final awesome = Awesome();
-    directus.debug = true;
+    //directus.debug = true;
     setUp(() {});
 
     test('Email/Password Authentification', () async {
@@ -223,6 +224,16 @@ void main() {
       } catch (e) {
         print(e.toString());
       }
+    });
+  });
+
+  group("Object management", () {
+    test("get One by ID", () async {
+      CarObject car = await directus.object.getOne(
+          id: "cd512cc6-6951-45d1-86af-8bc468c23b0b",
+          itemCreator: (data) => CarObject.fromDirectus(data));
+      print("${car.identifier} : ${car.name}");
+      print("Brand = (${car.brandId}) ${car.brandObject.name}");
     });
   });
 }

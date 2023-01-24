@@ -1,4 +1,5 @@
 import 'package:fcs_directus/src/modules/item/item.dart';
+import 'package:fcs_directus/src/modules/object/object.dart';
 import 'package:fcs_directus/src/modules/server/server.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 import 'package:fcs_directus/src/modules/auth/authentification.dart';
@@ -33,6 +34,9 @@ class FcsDirectus {
         _requestManager,
         itemName,
       );
+
+  /// For objects management
+  ModObject get object => ModObject(_requestManager);
 
   /// Server utilities
   ModServer get server => ModServer(_requestManager);

@@ -15,5 +15,6 @@ export 'src/const/date_time.dart';
 export 'src/modules/item/params.dart';
 
 // Models
+export 'src/models/item_model.dart';
 export 'src/models/server_info_model.dart';
 export 'src/models/server_health_model.dart';

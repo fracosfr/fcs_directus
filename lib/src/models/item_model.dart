@@ -1,12 +1,25 @@
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/request/directus_response.dart';
 
-class DirectusItemModel {
+abstract class DirectusItemModel {
   final Map<String, dynamic> _values = {};
   final Map<String, dynamic> _rawValues = {};
   List<dynamic> _listValues = [];
 
-  DirectusItemModel.fromDirectus(dynamic data) {
+  /// Get the item name used to make request on Directus, override it if your class name dont respect the camel case.
+  /// Use "MyClassNameObject" for "my_class_name" item name in directus.
+  String? get itemName => null;
+
+  /// Get the unique identifier of the object
+  String get identifier => getValue("id") ?? "";
+
+  /// Force multiple level on request => use it if you want retrieve a sub object
+  /// level 0 eq *, level 1 eq *.*, level 2 eq *.*.* etc...
+  int get cascadeLevel => 0;
+
+  /// Creator constructor, used to convert the Directus responses.
+  DirectusItemModel.creator(dynamic data) {
+    if (data == null) return;
     dynamic finalData = data;
 
     if (data is DirectusResponse) {
@@ -53,6 +66,7 @@ class DirectusItemModel {
     _values[key] = value;
   }
 
+  /// Retrieve an value correspond with the [key]
   T? getValue<T>(String key) {
     final v = _values[key];
     if (v.runtimeType == T) return v;

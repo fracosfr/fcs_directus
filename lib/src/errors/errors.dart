@@ -99,3 +99,11 @@ class DirectusErrorAuthUnknow extends DirectusErrorAuth {
     _code = 1010;
   }
 }
+
+class DirectusErrorObjectClassName extends DirectusError {
+  DirectusErrorObjectClassName(String className) {
+    _message =
+        "Please use a legal Class name for $className or override getter itemName";
+    _code = 2000;
+  }
+}
