@@ -3,7 +3,7 @@ import 'package:fcs_directus/fcs_directus.dart';
 import 'brand_object.dart';
 
 class CarObject extends DirectusItemModel {
-  CarObject.fromDirectus(super.data) : super.creator();
+  CarObject.creator(super.data) : super.creator();
 
   //@override
   //String? get itemName => "car";

@@ -4,6 +4,7 @@ import 'package:fcs_directus/src/request/directus_response.dart';
 abstract class DirectusItemModel {
   final Map<String, dynamic> _values = {};
   final Map<String, dynamic> _rawValues = {};
+  final Map<String, dynamic> _updatedValues = {};
   List<dynamic> _listValues = [];
 
   /// Get the item name used to make request on Directus, override it if your class name dont respect the camel case.
@@ -19,6 +20,14 @@ abstract class DirectusItemModel {
 
   /// Creator constructor, used to convert the Directus responses.
   DirectusItemModel.creator(dynamic data) {
+    rebuild(data);
+  }
+
+  void rebuild(dynamic data) {
+    _rawValues.clear();
+    _values.clear();
+    _updatedValues.clear();
+
     if (data == null) return;
     dynamic finalData = data;
 
@@ -63,14 +72,21 @@ abstract class DirectusItemModel {
   List<dynamic> get items => _listValues;
 
   setValue(String key, dynamic value) {
-    _values[key] = value;
+    _updatedValues[key] = value;
   }
 
   /// Retrieve an value correspond with the [key]
   T? getValue<T>(String key) {
-    final v = _values[key];
+    final v =
+        _updatedValues.containsKey(key) ? _updatedValues[key] : _values[key];
     if (v.runtimeType == T) return v;
     return null;
+  }
+
+  Map<String, dynamic> toMap({bool onlyChanges = true}) {
+    final Map<String, dynamic> res = {};
+
+    return res;
   }
 
   List<T> getObjectList<T>(String key, T Function(dynamic data) itemCreator) {

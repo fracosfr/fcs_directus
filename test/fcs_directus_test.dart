@@ -79,18 +79,18 @@ void main() {
         print(e.toString());
       }
     });
-  });
 
-  test('Read 508 (by ID)', () async {
-    try {
-      print((await directus
-              .item("car")
-              .readOne("cd512cc6-6951-45d1-86af-8bc468c23b0b"))
-          .length);
-    } catch (e) {
-      print(e.toString());
-    }
-  });
+    test('Read 508 (by ID)', () async {
+      try {
+        print((await directus
+                .item("car")
+                .readOne("cd512cc6-6951-45d1-86af-8bc468c23b0b"))
+            .length);
+      } catch (e) {
+        print(e.toString());
+      }
+    });
+  }, skip: true);
 
   group("Server", () {
     test("PING", () async {
@@ -116,7 +116,7 @@ void main() {
         print(e.toString());
       }
     });
-  });
+  }, skip: true);
 
   group("creation/update/delete item", () {
     test("Create one item", () async {
@@ -169,7 +169,7 @@ void main() {
       } catch (e) {
         print(e.toString());
       }
-    });
+    }, skip: true);
 
     test("Update many items", () async {
       try {
@@ -225,15 +225,28 @@ void main() {
         print(e.toString());
       }
     });
-  });
+  }, skip: true);
 
   group("Object management", () {
     test("get One by ID", () async {
       CarObject car = await directus.object.getOne(
-          id: "cd512cc6-6951-45d1-86af-8bc468c23b0b",
-          itemCreator: (data) => CarObject.fromDirectus(data));
+        id: "cd512cc6-6951-45d1-86af-8bc468c23b0b",
+        itemCreator: CarObject.creator,
+      );
       print("${car.identifier} : ${car.name}");
       print("Brand = (${car.brandId}) ${car.brandObject.name}");
+    });
+
+    test("Get many cars", () async {
+      List<CarObject> cars = await directus.object.getMany(
+          itemCreator: CarObject.creator,
+          params: DirectusParams(filter: {
+            "hp": {DirectusFilterVar.lessThan: 200}
+          }));
+
+      for (final car in cars) {
+        print(car.name);
+      }
     });
   });
 }

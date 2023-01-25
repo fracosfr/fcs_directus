@@ -22,14 +22,14 @@ class DirectusParams {
   ///		[DirectusFilterVar.isOneOf]: ["vegetables", "fruit"]
   ///	}
   ///}
-  final Map<String, dynamic>? filter;
-  final DirectusParamsAggregate? aggregate;
-  final int? limit;
-  final int? offset;
-  final int? page;
-  final String? search;
-  final List<String>? fields;
-  final List<String>? sort;
+  Map<String, dynamic>? filter;
+  DirectusParamsAggregate? aggregate;
+  int? limit;
+  int? offset;
+  int? page;
+  String? search;
+  List<String>? fields;
+  List<String>? sort;
 
   DirectusParams({
     this.aggregate,

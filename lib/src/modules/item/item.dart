@@ -1,3 +1,4 @@
+import 'package:fcs_directus/fcs_directus.dart';
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/modules/item/params.dart';
 import 'package:fcs_directus/src/modules/item/generic_item_model.dart';
@@ -23,7 +24,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items.first;
     } catch (e) {
       rethrow;
@@ -38,7 +39,7 @@ class ModItem {
       ErrorParser(response).sendError();
 
       try {
-        final model = GenericItemModel.fromDirectus(response);
+        final model = GenericItemModel.creator(response);
         return model.items;
       } catch (e) {
         rethrow;
@@ -51,7 +52,7 @@ class ModItem {
       ErrorParser(response).sendError();
 
       try {
-        final model = GenericItemModel.fromDirectus(response);
+        final model = GenericItemModel.creator(response);
         return model.items;
       } catch (e) {
         rethrow;
@@ -68,7 +69,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items.first;
     } catch (e) {
       rethrow;
@@ -84,7 +85,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items;
     } catch (e) {
       rethrow;
@@ -101,7 +102,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items.first;
     } catch (e) {
       rethrow;
@@ -118,7 +119,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items;
     } catch (e) {
       rethrow;
@@ -161,7 +162,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.fromDirectus(response);
+      final model = GenericItemModel.creator(response);
       return model.items;
     } catch (e) {
       rethrow;

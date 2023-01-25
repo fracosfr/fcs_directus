@@ -14,31 +14,62 @@ class ModObject {
     required String id,
     required T Function(dynamic data) itemCreator,
   }) async {
-    // Get item name
-    final test = itemCreator(null);
-    String itemName = test.itemName ?? "";
-    final int cascadeLevel = test.cascadeLevel;
-    if (itemName.isEmpty) itemName = _getItemNameFromClassName(T.toString());
+    // Get item test information with itemCreator
+    final test = _getObjTest(itemCreator);
 
     // Get data
-    final modItem = ModItem(_requestManager, itemName);
-    String fields = "*";
-    for (int l = 0; l < cascadeLevel; l++) {
-      fields += ".*";
-    }
+    final modItem = ModItem(_requestManager, test.name);
+
     final res = await modItem.readMany(
         params: DirectusParams(filter: {
       "id": {"_eq": id}
     }, fields: [
-      fields
+      test.cascadeFilter
     ]));
     return itemCreator(res.first);
   }
 
+  /// Get an array of Item Object (child of [DirectusItemModel])
+  /// Return an [List<T extends DirectusItemModel>] object list build with [itemCreator] (use the [DirectusItemModel.creator])
   Future<List<T>> getMany<T extends DirectusItemModel>({
     required T Function(dynamic data) itemCreator,
+    DirectusParams? params,
   }) async {
-    return [];
+    // Get item test information with itemCreator
+    final test = _getObjTest(itemCreator);
+
+    // Get data
+    final modItem = ModItem(_requestManager, test.name);
+
+    params ??= DirectusParams();
+    params.fields ??= [test.cascadeFilter];
+
+    final res = await modItem.readMany(
+      params: params,
+    );
+
+    List<T> resultList = [];
+    for (final r in res) {
+      resultList.add(itemCreator(r));
+    }
+
+    return resultList;
+  }
+
+  Future<T> createOne<T extends DirectusItemModel>(T object) async {
+    print(_getObjTest((data) {
+      object.rebuild(data);
+      return object;
+    }));
+    return object;
+  }
+
+  _ObjTestInfo _getObjTest<T extends DirectusItemModel>(
+      T Function(dynamic data) itemCreator) {
+    final obj = itemCreator(null);
+    String itemName = obj.itemName ?? "";
+    if (itemName.isEmpty) itemName = _getItemNameFromClassName(T.toString());
+    return _ObjTestInfo(name: itemName, cascadeLevel: obj.cascadeLevel);
   }
 
   String _getItemNameFromClassName(String className) {
@@ -54,5 +85,20 @@ class ModObject {
       name += tmpName[i].toLowerCase();
     }
     return name;
+  }
+}
+
+class _ObjTestInfo {
+  final String name;
+  final int cascadeLevel;
+
+  late String cascadeFilter;
+
+  _ObjTestInfo({required this.name, this.cascadeLevel = 0}) {
+    String fields = "*";
+    for (int l = 0; l < cascadeLevel; l++) {
+      fields += ".*";
+    }
+    cascadeFilter = fields;
   }
 }
