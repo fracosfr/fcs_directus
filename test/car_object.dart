@@ -3,7 +3,13 @@ import 'package:fcs_directus/fcs_directus.dart';
 import 'brand_object.dart';
 
 class CarObject extends DirectusItemModel {
+  CarObject({required String name, required int doors, String? brandId}) {
+    this.name = name;
+    this.doors = doors;
+    if (brandId != null) setValue("brand.id", brandId);
+  }
   CarObject.creator(super.data) : super.creator();
+  CarObject.empty();
 
   //@override
   //String? get itemName => "car";
@@ -23,4 +29,6 @@ class CarObject extends DirectusItemModel {
   String get brandId => getValue("brand.id") ?? "";
   BrandObject get brandObject =>
       getObject("brand", (data) => BrandObject.creator(data));
+  set brandObject(BrandObject o) =>
+      setValue("brand", o.toMap(onlyChanges: false));
 }

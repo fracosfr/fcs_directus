@@ -10,7 +10,7 @@ class ModObject {
 
   /// Get an Item Object (child of [DirectusItemModel] with identifier as [id])
   /// Return an [T extends DirectusItemModel] object build with [itemCreator] (use the [DirectusItemModel.creator])
-  Future<T> getOne<T extends DirectusItemModel>({
+  Future<T?> getById<T extends DirectusItemModel>({
     required String id,
     required T Function(dynamic data) itemCreator,
   }) async {
@@ -26,6 +26,25 @@ class ModObject {
     }, fields: [
       test.cascadeFilter
     ]));
+    return itemCreator(res.first);
+  }
+
+  /// Get an Item Object (child of [DirectusItemModel] with filter )
+  /// Return an [T extends DirectusItemModel] object build with [itemCreator] (use the [DirectusItemModel.creator])
+  Future<T?> getOne<T extends DirectusItemModel>({
+    DirectusParams? params,
+    required T Function(dynamic data) itemCreator,
+  }) async {
+    // Get item test information with itemCreator
+    final test = _getObjTest(itemCreator);
+
+    // Get data
+    final modItem = ModItem(_requestManager, test.name);
+
+    params ??= DirectusParams();
+    params.fields ??= [test.cascadeFilter];
+
+    final res = await modItem.readMany(params: params);
     return itemCreator(res.first);
   }
 
@@ -56,12 +75,43 @@ class ModObject {
     return resultList;
   }
 
+  /// Create an item on Directus with [object] data.
+  /// Return the [T] object item created
   Future<T> createOne<T extends DirectusItemModel>(T object) async {
-    print(_getObjTest((data) {
-      object.rebuild(data);
+    final objInfo = _getObjTest((data) {
       return object;
-    }));
+    });
+
+    final modItem = ModItem(_requestManager, objInfo.name);
+    object.rebuild(await modItem.createOne(object.toMap()));
+
     return object;
+  }
+
+  Future<List<T>> createMany<T extends DirectusItemModel>({
+    required List<T> objects,
+    required T Function(dynamic data) itemCreator,
+  }) async {
+    if (objects.isEmpty) return [];
+
+    final List<Map<String, dynamic>> mapList = [];
+    for (final obj in objects) {
+      mapList.add(obj.toMap());
+    }
+
+    final objInfo = _getObjTest((data) {
+      return objects.first;
+    });
+
+    final modItem = ModItem(_requestManager, objInfo.name);
+    final resultItems = await modItem.createMany(mapList);
+
+    final List<T> result = [];
+    for (final item in resultItems) {
+      result.add(itemCreator(item));
+    }
+
+    return result;
   }
 
   _ObjTestInfo _getObjTest<T extends DirectusItemModel>(

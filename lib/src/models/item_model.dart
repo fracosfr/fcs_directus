@@ -3,8 +3,10 @@ import 'package:fcs_directus/src/request/directus_response.dart';
 
 abstract class DirectusItemModel {
   final Map<String, dynamic> _values = {};
-  final Map<String, dynamic> _rawValues = {};
+  //final Map<String, dynamic> _rawValues = {};
   final Map<String, dynamic> _updatedValues = {};
+
+  // A VALIDER
   List<dynamic> _listValues = [];
 
   /// Get the item name used to make request on Directus, override it if your class name dont respect the camel case.
@@ -18,14 +20,16 @@ abstract class DirectusItemModel {
   /// level 0 eq *, level 1 eq *.*, level 2 eq *.*.* etc...
   int get cascadeLevel => 0;
 
+  DirectusItemModel();
+
   /// Creator constructor, used to convert the Directus responses.
   DirectusItemModel.creator(dynamic data) {
     rebuild(data);
   }
 
   void rebuild(dynamic data) {
-    _rawValues.clear();
     _values.clear();
+    //_rawValues.clear();
     _updatedValues.clear();
 
     if (data == null) return;
@@ -42,11 +46,7 @@ abstract class DirectusItemModel {
       }
     }
     if (finalData is Map<String, dynamic>) {
-      // Map data
-      for (final key in finalData.keys) {
-        _setValueFromMap(key, finalData);
-        _rawValues[key] = finalData[key];
-      }
+      _values.addAll(finalData);
       _listValues = [finalData];
     } else if (finalData is List<dynamic>) {
       _listValues = finalData;
@@ -56,63 +56,63 @@ abstract class DirectusItemModel {
     }
   }
 
-  void _setValueFromMap(String key, dynamic data, {String finalKey = ""}) {
-    if (finalKey.isNotEmpty) finalKey += ".";
-    finalKey += key;
-
-    if (data[key] is Map<String, dynamic>) {
-      for (final k in data[key].keys) {
-        _setValueFromMap(k, data[key], finalKey: finalKey);
-      }
-    } else {
-      setValue(finalKey, data[key]);
-    }
-  }
-
   List<dynamic> get items => _listValues;
 
   setValue(String key, dynamic value) {
+    if (key.contains(".")) {
+      final keyList = key.split(".");
+      Map<String, dynamic> current = {keyList.last: value};
+      keyList.removeLast();
+      while (keyList.isNotEmpty) {
+        current = {keyList.last: current};
+        keyList.removeLast();
+      }
+
+      _updatedValues.combineRecursive(current);
+      return;
+    }
+
     _updatedValues[key] = value;
   }
 
   /// Retrieve an value correspond with the [key]
   T? getValue<T>(String key) {
-    final v =
-        _updatedValues.containsKey(key) ? _updatedValues[key] : _values[key];
-    if (v.runtimeType == T) return v;
-    return null;
+    if (key.contains(".")) {
+      final keyList = key.split(".");
+      Map<String, dynamic> current = toMap(onlyChanges: false);
+
+      while (keyList.isNotEmpty) {
+        if (!current.containsKey(keyList.first)) return null;
+
+        if (keyList.length == 1) {
+          return current[keyList.first] is T ? current[keyList.first] : null;
+        }
+
+        if (current[keyList.first] is Map<String, dynamic>) {
+          current = current[keyList.first];
+        }
+
+        keyList.removeAt(0);
+      }
+    }
+
+    final vals = toMap(onlyChanges: false);
+    if (!vals.containsKey(key)) return null;
+    return vals[key];
   }
 
   Map<String, dynamic> toMap({bool onlyChanges = true}) {
     final Map<String, dynamic> res = {};
+
+    if (!onlyChanges) res.combineRecursive(_values);
+    res.combineRecursive(_updatedValues);
 
     return res;
   }
 
   List<T> getObjectList<T>(String key, T Function(dynamic data) itemCreator) {
     final List<T> result = [];
-    List<dynamic> data = [];
-
-    if (key.contains(".")) {
-      List<String> keyItems = key.split(".");
-      Map<String, dynamic> tmpData = _rawValues;
-      while (keyItems.isNotEmpty) {
-        if (tmpData.keys.contains(keyItems.first)) {
-          print(tmpData[keyItems.first].runtimeType);
-          if (tmpData[keyItems.first] is List<dynamic>) {
-            data = tmpData[keyItems.first];
-            keyItems.clear();
-          } else if (tmpData[keyItems.first] is Map<String, dynamic>) {
-            tmpData = tmpData[keyItems.first];
-            keyItems.removeAt(0);
-          }
-        } else {
-          keyItems.clear();
-        }
-      }
-    } else {
-      data = _rawValues[key] ?? [];
-    }
+    List<dynamic> data = getValue(key);
 
     for (final item in data) {
       result.add(itemCreator(item));
@@ -122,27 +122,25 @@ abstract class DirectusItemModel {
   }
 
   T getObject<T>(String key, T Function(dynamic data) itemCreator) {
-    Map<String, dynamic> data = {};
+    return itemCreator(getValue<Map<String, dynamic>>(key));
+  }
+}
 
-    if (key.contains(".")) {
-      List<String> keyItems = key.split(".");
-      Map<String, dynamic> tmpData = _rawValues;
-      while (keyItems.isNotEmpty) {
-        if (tmpData.keys.contains(keyItems.first)) {
-          print(tmpData[keyItems.first].runtimeType);
-          if (tmpData[keyItems.first] is Map<String, dynamic>) {
-            tmpData = tmpData[keyItems.first];
-            keyItems.removeAt(0);
-            data = tmpData;
-          }
+extension MapCombineRecursive on Map<String, dynamic> {
+  combineRecursive(Map<String, dynamic> map) {
+    for (final entry in map.entries) {
+      if (containsKey(entry.key)) {
+        if (entry.value is Map<String, dynamic>) {
+          if (this[entry.key] is! Map<String, dynamic>) this[entry.key] = {};
+          Map<String, dynamic> tmp = this[entry.key];
+          tmp.combineRecursive(entry.value);
+          this[entry.key] = tmp;
         } else {
-          keyItems.clear();
+          this[entry.key] = entry.value;
         }
+      } else {
+        this[entry.key] = entry.value;
       }
-    } else {
-      data = _rawValues[key] ?? {};
     }
-
-    return itemCreator(data);
   }
 }

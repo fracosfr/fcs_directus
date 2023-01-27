@@ -1,6 +1,7 @@
 import 'package:fcs_directus/fcs_directus.dart';
 import 'package:test/test.dart';
 
+import 'brand_object.dart';
 import 'car_object.dart';
 
 void main() {
@@ -229,10 +230,19 @@ void main() {
 
   group("Object management", () {
     test("get One by ID", () async {
-      CarObject car = await directus.object.getOne(
+      CarObject? car = await directus.object.getById(
         id: "cd512cc6-6951-45d1-86af-8bc468c23b0b",
         itemCreator: CarObject.creator,
       );
+
+      if (car == null) return;
+
+      print("${car.identifier} : ${car.name}");
+      print("Brand = (${car.brandId}) ${car.brandObject.name}");
+
+      car.name = "F150";
+      car.brandObject.name = "Ford";
+
       print("${car.identifier} : ${car.name}");
       print("Brand = (${car.brandId}) ${car.brandObject.name}");
     });
@@ -245,8 +255,49 @@ void main() {
           }));
 
       for (final car in cars) {
-        print(car.name);
+        print("${car.name} (${car.brandObject.name})");
       }
+    });
+
+    test("Create a car", () async {
+      CarObject myCar = CarObject(name: "XC90", doors: 5, brandId: "Volvo");
+      //myCar = await directus.object.createOne(myCar);
+    });
+
+    test("Create a car with existing brand", () async {
+      BrandObject? brand = await directus.object.getOne(
+          itemCreator: BrandObject.creator,
+          params: DirectusParams(filter: {
+            "name": {DirectusFilterVar.equals: "Peugeot"}
+          }));
+
+      if (brand == null) return;
+
+      CarObject car = CarObject(name: "306", doors: 3);
+      car.brandObject = brand;
+
+      //car = await directus.object.createOne(car);
+    });
+
+    test("Create many cars", () async {
+      final brand = await directus.object.getOne(
+          itemCreator: BrandObject.creator,
+          params: DirectusParams(filter: {
+            "name": {DirectusFilterVar.equals: "Ford"}
+          }));
+
+      if (brand == null) return;
+
+      final myCars = [
+        CarObject(name: "Fiesta", doors: 5, brandId: brand.identifier),
+        CarObject(name: "Focus", doors: 5, brandId: brand.identifier),
+        CarObject(name: "F150", doors: 5, brandId: brand.identifier),
+      ];
+
+      //final res = await directus.object.createMany(
+      //  objects: myCars,
+      //  itemCreator: CarObject.creator,
+      //);
     });
   });
 }
