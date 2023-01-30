@@ -51,7 +51,7 @@ class RequestManager {
     final response = await request.execute();
 
     if (authentification) {
-      final errorParser = ErrorParser(response.data);
+      final errorParser = ErrorParser(response.toMap());
       if (errorParser.errorDetected) {
         print("A TRAITER => ${errorParser.code}");
         errorParser.sendError();
@@ -74,7 +74,7 @@ class RequestManager {
     );
 
     try {
-      final m = LoginModel.fromResponse(result);
+      final m = LoginModel.fromResponse(result.toMap());
       _token = m.accessToken;
       _renewToken = m.refreshToken;
 

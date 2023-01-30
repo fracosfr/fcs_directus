@@ -1,7 +1,6 @@
 import 'package:fcs_directus/fcs_directus.dart';
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/modules/item/params.dart';
-import 'package:fcs_directus/src/modules/item/generic_item_model.dart';
 import 'package:fcs_directus/src/request/directus_request.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 
@@ -22,41 +21,26 @@ class ModItem {
     );
 
     ErrorParser(response).sendError();
-
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items.first;
+      return response.toMap();
     } catch (e) {
       rethrow;
     }
   }
 
   Future<List<dynamic>> readMany({DirectusParams? params}) async {
-    if (params == null) {
-      final response = await _requestManager.executeRequest(
-        url: "/items/$_itemName",
-      );
-      ErrorParser(response).sendError();
+    String url = "/items/$_itemName";
+    if (params != null) url = params.generateUrl(url);
 
-      try {
-        final model = GenericItemModel.creator(response);
-        return model.items;
-      } catch (e) {
-        rethrow;
-      }
-    } else {
-      final response = await _requestManager.executeRequest(
-        url: params.generateUrl("/items/$_itemName"),
-      );
+    final response = await _requestManager.executeRequest(
+      url: url,
+    );
+    ErrorParser(response).sendError();
 
-      ErrorParser(response).sendError();
-
-      try {
-        final model = GenericItemModel.creator(response);
-        return model.items;
-      } catch (e) {
-        rethrow;
-      }
+    try {
+      return response.toList();
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -69,8 +53,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items.first;
+      return response.toMap();
     } catch (e) {
       rethrow;
     }
@@ -85,8 +68,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items;
+      return response.toList();
     } catch (e) {
       rethrow;
     }
@@ -102,8 +84,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items.first;
+      return response.toMap();
     } catch (e) {
       rethrow;
     }
@@ -119,8 +100,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items;
+      return response.toList();
     } catch (e) {
       rethrow;
     }
@@ -162,8 +142,7 @@ class ModItem {
     ErrorParser(response).sendError();
 
     try {
-      final model = GenericItemModel.creator(response);
-      return model.items;
+      return response.toList();
     } catch (e) {
       rethrow;
     }

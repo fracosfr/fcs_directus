@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fcs_directus/fcs_directus.dart';
 import 'package:test/test.dart';
 
@@ -260,8 +262,11 @@ void main() {
     });
 
     test("Create a car", () async {
-      CarObject myCar = CarObject(name: "XC90", doors: 5, brandId: "Volvo");
-      //myCar = await directus.object.createOne(myCar);
+      CarObject myCar = CarObject(
+          name: "XC90",
+          doors: 5,
+          brandId: "dd95329d-e6cf-4cd5-92f2-f8dac41bf178");
+      myCar = await directus.object.createOne(myCar);
     });
 
     test("Create a car with existing brand", () async {
@@ -294,10 +299,81 @@ void main() {
         CarObject(name: "F150", doors: 5, brandId: brand.identifier),
       ];
 
-      //final res = await directus.object.createMany(
-      //  objects: myCars,
-      //  itemCreator: CarObject.creator,
-      //);
+      final res = await directus.object.createMany(
+        objects: myCars,
+        itemCreator: CarObject.creator,
+      );
+    });
+
+    test("Update one car", () async {
+      final car = await directus.object.getOne(
+        itemCreator: CarObject.creator,
+        params: DirectusParams(
+          filter: {
+            "name": {DirectusFilterVar.equals: "Berlingo"}
+          },
+        ),
+      );
+
+      if (car == null) return;
+
+      car.doors++;
+
+      final updatedCar = await directus.object.updateOne(car);
+      print(updatedCar.doors);
+    });
+
+    test("Update many cars", () async {
+      final cars = await directus.object.getMany(
+        itemCreator: CarObject.creator,
+        params: DirectusParams(
+          filter: {
+            "brand": {
+              "name": {DirectusFilterVar.equals: "Peugeot"}
+            }
+          },
+        ),
+      );
+
+      CarObject carData = CarObject.empty();
+      carData.doors = Random().nextInt(9) + 1;
+
+      final updatedCars = await directus.object.updateMany(
+          objects: cars, itemCreator: CarObject.creator, sourceObject: carData);
+
+      for (final car in updatedCars) {
+        print("${car.name} : ${car.doors} doors !");
+      }
+    });
+
+    test("Delete One car", () async {
+      final car = await directus.object.getOne(
+        itemCreator: CarObject.creator,
+        params: DirectusParams(
+          filter: {
+            "brand": {
+              "name": {DirectusFilterVar.equals: "Volvo"}
+            }
+          },
+        ),
+      );
+      if (car == null) return;
+      print(await directus.object.deleteOne(car));
+    });
+
+    test("Delete many cars", () async {
+      final cars = await directus.object.getMany(
+        itemCreator: CarObject.creator,
+        params: DirectusParams(
+          filter: {
+            "brand": {
+              "name": {DirectusFilterVar.equals: "Ford"}
+            }
+          },
+        ),
+      );
+
+      print(await directus.object.deleteMany(cars));
     });
   });
 }

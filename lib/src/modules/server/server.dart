@@ -27,13 +27,13 @@ class ModServer {
   Future<DirectusServerInfoModel> info() async {
     final response = await _requestManager.executeRequest(url: "/server/info");
     ErrorParser(response).sendError();
-    return DirectusServerInfoModel.fromDirectus(response);
+    return DirectusServerInfoModel.fromDirectus(response.toMap());
   }
 
   Future<DirectusServerHealthModel> health() async {
     final response =
         await _requestManager.executeRequest(url: "/server/health");
     ErrorParser(response).sendError();
-    return DirectusServerHealthModel.fromDirectus(response);
+    return DirectusServerHealthModel.fromDirectus(response.toMap());
   }
 }

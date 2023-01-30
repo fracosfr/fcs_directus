@@ -1,13 +1,9 @@
-import 'package:fcs_directus/src/errors/error_parser.dart';
-import 'package:fcs_directus/src/request/directus_response.dart';
-
 abstract class DirectusItemModel {
   final Map<String, dynamic> _values = {};
   //final Map<String, dynamic> _rawValues = {};
   final Map<String, dynamic> _updatedValues = {};
 
   // A VALIDER
-  List<dynamic> _listValues = [];
 
   /// Get the item name used to make request on Directus, override it if your class name dont respect the camel case.
   /// Use "MyClassNameObject" for "my_class_name" item name in directus.
@@ -23,40 +19,17 @@ abstract class DirectusItemModel {
   DirectusItemModel();
 
   /// Creator constructor, used to convert the Directus responses.
-  DirectusItemModel.creator(dynamic data) {
+  DirectusItemModel.creator(Map<String, dynamic> data) {
     rebuild(data);
   }
 
-  void rebuild(dynamic data) {
+  void rebuild(Map<String, dynamic> data) {
     _values.clear();
     //_rawValues.clear();
     _updatedValues.clear();
 
-    if (data == null) return;
-    dynamic finalData = data;
-
-    if (data is DirectusResponse) {
-      ErrorParser(data.data).sendError();
-
-      if (data.data.keys.contains("data")) {
-        // OK DirectusResponse contain data
-        finalData = data.data["data"];
-      } else {
-        finalData = data.data;
-      }
-    }
-    if (finalData is Map<String, dynamic>) {
-      _values.addAll(finalData);
-      _listValues = [finalData];
-    } else if (finalData is List<dynamic>) {
-      _listValues = finalData;
-    } else {
-      // UnknowType
-      print("ItemModel got type : ${finalData.runtimeType}");
-    }
+    _values.addAll(data);
   }
-
-  List<dynamic> get items => _listValues;
 
   setValue(String key, dynamic value) {
     if (key.contains(".")) {
