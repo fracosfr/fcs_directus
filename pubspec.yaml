@@ -1,6 +1,6 @@
 name: fcs_directus
 description: A library for http request with an Directus server.
-version: 0.0.14
+version: 0.0.15
 repository: https://github.com/fracosfr/fcs_directus
 
 environment:
@@ -16,4 +16,3 @@ dev_dependencies:
 
 dependencies:
   http: ^0.13.5
-  reflectable: ^4.0.4
