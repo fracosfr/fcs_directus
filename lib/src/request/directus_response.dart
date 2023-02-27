@@ -39,6 +39,14 @@ class DirectusResponse {
     return [];
   }
 
+  String toJson() {
+    return jsonEncode({
+      "url": url,
+      "method": method.name,
+      "body": rawData,
+    });
+  }
+
   DirectusResponse.fromRequest(
       this.url, String body, this.method, bool debugMode, bool parseJson)
       : rawData = body {
@@ -46,6 +54,20 @@ class DirectusResponse {
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
       if (debugMode) print("Parsed data=> $_data");
+    } catch (e) {
+      throw DirectusErrorHttpJsonException();
+    }
+  }
+
+  factory DirectusResponse.fromJson(String jsonData) {
+    try {
+      final d = jsonDecode(jsonData);
+      if (d! is Map<String, dynamic>) {
+        throw DirectusErrorHttpJsonException();
+      }
+
+      return DirectusResponse.fromRequest(
+          d["url"] ?? "", d["body"] ?? {}, HttpMethod.get, false, false);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }

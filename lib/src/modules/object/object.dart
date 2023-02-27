@@ -49,8 +49,36 @@ class ModObject {
   }
 
   /// Get an array of Item Object (child of [DirectusItemModel])
-  /// Return an [List<T extends DirectusItemModel>] object list build with [itemCreator] (use the [DirectusItemModel.creator])
-  Future<List<T>> getMany<T extends DirectusItemModel>({
+  /// Return an [List<T extends DirectusItemModel>] object list build with [itemCreator] (use the [DirectusItemModel.creator]).
+  /// If the [jsonData] param is != null, the request will be based on the [jsonData] value and no http request will be send.
+  Future<List<T>> getMany<T extends DirectusItemModel>(
+      {required T Function(Map<String, dynamic> data) itemCreator,
+      DirectusParams? params,
+      String? jsonData}) async {
+    // Get item test information with itemCreator
+    final test = _getObjTest(itemCreator);
+
+    // Get data
+    final modItem = ModItem(_requestManager, test.name);
+
+    params ??= DirectusParams();
+    params.fields ??= [test.cascadeFilter];
+
+    final res = await modItem.readMany(
+      params: params,
+      jsonData: jsonData,
+    );
+
+    List<T> resultList = [];
+    for (final r in res) {
+      resultList.add(itemCreator(r));
+    }
+
+    return resultList;
+  }
+
+  /// Get an json object from the request [getMany].
+  Future<String> getManyJson<T extends DirectusItemModel>({
     required T Function(Map<String, dynamic> data) itemCreator,
     DirectusParams? params,
   }) async {
@@ -63,16 +91,11 @@ class ModObject {
     params ??= DirectusParams();
     params.fields ??= [test.cascadeFilter];
 
-    final res = await modItem.readMany(
+    final res = await modItem.readManyJson(
       params: params,
     );
 
-    List<T> resultList = [];
-    for (final r in res) {
-      resultList.add(itemCreator(r));
-    }
-
-    return resultList;
+    return res;
   }
 
   /// Create an item on Directus with [object] data.

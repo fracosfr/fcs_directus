@@ -2,7 +2,9 @@ import 'package:fcs_directus/fcs_directus.dart';
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/modules/item/params.dart';
 import 'package:fcs_directus/src/request/directus_request.dart';
+import 'package:fcs_directus/src/request/directus_response.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
+import 'package:http/http.dart';
 
 class ModItem {
   final RequestManager _requestManager;
@@ -28,7 +30,20 @@ class ModItem {
     }
   }
 
-  Future<List<dynamic>> readMany({DirectusParams? params}) async {
+  /// Read many items in Directus
+  /// If the [jsonData] param is != null, the request will be based on the [jsonData] value and no http request will be send.
+  Future<List<dynamic>> readMany(
+      {DirectusParams? params, String? jsonData}) async {
+    if (jsonData != null) {
+      final response = DirectusResponse.fromJson(jsonData);
+      ErrorParser(response).sendError();
+      try {
+        return response.toList();
+      } catch (e) {
+        rethrow;
+      }
+    }
+
     String url = "/items/$_itemName";
     if (params != null) url = params.generateUrl(url);
 
@@ -42,6 +57,19 @@ class ModItem {
     } catch (e) {
       rethrow;
     }
+  }
+
+  /// Eq [readMany] but return an json object can be stored and reuse later.
+  Future<String> readManyJson({DirectusParams? params}) async {
+    String url = "/items/$_itemName";
+    if (params != null) url = params.generateUrl(url);
+
+    final response = await _requestManager.executeRequest(
+      url: url,
+    );
+    ErrorParser(response).sendError();
+
+    return response.toJson();
   }
 
   Future<Map<String, dynamic>> createOne(Map<String, dynamic> itemData) async {
