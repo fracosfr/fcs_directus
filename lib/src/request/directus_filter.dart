@@ -7,9 +7,6 @@ enum FilterKey {
   lessThanOrEqualTo,
   greaterThan,
   greaterThanOrEqualTo,
-  isOneOf,
-  isNotOneOf,
-  isNull,
   isntNull,
   contains,
   coesntContain,
@@ -67,12 +64,6 @@ class Filter extends DirectusFilterContructor {
         return "_gt";
       case FilterKey.greaterThanOrEqualTo:
         return "_gte";
-      case FilterKey.isOneOf:
-        return "_in";
-      case FilterKey.isNotOneOf:
-        return "_nin";
-      case FilterKey.isNull:
-        return "_null";
       case FilterKey.isntNull:
         return "_nnuul";
       case FilterKey.contains:
@@ -162,4 +153,31 @@ class FilterIsOneOf extends DirectusFilterContructor {
       column: {"_in": obj.toString()}
     };
   }
+}
+
+class FilterIsNotOneOf extends DirectusFilterContructor {
+  FilterIsNotOneOf(this.column, this.items);
+  final String column;
+  final List<dynamic> items;
+
+  @override
+  Map get map {
+    List<dynamic> obj = [];
+
+    for (final i in items) {
+      obj.add(parseData(i));
+    }
+
+    return {
+      column: {"_nin": obj.toString()}
+    };
+  }
+}
+
+class FilterIsNull extends DirectusFilterContructor {
+  FilterIsNull(this.column);
+  final String column;
+
+  @override
+  Map get map => {column: "_null"};
 }
