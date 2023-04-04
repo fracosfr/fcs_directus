@@ -21,11 +21,11 @@ class ModObject {
     final modItem = ModItem(_requestManager, test.name);
 
     final res = await modItem.readMany(
-        params: DirectusParams(filter: {
-      "id": {"_eq": id}
-    }, fields: [
-      test.cascadeFilter
-    ]));
+      params: DirectusParams(
+        filter: FilterEqual("id", id),
+        fields: [test.cascadeFilter],
+      ),
+    );
     return itemCreator(res.first);
   }
 

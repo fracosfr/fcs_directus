@@ -34,9 +34,9 @@ abstract class DirectusFilterContructor {
   @override
   String toString() => json;
 
-  dynamic parseData(dynamic data) {
-    if (data.runtimeType == DateTime) return data.toString();
-    return data;
+  dynamic parseData(dynamic value) {
+    if (value.runtimeType == DateTime) return value.toString();
+    return value;
   }
 }
 
@@ -180,4 +180,15 @@ class FilterIsNull extends DirectusFilterContructor {
 
   @override
   Map get map => {column: "_null"};
+}
+
+class FilterEqual extends DirectusFilterContructor {
+  FilterEqual(this.column, this.value);
+  final String column;
+  final dynamic value;
+
+  @override
+  Map get map => {
+        column: {"_eq": parseData(value)}
+      };
 }
