@@ -13,6 +13,7 @@ export 'src/const/date_time.dart';
 
 // Modules
 export 'src/modules/item/params.dart';
+export 'src/request/directus_filter.dart';
 
 // Models
 export 'src/models/item_model.dart';

@@ -23,6 +23,7 @@ class DirectusParams {
   ///	}
   ///}
   Map<String, dynamic>? filter;
+  DirectusFilterContructor? filterContructor;
   DirectusParamsAggregate? aggregate;
   int? limit;
   int? offset;
@@ -36,6 +37,7 @@ class DirectusParams {
     this.fields,
     this.filter,
     this.limit,
+    this.filterContructor,
     this.offset,
     this.page,
     this.search,
@@ -55,6 +57,10 @@ class DirectusParams {
 
     if (filter != null) {
       ext = _addParam(ext, "filter=${jsonEncode(filter)}");
+    }
+
+    if (filterContructor != null) {
+      ext = _addParam(ext, "filter=${filterContructor?.json}");
     }
 
     if (search != null) {
