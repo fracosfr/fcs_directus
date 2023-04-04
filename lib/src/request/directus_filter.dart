@@ -43,8 +43,8 @@ abstract class DirectusFilterContructor {
   }
 }
 
-class DirectusFilter extends DirectusFilterContructor {
-  DirectusFilter(this.column, this.key, this.value);
+class Filter extends DirectusFilterContructor {
+  Filter(this.column, this.key, this.value);
   final FilterKey key;
   final Comparable value;
   final String column;
@@ -146,7 +146,8 @@ class FilterOr extends DirectusFilterContructor {
 }
 
 class FilterIsOneOf extends DirectusFilterContructor {
-  FilterIsOneOf(this.items);
+  FilterIsOneOf(this.column, this.items);
+  final String column;
   final List<Comparable> items;
 
   @override
@@ -157,6 +158,8 @@ class FilterIsOneOf extends DirectusFilterContructor {
       obj.add(parseData(i));
     }
 
-    return {"_or": obj};
+    return {
+      column: {"_in": obj.toString()}
+    };
   }
 }
