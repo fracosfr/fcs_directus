@@ -22,7 +22,7 @@ class ModObject {
 
     final res = await modItem.readMany(
       params: DirectusParams(
-        filter: FilterEqual("id", id),
+        filter: Filter.equal("id", id),
         fields: [test.cascadeFilter],
       ),
     );

@@ -4,18 +4,22 @@ import 'package:test/test.dart';
 void testFilter() {
   group('Simple Filter', () {
     test('equal int', () {
-      print(Filter("colName", FilterKey.equal, 1));
+      print(Filter.equal("colName", 1));
     });
     test('equal String', () {
-      print(Filter("colName", FilterKey.equal, "toto"));
+      print(Filter.equal("colName", "toto"));
     });
   });
 
   group('And Filter', () {
     test('2 test', () {
-      print(FilterAnd([
-        Filter("colName", FilterKey.equal, "toto"),
-        Filter("colName", FilterKey.equal, "titi"),
+      print(Filter.and([
+        Filter.equal("colName", "toto"),
+        Filter.equal("colName", "titi"),
+        Filter.or([
+          Filter.equal("colName", "A"),
+          Filter.equal("colName", "B"),
+        ])
       ]));
     });
   });

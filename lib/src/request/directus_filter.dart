@@ -28,6 +28,8 @@ enum FilterKey {
 }
 
 abstract class DirectusFilterContructor {
+  DirectusFilterContructor(this.key);
+  final String key;
   Map get map;
   String get json => jsonEncode(map);
 
@@ -40,7 +42,7 @@ abstract class DirectusFilterContructor {
   }
 }
 
-class Filter extends DirectusFilterContructor {
+/*class Filter extends DirectusFilterContructor {
   Filter(this.column, this.key, this.value);
   final FilterKey key;
   final dynamic value;
@@ -102,10 +104,28 @@ class Filter extends DirectusFilterContructor {
         return "\$NOW";
     }
   }
+}*/
+
+class Filter {
+  static DirectusFilterListFilter or(List<DirectusFilterContructor> items) =>
+      DirectusFilterListFilter("_or", items);
+  static DirectusFilterListFilter and(List<DirectusFilterContructor> items) =>
+      DirectusFilterListFilter("_and", items);
+
+  static DirectusFilterList isOneOf(String column, List<dynamic> items) =>
+      DirectusFilterList("_in", column, items);
+
+  static DirectusFilterValue equal(String column, dynamic value) =>
+      DirectusFilterValue("_eq", column, value);
+  static DirectusFilterValue greaterThan(String column, dynamic value) =>
+      DirectusFilterValue("_gt", column, value);
+
+  static DirectusFilterNoValue isNull(String column) =>
+      DirectusFilterNoValue("_null", column);
 }
 
-class FilterAnd extends DirectusFilterContructor {
-  FilterAnd(this.items);
+class DirectusFilterListFilter extends DirectusFilterContructor {
+  DirectusFilterListFilter(super.key, this.items);
   final List<DirectusFilterContructor> items;
 
   @override
@@ -116,79 +136,44 @@ class FilterAnd extends DirectusFilterContructor {
       obj.add(i.map);
     }
 
-    return {"_and": obj};
+    return {key: obj};
   }
 }
 
-class FilterOr extends DirectusFilterContructor {
-  FilterOr(this.items);
-  final List<DirectusFilterContructor> items;
-
-  @override
-  Map get map {
-    List<Map> obj = [];
-
-    for (final i in items) {
-      obj.add(i.map);
-    }
-
-    return {"_or": obj};
-  }
-}
-
-class FilterIsOneOf extends DirectusFilterContructor {
-  FilterIsOneOf(this.column, this.items);
-  final String column;
-  final List<dynamic> items;
-
-  @override
-  Map get map {
-    List<dynamic> obj = [];
-
-    for (final i in items) {
-      obj.add(parseData(i));
-    }
-
-    return {
-      column: {"_in": obj.toString()}
-    };
-  }
-}
-
-class FilterIsNotOneOf extends DirectusFilterContructor {
-  FilterIsNotOneOf(this.column, this.items);
-  final String column;
-  final List<dynamic> items;
-
-  @override
-  Map get map {
-    List<dynamic> obj = [];
-
-    for (final i in items) {
-      obj.add(parseData(i));
-    }
-
-    return {
-      column: {"_nin": obj.toString()}
-    };
-  }
-}
-
-class FilterIsNull extends DirectusFilterContructor {
-  FilterIsNull(this.column);
-  final String column;
-
-  @override
-  Map get map => {column: "_null"};
-}
-
-class FilterEqual extends DirectusFilterContructor {
-  FilterEqual(this.column, this.value);
+class DirectusFilterValue extends DirectusFilterContructor {
+  DirectusFilterValue(super.key, this.column, this.value);
   final String column;
   final dynamic value;
 
   @override
   Map get map => {
-        column: {"_eq": parseData(value)}
+        column: {key: parseData(value)}
       };
+}
+
+class DirectusFilterList extends DirectusFilterContructor {
+  DirectusFilterList(super.key, this.column, this.items);
+  final String column;
+  final List<dynamic> items;
+
+  @override
+  Map get map {
+    List<dynamic> obj = [];
+
+    for (final i in items) {
+      obj.add(parseData(i));
+    }
+
+    return {
+      column: {key: obj.toString()}
+    };
+  }
+}
+
+class DirectusFilterNoValue extends DirectusFilterContructor {
+  DirectusFilterNoValue(super.key, this.column);
+  final String column;
+
+  @override
+  Map get map => {column: key};
 }
