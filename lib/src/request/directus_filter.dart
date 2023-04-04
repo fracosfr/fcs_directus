@@ -46,7 +46,7 @@ abstract class DirectusFilterContructor {
 class Filter extends DirectusFilterContructor {
   Filter(this.column, this.key, this.value);
   final FilterKey key;
-  final Comparable value;
+  final dynamic value;
   final String column;
 
   Map get map => {
@@ -148,11 +148,11 @@ class FilterOr extends DirectusFilterContructor {
 class FilterIsOneOf extends DirectusFilterContructor {
   FilterIsOneOf(this.column, this.items);
   final String column;
-  final List<Comparable> items;
+  final List<dynamic> items;
 
   @override
   Map get map {
-    List<Comparable> obj = [];
+    List<dynamic> obj = [];
 
     for (final i in items) {
       obj.add(parseData(i));
