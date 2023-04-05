@@ -23,4 +23,10 @@ void testFilter() {
       ]));
     });
   });
+
+  group('Sub columns', () {
+    test('3 levels equal true', () {
+      print(Filter.equal("colA.subA.subsubA", true));
+    });
+  });
 }

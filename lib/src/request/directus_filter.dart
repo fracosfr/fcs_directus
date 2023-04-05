@@ -40,6 +40,23 @@ abstract class DirectusFilterContructor {
     if (value.runtimeType == DateTime) return value.toString();
     return value;
   }
+
+  Map mapParser(String column, dynamic value) {
+    if (column.contains(".")) {
+      final cols = column.split(".");
+      Map finalData = {};
+      for (final String col in cols.reversed) {
+        if (finalData.isEmpty) {
+          finalData = {col: value};
+        } else {
+          finalData = {col: finalData};
+        }
+      }
+      return finalData;
+    }
+
+    return {column: value};
+  }
 }
 
 /*class Filter extends DirectusFilterContructor {
@@ -146,9 +163,7 @@ class DirectusFilterValue extends DirectusFilterContructor {
   final dynamic value;
 
   @override
-  Map get map => {
-        column: {key: parseData(value)}
-      };
+  Map get map => mapParser(column, {key: parseData(value)});
 }
 
 class DirectusFilterList extends DirectusFilterContructor {
@@ -164,9 +179,7 @@ class DirectusFilterList extends DirectusFilterContructor {
       obj.add(parseData(i));
     }
 
-    return {
-      column: {key: obj.toString()}
-    };
+    return mapParser(column, {key: obj.toString()});
   }
 }
 
@@ -175,5 +188,5 @@ class DirectusFilterNoValue extends DirectusFilterContructor {
   final String column;
 
   @override
-  Map get map => {column: key};
+  Map get map => mapParser(column, key);
 }
