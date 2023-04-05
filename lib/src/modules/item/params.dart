@@ -54,10 +54,6 @@ class DirectusParams {
     }
 
     if (filter != null) {
-      ext = _addParam(ext, "filter=${jsonEncode(filter)}");
-    }
-
-    if (filter != null) {
       ext = _addParam(ext, "filter=${filter?.json}");
     }
 
