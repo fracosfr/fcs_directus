@@ -88,7 +88,7 @@ class DirectusFilterList extends DirectusFilterContructor {
       obj.add(parseData(i));
     }
 
-    return mapParser(column, {key: jsonEncode(obj)});
+    return mapParser(column, {key: obj});
   }
 }
 
