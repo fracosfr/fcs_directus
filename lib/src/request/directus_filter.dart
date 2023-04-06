@@ -33,6 +33,16 @@ abstract class DirectusFilterContructor {
 }
 
 class Filter {
+  static String currentUser = "\$CURRENT_USER";
+  static String currentRole = "\$CURRENT_ROLE";
+  //static String now = "\$NOW";
+
+  /// Adjustement example : [now("+2 hours")] [now("-1 year")]
+  static String now({String adjustement = ""}) {
+    if (adjustement.isEmpty) return "\$NOW";
+    return "\$NOW($adjustement)";
+  }
+
   static DirectusFilterListFilter or(List<DirectusFilterContructor> items) =>
       DirectusFilterListFilter("_or", items);
   static DirectusFilterListFilter and(List<DirectusFilterContructor> items) =>
@@ -40,14 +50,49 @@ class Filter {
 
   static DirectusFilterList isOneOf(String column, List<dynamic> items) =>
       DirectusFilterList("_in", column, items);
+  static DirectusFilterList isNotOneOf(String column, List<dynamic> items) =>
+      DirectusFilterList("_nin", column, items);
+
+  static DirectusFilterCompare between(
+          String column, dynamic begin, dynamic end) =>
+      DirectusFilterCompare("_between", column, begin, end);
+  static DirectusFilterCompare notBetween(
+          String column, dynamic begin, dynamic end) =>
+      DirectusFilterCompare("_nbetween", column, begin, end);
 
   static DirectusFilterValue equal(String column, dynamic value) =>
       DirectusFilterValue("_eq", column, value);
+  static DirectusFilterValue doesntEqual(String column, dynamic value) =>
+      DirectusFilterValue("_neq", column, value);
+  static DirectusFilterValue lessThan(String column, dynamic value) =>
+      DirectusFilterValue("_lt", column, value);
+  static DirectusFilterValue lessThanOrEqual(String column, dynamic value) =>
+      DirectusFilterValue("_lte", column, value);
   static DirectusFilterValue greaterThan(String column, dynamic value) =>
       DirectusFilterValue("_gt", column, value);
+  static DirectusFilterValue greaterThanOrEqual(String column, dynamic value) =>
+      DirectusFilterValue("_gte", column, value);
+  static DirectusFilterValue contains(String column, dynamic value) =>
+      DirectusFilterValue("_contains", column, value);
+  static DirectusFilterValue notContains(String column, dynamic value) =>
+      DirectusFilterValue("_ncontains", column, value);
+  static DirectusFilterValue startWith(String column, dynamic value) =>
+      DirectusFilterValue("_starts_with", column, value);
+  static DirectusFilterValue dontStartWith(String column, dynamic value) =>
+      DirectusFilterValue("_nstarts_with", column, value);
+  static DirectusFilterValue endsWith(String column, dynamic value) =>
+      DirectusFilterValue("_ends_with", column, value);
+  static DirectusFilterValue dontEndsWith(String column, dynamic value) =>
+      DirectusFilterValue("_nends_with", column, value);
 
   static DirectusFilterNoValue isNull(String column) =>
       DirectusFilterNoValue("_null", column);
+  static DirectusFilterNoValue isNotNull(String column) =>
+      DirectusFilterNoValue("_nnull", column);
+  static DirectusFilterNoValue isEmpty(String column) =>
+      DirectusFilterNoValue("_empty", column);
+  static DirectusFilterNoValue isNotEmpty(String column) =>
+      DirectusFilterNoValue("_nempty", column);
 }
 
 class DirectusFilterListFilter extends DirectusFilterContructor {
@@ -90,6 +135,18 @@ class DirectusFilterList extends DirectusFilterContructor {
 
     return mapParser(column, {key: obj});
   }
+}
+
+class DirectusFilterCompare extends DirectusFilterContructor {
+  DirectusFilterCompare(super.key, this.column, this.value1, this.value2);
+  final String column;
+  final dynamic value1;
+  final dynamic value2;
+
+  @override
+  Map get map => mapParser(column, {
+        key: [parseData(value1), parseData(value2)]
+      });
 }
 
 class DirectusFilterNoValue extends DirectusFilterContructor {
