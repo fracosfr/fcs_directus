@@ -73,14 +73,8 @@ abstract class DirectusItemModel {
     if (!vals.containsKey(key)) return null;
 
     if (T == DateTime) {
-      print("C'est un DateTime");
       String dateString = vals[key];
-      print(vals[key].runtimeType);
-      //String date = dateString.substring(0, 9);
-      //String time = dateString.substring(11, 8);
-      //print("$date $time");
       return DateTime.tryParse(dateString) as T;
-      //return null;
     }
     return vals[key];
   }
