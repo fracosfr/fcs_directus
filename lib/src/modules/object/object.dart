@@ -214,7 +214,7 @@ class ModObject {
   }
 
   String _getItemNameFromClassName(String className) {
-    if (!className.endsWith("Object") || !className.endsWith("Obj")) {
+    if (!className.endsWith("Object") && !className.endsWith("Obj")) {
       throw DirectusErrorObjectClassName(className);
     }
 
