@@ -214,11 +214,12 @@ class ModObject {
   }
 
   String _getItemNameFromClassName(String className) {
-    if (!className.endsWith("Object")) {
+    if (!className.endsWith("Object") || !className.endsWith("Obj")) {
       throw DirectusErrorObjectClassName(className);
     }
 
-    final tmpName = className.substring(0, className.length - 6);
+    final tmpName = className.substring(
+        0, className.length - (className.endsWith("Object") ? 6 : 3));
     String name = tmpName[0].toLowerCase();
     final majKey = "AZERTYUIOPMLKJHGFDSQWXCVBN";
     for (int i = 1; i < tmpName.length; i++) {

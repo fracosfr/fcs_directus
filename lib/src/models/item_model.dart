@@ -6,7 +6,7 @@ abstract class DirectusItemModel {
   // A VALIDER
 
   /// Get the item name used to make request on Directus, override it if your class name dont respect the camel case.
-  /// Use "MyClassNameObject" for "my_class_name" item name in directus.
+  /// Use "MyClassNameObject" or "MyClassNameObj" for "my_class_name" item name in directus.
   String? get itemName => null;
 
   /// Get the unique identifier of the object
