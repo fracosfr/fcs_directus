@@ -72,6 +72,7 @@ abstract class DirectusItemModel {
     final vals = toMap(onlyChanges: false);
     if (!vals.containsKey(key)) return null;
     if (T == DateTime) {
+      print(DateTime.tryParse(vals[key]));
       return DateTime.tryParse(vals[key]) as T?;
     }
     return vals[key];
