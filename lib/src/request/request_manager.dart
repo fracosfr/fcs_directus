@@ -9,8 +9,13 @@ class RequestManager {
   String? _renewToken;
   String? _serverUrl;
   bool _debugMode = false;
+  final Function(bool isConnected) onConnexionChange;
+
+  RequestManager(this.onConnexionChange);
 
   bool get debugMode => _debugMode;
+
+  bool get connected => (_token ?? "").isNotEmpty;
 
   void setStaticToken({required String? staticToken}) {
     _token = staticToken;
@@ -54,6 +59,7 @@ class RequestManager {
       final errorParser = ErrorParser(response.toMap());
       if (errorParser.errorDetected) {
         print("A TRAITER => ${errorParser.code}");
+        onConnexionChange(false);
         errorParser.sendError();
       }
     }
@@ -77,7 +83,7 @@ class RequestManager {
       final m = LoginModel.fromResponse(result.toMap());
       _token = m.accessToken;
       _renewToken = m.refreshToken;
-
+      onConnexionChange(true);
       return true;
     } catch (e) {
       rethrow;

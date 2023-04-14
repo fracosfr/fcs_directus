@@ -9,6 +9,8 @@ class ModAuthentification {
     _requestManager.setStaticToken(staticToken: token);
   }
 
+  bool get connected => _requestManager.connected;
+
   Future<bool> restoreSession({required String refreshToken}) async => false;
 
   Future<bool> login({required String login, required String password}) async {
