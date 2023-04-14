@@ -9,8 +9,8 @@ class FcsDirectus {
   static FcsDirectus? _instance;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
-  factory FcsDirectus.instance() {
-    _instance ??= FcsDirectus();
+  factory FcsDirectus.instance({String? serverUrl, String? staticToken}) {
+    _instance ??= FcsDirectus(serverUrl: serverUrl, staticToken: staticToken);
     return _instance!;
   }
 
@@ -22,8 +22,10 @@ class FcsDirectus {
   /// Initialise a new Instance of [FcsDirectus].
   /// [staticToken] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.
   FcsDirectus({String? serverUrl, String? staticToken}) {
-    _requestManager.setServerUrl(url: serverUrl);
-    _requestManager.setStaticToken(staticToken: staticToken);
+    if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
+    if (staticToken != null) {
+      _requestManager.setStaticToken(staticToken: staticToken);
+    }
   }
 
   /// For authentification request
