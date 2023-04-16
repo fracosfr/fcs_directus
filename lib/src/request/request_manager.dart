@@ -95,6 +95,7 @@ class RequestManager {
       _renewToken = m.refreshToken;
       if ((_token ?? "").isNotEmpty && (_renewToken ?? "").isNotEmpty) {
         onConnexionChange(true);
+        onRefreshTokenChange(_renewToken);
       }
       return true;
     } catch (e) {
