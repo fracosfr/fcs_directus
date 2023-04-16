@@ -97,7 +97,7 @@ class RequestManager {
   }
 
   Future<bool> loginWithRefreshToken(String? refreshToken) async {
-    if (_renewToken != null) _renewToken = refreshToken;
+    if (refreshToken != null) _renewToken = refreshToken;
     if (_renewToken == null) return false;
 
     final data = {"refresh_token": _renewToken, "mode": "json"};
