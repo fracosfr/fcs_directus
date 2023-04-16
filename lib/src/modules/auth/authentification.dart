@@ -31,6 +31,11 @@ class ModAuthentification {
     return false;
   }
 
+  String? get refreshToken => _requestManager.refreshToken;
+
+  Future<bool> loginWithRefreshToken(String? refreshToken) =>
+      _requestManager.loginWithRefreshToken(refreshToken);
+
   bool resetPassword({
     required String resetToken,
     required String newPassword,

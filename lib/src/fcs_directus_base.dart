@@ -7,6 +7,7 @@ import 'package:fcs_directus/src/modules/auth/authentification.dart';
 class FcsDirectus {
   static FcsDirectus? _instance;
   final Function(bool isConnected)? onConnexionChange;
+  final Function(String? refreshKoken)? onRefreshTokenChange;
   late RequestManager _requestManager;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
@@ -14,11 +15,13 @@ class FcsDirectus {
     String? serverUrl,
     String? staticToken,
     Function(bool isConnected)? onConnexionChange,
+    Function(String? refreshKoken)? onRefreshTokenChange,
   }) {
     _instance ??= FcsDirectus(
       serverUrl: serverUrl,
       staticToken: staticToken,
       onConnexionChange: onConnexionChange,
+      onRefreshTokenChange: onRefreshTokenChange,
     );
     return _instance!;
   }
@@ -34,8 +37,10 @@ class FcsDirectus {
     String? serverUrl,
     String? staticToken,
     this.onConnexionChange,
+    this.onRefreshTokenChange,
   }) {
-    _requestManager = RequestManager(onConnexionChange ?? (bool test) {});
+    _requestManager = RequestManager(onConnexionChange ?? (bool test) {},
+        onRefreshTokenChange ?? (String? refreshKoken) {});
     if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
     if (staticToken != null) {
       _requestManager.setStaticToken(staticToken: staticToken);

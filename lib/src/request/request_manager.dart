@@ -10,8 +10,9 @@ class RequestManager {
   String? _serverUrl;
   bool _debugMode = false;
   final Function(bool isConnected) onConnexionChange;
+  final Function(String? refreshKoken) onRefreshTokenChange;
 
-  RequestManager(this.onConnexionChange);
+  RequestManager(this.onConnexionChange, this.onRefreshTokenChange);
 
   bool get debugMode => _debugMode;
 
@@ -30,7 +31,9 @@ class RequestManager {
     _serverUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
   }
 
-  bool _refreshToken() {
+  Future<bool> loginWithRefreshToken(String? refreshToken) async {
+    if (_renewToken != null) _renewToken = refreshToken;
+    onRefreshTokenChange(null);
     print("REFRESH TOKEN");
     return false;
   }
@@ -66,6 +69,8 @@ class RequestManager {
 
     return response;
   }
+
+  String? get refreshToken => _renewToken;
 
   Future<bool> login({
     required String login,
