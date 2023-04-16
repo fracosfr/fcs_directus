@@ -9,7 +9,7 @@ export 'src/fcs_directus_base.dart';
 export 'src/const/filters_const.dart';
 export 'src/const/aggregate_const.dart';
 export 'src/const/date_time.dart';
-//export 'src/errors/errors.dart';
+export 'src/errors/errors.dart';
 
 // Modules
 export 'src/modules/item/params.dart';
