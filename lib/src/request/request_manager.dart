@@ -79,11 +79,18 @@ class RequestManager {
       method: HttpMethod.post,
     );
 
+    final errorParser = ErrorParser(result.toMap());
+    if (errorParser.errorDetected) {
+      errorParser.sendError();
+    }
+
     try {
       final m = LoginModel.fromResponse(result.toMap());
       _token = m.accessToken;
       _renewToken = m.refreshToken;
-      onConnexionChange(true);
+      if ((_token ?? "").isNotEmpty && (_renewToken ?? "").isNotEmpty) {
+        onConnexionChange(true);
+      }
       return true;
     } catch (e) {
       rethrow;
