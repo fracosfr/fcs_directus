@@ -6,7 +6,6 @@ library fcs_directus;
 export 'src/fcs_directus_base.dart';
 
 // Constants
-export 'src/const/filters_const.dart';
 export 'src/const/aggregate_const.dart';
 export 'src/const/date_time.dart';
 export 'src/errors/errors.dart';

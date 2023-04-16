@@ -31,13 +31,6 @@ class RequestManager {
     _serverUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
   }
 
-  Future<bool> loginWithRefreshToken(String? refreshToken) async {
-    if (_renewToken != null) _renewToken = refreshToken;
-    onRefreshTokenChange(null);
-    print("REFRESH TOKEN");
-    return false;
-  }
-
   Future<DirectusResponse> executeRequest({
     required String url,
     dynamic data,
@@ -79,6 +72,37 @@ class RequestManager {
     final data = {"email": login, "password": password};
     final result = await executeRequest(
       url: AuthentificationUrls.login,
+      data: data,
+      authentification: false,
+      method: HttpMethod.post,
+    );
+
+    final errorParser = ErrorParser(result.toMap());
+    if (errorParser.errorDetected) {
+      errorParser.sendError();
+    }
+
+    try {
+      final m = LoginModel.fromResponse(result.toMap());
+      _token = m.accessToken;
+      _renewToken = m.refreshToken;
+      if ((_token ?? "").isNotEmpty && (_renewToken ?? "").isNotEmpty) {
+        onConnexionChange(true);
+        onRefreshTokenChange(_renewToken);
+      }
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> loginWithRefreshToken(String? refreshToken) async {
+    if (_renewToken != null) _renewToken = refreshToken;
+    if (_renewToken == null) return false;
+
+    final data = {"refresh_token": _renewToken, "mode": "json"};
+    final result = await executeRequest(
+      url: AuthentificationUrls.refresh,
       data: data,
       authentification: false,
       method: HttpMethod.post,
