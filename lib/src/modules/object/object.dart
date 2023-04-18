@@ -1,5 +1,4 @@
 import 'package:fcs_directus/fcs_directus.dart';
-import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 
@@ -236,7 +235,10 @@ class _ObjTestInfo {
 
   late String cascadeFilter;
 
-  _ObjTestInfo({required this.name, this.cascadeLevel = 0}) {
+  _ObjTestInfo({
+    required this.name,
+    this.cascadeLevel = 0,
+  }) {
     String fields = "*";
     for (int l = 0; l < cascadeLevel; l++) {
       fields += ".*";

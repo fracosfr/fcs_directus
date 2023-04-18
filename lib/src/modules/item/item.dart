@@ -4,22 +4,19 @@ import 'package:fcs_directus/src/modules/item/params.dart';
 import 'package:fcs_directus/src/request/directus_request.dart';
 import 'package:fcs_directus/src/request/directus_response.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
-import 'package:http/http.dart';
 
 class ModItem {
   final RequestManager _requestManager;
   final String _itemName;
+  final String baseUrl;
 
   String get name => _itemName;
 
-  ModItem(
-    this._requestManager,
-    this._itemName,
-  );
+  ModItem(this._requestManager, this._itemName, {this.baseUrl = "/items/"});
 
   Future<Map<String, dynamic>> readOne(String id) async {
     final response = await _requestManager.executeRequest(
-      url: "/items/$_itemName/$id",
+      url: "$baseUrl$_itemName/$id",
     );
 
     ErrorParser(response).sendError();
@@ -44,7 +41,7 @@ class ModItem {
       }
     }
 
-    String url = "/items/$_itemName";
+    String url = "$baseUrl$_itemName";
     if (params != null) url = params.generateUrl(url);
 
     final response = await _requestManager.executeRequest(
@@ -61,7 +58,7 @@ class ModItem {
 
   /// Eq [readMany] but return an json object can be stored and reuse later.
   Future<String> readManyJson({DirectusParams? params}) async {
-    String url = "/items/$_itemName";
+    String url = "$baseUrl$_itemName";
     if (params != null) url = params.generateUrl(url);
 
     final response = await _requestManager.executeRequest(
@@ -74,7 +71,7 @@ class ModItem {
 
   Future<Map<String, dynamic>> createOne(Map<String, dynamic> itemData) async {
     final response = await _requestManager.executeRequest(
-      url: "/items/$_itemName",
+      url: "$baseUrl$_itemName",
       method: HttpMethod.post,
       data: itemData,
     );
@@ -89,7 +86,7 @@ class ModItem {
 
   Future<List<dynamic>> createMany(List<Map<String, dynamic>> itemsData) async {
     final response = await _requestManager.executeRequest(
-      url: "/items/$_itemName",
+      url: "$baseUrl$_itemName",
       method: HttpMethod.post,
       data: itemsData,
     );
@@ -105,7 +102,7 @@ class ModItem {
   Future<Map<String, dynamic>> updateOne(
       String id, Map<String, dynamic> itemData) async {
     final response = await _requestManager.executeRequest(
-      url: "/items/$_itemName/$id",
+      url: "$baseUrl$_itemName/$id",
       method: HttpMethod.patch,
       data: itemData,
     );
@@ -121,7 +118,7 @@ class ModItem {
   Future<List<dynamic>> updateMany(
       List<String> ids, Map<String, dynamic> itemData) async {
     final response = await _requestManager.executeRequest(
-      url: "/items/$_itemName",
+      url: "$baseUrl$_itemName",
       method: HttpMethod.patch,
       data: {"keys": ids, "data": itemData},
     );
@@ -136,7 +133,7 @@ class ModItem {
 
   Future<bool> deleteOne(String id) async {
     final request = await _requestManager.executeRequest(
-      url: "/items/$_itemName/$id",
+      url: "$baseUrl$_itemName/$id",
       method: HttpMethod.delete,
       parseJson: false,
     );
@@ -146,7 +143,7 @@ class ModItem {
 
   Future<bool> deleteMany(List<String> ids) async {
     final request = await _requestManager.executeRequest(
-      url: "/items/$_itemName",
+      url: "$baseUrl$_itemName",
       method: HttpMethod.delete,
       data: ids,
       parseJson: false,
@@ -162,7 +159,7 @@ class ModItem {
       {required Map<String, dynamic> filter}) async {
     final response = await _requestManager.executeRequest(
       method: HttpMethod.search,
-      url: "/items/$_itemName",
+      url: "$baseUrl$_itemName",
       data: {
         "query": {"filter": filter}
       },

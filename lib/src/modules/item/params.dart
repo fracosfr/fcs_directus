@@ -42,6 +42,17 @@ class DirectusParams {
     this.sort,
   });
 
+  combine(DirectusParams params) {
+    aggregate ??= params.aggregate;
+    fields ??= params.fields;
+    limit ??= params.limit;
+    filter ??= params.filter;
+    offset ??= params.offset;
+    page ??= params.page;
+    search ??= params.search;
+    sort ??= params.sort;
+  }
+
   String generateUrl(String url) {
     String ext = "";
 

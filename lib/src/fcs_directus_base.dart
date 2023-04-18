@@ -1,6 +1,7 @@
 import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/modules/object/object.dart';
 import 'package:fcs_directus/src/modules/server/server.dart';
+import 'package:fcs_directus/src/modules/user/user.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 import 'package:fcs_directus/src/modules/auth/authentification.dart';
 
@@ -61,6 +62,9 @@ class FcsDirectus {
 
   /// Server utilities
   ModServer get server => ModServer(_requestManager);
+
+  /// User management
+  ModUser get user => ModUser(_requestManager);
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {

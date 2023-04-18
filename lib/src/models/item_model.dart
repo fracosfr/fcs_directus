@@ -76,7 +76,11 @@ abstract class DirectusItemModel {
       String dateString = vals[key];
       return DateTime.tryParse(dateString) as T;
     }
-    return vals[key];
+    try {
+      return vals[key];
+    } catch (_) {
+      return null;
+    }
   }
 
   Map<String, dynamic> toMap({bool onlyChanges = true}) {
@@ -100,7 +104,8 @@ abstract class DirectusItemModel {
   }
 
   T getObject<T>(String key, T Function(dynamic data) itemCreator) {
-    return itemCreator(getValue<Map<String, dynamic>>(key));
+    return itemCreator(
+        getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
   }
 }
 
