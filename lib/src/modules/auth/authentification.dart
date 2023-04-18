@@ -22,8 +22,8 @@ class ModAuthentification {
   }
 
   bool logout() {
-    print("LOGOUT");
-    return false;
+    _requestManager.logout();
+    return true;
   }
 
   bool requestPasswordReset({required String email}) {

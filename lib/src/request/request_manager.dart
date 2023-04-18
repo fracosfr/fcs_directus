@@ -96,6 +96,13 @@ class RequestManager {
     }
   }
 
+  void logout() {
+    _token = null;
+    _renewToken = null;
+    onRefreshTokenChange(null);
+    onConnexionChange(false);
+  }
+
   Future<bool> loginWithRefreshToken(String? refreshToken) async {
     if (refreshToken != null) _renewToken = refreshToken;
     if (_renewToken == null) return false;

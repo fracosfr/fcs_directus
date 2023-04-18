@@ -19,9 +19,9 @@ boolean_selector
 file:///home/fracos/.pub-cache/hosted/pub.dev/boolean_selector-2.1.1/
 file:///home/fracos/.pub-cache/hosted/pub.dev/boolean_selector-2.1.1/lib/
 collection
-2.18
-file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.1/
-file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.1/lib/
+2.12
+file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.0/
+file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.0/lib/
 convert
 2.18
 file:///home/fracos/.pub-cache/hosted/pub.dev/convert-3.1.1/
@@ -63,9 +63,9 @@ io
 file:///home/fracos/.pub-cache/hosted/pub.dev/io-1.0.4/
 file:///home/fracos/.pub-cache/hosted/pub.dev/io-1.0.4/lib/
 js
-2.19
-file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.6/
-file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.6/lib/
+2.16
+file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.5/
+file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.5/lib/
 lints
 2.17
 file:///home/fracos/.pub-cache/hosted/pub.dev/lints-2.0.1/
@@ -80,8 +80,8 @@ file:///home/fracos/.pub-cache/hosted/pub.dev/matcher-0.12.14/
 file:///home/fracos/.pub-cache/hosted/pub.dev/matcher-0.12.14/lib/
 meta
 2.12
-file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.9.0/
-file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.9.0/lib/
+file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.8.0/
+file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.8.0/lib/
 mime
 2.18
 file:///home/fracos/.pub-cache/hosted/pub.dev/mime-1.0.4/

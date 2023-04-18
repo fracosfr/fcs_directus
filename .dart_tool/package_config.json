@@ -33,9 +33,9 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.17.0",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "2.12"
     },
     {
       "name": "convert",
@@ -99,9 +99,9 @@
     },
     {
       "name": "js",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.6",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/js-0.6.5",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "2.16"
     },
     {
       "name": "lints",
@@ -123,7 +123,7 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.9.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.8.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -290,7 +290,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-04-18T10:44:00.358068Z",
+  "generated": "2023-04-18T11:06:36.729744Z",
   "generator": "pub",
   "generatorVersion": "2.19.6"
 }

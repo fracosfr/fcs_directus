@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:fcs_directus/fcs_directus.dart';
 
 class DirectusParams {
