@@ -54,9 +54,12 @@ class RequestManager {
     if (authentification) {
       final errorParser = ErrorParser(response.toMap());
       if (errorParser.errorDetected) {
-        print("A TRAITER => ${errorParser.code}");
-        onConnexionChange(false);
-        errorParser.sendError();
+        if (errorParser.code == "TOKEN_EXPIRED") {
+          loginWithRefreshToken(_renewToken);
+        } else {
+          onConnexionChange(false);
+          errorParser.sendError();
+        }
       }
     }
 
