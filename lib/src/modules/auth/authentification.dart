@@ -14,7 +14,7 @@ class ModAuthentification {
   Future<bool> restoreSession(refreshToken) {
     try {
       return _requestManager.loginWithRefreshToken(refreshToken);
-    } catch (_) {
+    } catch (e) {
       rethrow;
     }
   }
