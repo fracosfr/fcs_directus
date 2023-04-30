@@ -11,8 +11,13 @@ class ModAuthentification {
 
   bool get connected => _requestManager.connected;
 
-  Future<bool> restoreSession(refreshToken) =>
-      _requestManager.loginWithRefreshToken(refreshToken);
+  Future<bool> restoreSession(refreshToken) {
+    try {
+      return _requestManager.loginWithRefreshToken(refreshToken);
+    } catch (_) {
+      rethrow;
+    }
+  }
 
   Future<bool> login({required String login, required String password}) async {
     try {
