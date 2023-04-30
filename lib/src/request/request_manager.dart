@@ -120,7 +120,11 @@ class RequestManager {
 
     final errorParser = ErrorParser(result.toMap());
     if (errorParser.errorDetected) {
-      errorParser.sendError();
+      try {
+        errorParser.sendError();
+      } catch (_) {
+        rethrow;
+      }
     }
 
     try {
