@@ -54,7 +54,8 @@ class RequestManager {
     if (authentification) {
       final errorParser = ErrorParser(response.toMap());
       if (errorParser.errorDetected) {
-        if (errorParser.code == "TOKEN_EXPIRED") {
+        if (errorParser.code == "TOKEN_EXPIRED" ||
+            errorParser.code == "INVALID_CREDENTIALS") {
           loginWithRefreshToken(_renewToken);
         } else {
           onConnexionChange(false);
