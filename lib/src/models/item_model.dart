@@ -92,7 +92,8 @@ abstract class DirectusItemModel {
     return res;
   }
 
-  List<T> getObjectList<T>(String key, T Function(dynamic data) itemCreator) {
+  List<T> getObjectList<T>(
+      String key, T Function(Map<String, dynamic> data) itemCreator) {
     final List<T> result = [];
     List<dynamic> data = getValue(key);
 
@@ -103,7 +104,8 @@ abstract class DirectusItemModel {
     return result;
   }
 
-  T getObject<T>(String key, T Function(dynamic data) itemCreator) {
+  T getObject<T>(
+      String key, T Function(Map<String, dynamic> data) itemCreator) {
     return itemCreator(
         getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
   }
