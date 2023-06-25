@@ -38,8 +38,9 @@ class FcsDirectus {
   }
 
   /// Custom print function for debug.
-  setDebugPrintFunction(Function(dynamic value) printFunction) =>
-      _requestManager.setDebugPrintFunction;
+  void setDebugPrintFunction(void Function(dynamic value) printFunction) {
+    _requestManager.setDebugPrintFunction(printFunction);
+  }
 
   /// Initialise a new Instance of [FcsDirectus].
   /// [staticToken] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.

@@ -33,7 +33,7 @@ class ModItem {
       {DirectusParams? params, String? jsonData}) async {
     if (jsonData != null) {
       final response =
-          DirectusResponse.fromJson(jsonData, _requestManager.print);
+          DirectusResponse.fromJson(jsonData, _requestManager.debugPrint);
       ErrorParser(response).sendError();
       try {
         return response.toList();

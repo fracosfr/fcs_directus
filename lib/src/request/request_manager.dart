@@ -27,19 +27,18 @@ class RequestManager {
     _debugMode = debug;
   }
 
-  void setDebugPrintFunction(Function(dynamic value) printFunction) {
+  void setDebugPrintFunction(void Function(dynamic value) printFunction) {
     _onDebugPrint = printFunction;
   }
 
-  void print(dynamic value) {
-    //if (_debugMode) {
-    //  if (_onDebugPrint != null) {
-    //    _onDebugPrint!(value);
-    //  } else {
-    //    print(value);
-    //  }
-    //}
-    print("TEST: $value");
+  void debugPrint(dynamic value) {
+    if (_debugMode) {
+      if (_onDebugPrint != null) {
+        _onDebugPrint!(value);
+      } else {
+        print(value);
+      }
+    }
   }
 
   void setServerUrl({required String? url}) {
@@ -61,7 +60,7 @@ class RequestManager {
       headers: headers ?? {},
       data: data,
       token: authentification ? _token : null,
-      onPrint: print,
+      onPrint: debugPrint,
       parseJson: parseJson,
     );
 
