@@ -12,7 +12,7 @@ class FcsDirectus {
   late RequestManager _requestManager;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
-  factory FcsDirectus.instance({
+  factory FcsDirectus.singleton({
     String? serverUrl,
     String? staticToken,
     Function(bool isConnected)? onConnexionChange,
@@ -27,12 +27,18 @@ class FcsDirectus {
     return _instance!;
   }
 
+  /// Get an unique instance (singleton) of [FcsDirectus], for create singleton
+  /// with parameters consider using [FcsDirectus.singleton] first.
+  static FcsDirectus get instance => _instance ??= FcsDirectus.singleton();
+
+  /// Enable debug print
   bool get debug => _requestManager.debugMode;
   set debug(bool v) {
     _requestManager.setDebugMode(v);
   }
 
-  set debugPrintFunction(Function(dynamic value) printFunction) =>
+  /// Custom print function for debug.
+  setDebugPrintFunction(Function(dynamic value) printFunction) =>
       _requestManager.setDebugPrintFunction;
 
   /// Initialise a new Instance of [FcsDirectus].
