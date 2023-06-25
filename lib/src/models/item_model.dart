@@ -104,10 +104,11 @@ abstract class DirectusItemModel {
     return result;
   }
 
-  T getObject<T>(
-      String key, T Function(Map<String, dynamic> data) itemCreator) {
-    return itemCreator(
-        getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
+  T getObject<T extends DirectusItemModel>(
+    String key,
+    T Function(Map<String, dynamic> data) creator,
+  ) {
+    return creator(getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
   }
 }
 
