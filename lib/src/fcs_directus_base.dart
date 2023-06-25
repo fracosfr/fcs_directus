@@ -32,6 +32,9 @@ class FcsDirectus {
     _requestManager.setDebugMode(v);
   }
 
+  set debugPrintFunction(Function(dynamic value) printFunction) =>
+      _requestManager.setDebugPrintFunction;
+
   /// Initialise a new Instance of [FcsDirectus].
   /// [staticToken] may be filled with a unique token, however for an login/password dont use this and call [auth.login(login: login, password: password)] method.
   FcsDirectus({

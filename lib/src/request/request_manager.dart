@@ -9,6 +9,7 @@ class RequestManager {
   String? _renewToken;
   String? _serverUrl;
   bool _debugMode = false;
+  Function(dynamic value)? _onDebugPrint;
   final Function(bool isConnected) onConnexionChange;
   final Function(String? refreshKoken) onRefreshTokenChange;
 
@@ -24,6 +25,20 @@ class RequestManager {
 
   void setDebugMode(bool debug) {
     _debugMode = debug;
+  }
+
+  void setDebugPrintFunction(Function(dynamic value) printFunction) {
+    _onDebugPrint = printFunction;
+  }
+
+  void print(dynamic value) {
+    if (_debugMode) {
+      if (_onDebugPrint != null) {
+        _onDebugPrint!(value);
+      } else {
+        print(value);
+      }
+    }
   }
 
   void setServerUrl({required String? url}) {
@@ -45,7 +60,7 @@ class RequestManager {
       headers: headers ?? {},
       data: data,
       token: authentification ? _token : null,
-      debugMode: _debugMode,
+      onPrint: print,
       parseJson: parseJson,
     );
 

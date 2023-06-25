@@ -17,7 +17,7 @@ class DirectusRequest {
   final String url;
   final dynamic data;
   final HttpMethod method;
-  final bool debugMode;
+  final Function(dynamic value) onPrint;
   final bool parseJson;
   Map<String, String> headers;
 
@@ -27,7 +27,7 @@ class DirectusRequest {
     this.data,
     this.token,
     this.headers = const {},
-    this.debugMode = false,
+    required this.onPrint,
     this.parseJson = true,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
@@ -78,8 +78,8 @@ class DirectusRequest {
   Future<DirectusResponse> execute() async {
     headers["Content-Type"] = "application/json";
 
-    if (debugMode) print("$method => $url");
-    if (debugMode && data != null) print("Body=> $data");
+    onPrint("$method => $url");
+    if (data != null) onPrint("Body=> $data");
 
     switch (method) {
       case HttpMethod.get:
@@ -98,12 +98,12 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
-      if (debugMode) print("GET RAW=> ${res.body}");
+      onPrint("GET RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
         url,
         res.body,
         HttpMethod.get,
-        debugMode,
+        onPrint,
         parseJson,
       );
     } on DirectusErrorHttpJsonException catch (_) {
@@ -121,9 +121,9 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      if (debugMode) print("POST RAW=> ${res.body}");
+      onPrint("POST RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
-          url, res.body, HttpMethod.post, debugMode, parseJson);
+          url, res.body, HttpMethod.post, onPrint, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -139,9 +139,9 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      if (debugMode) print("PATCH RAW=> ${res.body}");
+      onPrint("PATCH RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
-          url, res.body, HttpMethod.post, debugMode, parseJson);
+          url, res.body, HttpMethod.post, onPrint, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -156,12 +156,12 @@ class DirectusRequest {
         headers: headers,
         body: data != null ? jsonEncode(data) : null,
       );
-      if (debugMode) print("DELETE RAW=> ${res.body}");
+      onPrint("DELETE RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
         url,
         res.body,
         HttpMethod.delete,
-        debugMode,
+        onPrint,
         parseJson,
       );
     } on DirectusErrorHttpJsonException catch (_) {
@@ -185,7 +185,7 @@ class DirectusRequest {
         url,
         await res.stream.bytesToString(),
         HttpMethod.post,
-        debugMode,
+        onPrint,
         parseJson,
       );
     } on DirectusErrorHttpJsonException catch (_) {

@@ -47,19 +47,20 @@ class DirectusResponse {
     });
   }
 
-  DirectusResponse.fromRequest(
-      this.url, String body, this.method, bool debugMode, bool parseJson)
+  DirectusResponse.fromRequest(this.url, String body, this.method,
+      Function(dynamic value) onPrint, bool parseJson)
       : rawData = body {
     if (body.isEmpty) return;
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
-      if (debugMode) print("Parsed data=> $_data");
+      onPrint("Parsed data=> $_data");
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
   }
 
-  factory DirectusResponse.fromJson(String jsonData) {
+  factory DirectusResponse.fromJson(
+      String jsonData, Function(dynamic value) onPrint) {
     try {
       final d = jsonDecode(jsonData);
       if (d! is Map<String, dynamic>) {
@@ -67,7 +68,7 @@ class DirectusResponse {
       }
 
       return DirectusResponse.fromRequest(
-          d["url"] ?? "", d["body"] ?? {}, HttpMethod.get, false, false);
+          d["url"] ?? "", d["body"] ?? {}, HttpMethod.get, onPrint, false);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }

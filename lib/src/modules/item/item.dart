@@ -32,7 +32,8 @@ class ModItem {
   Future<List<dynamic>> readMany(
       {DirectusParams? params, String? jsonData}) async {
     if (jsonData != null) {
-      final response = DirectusResponse.fromJson(jsonData);
+      final response =
+          DirectusResponse.fromJson(jsonData, _requestManager.print);
       ErrorParser(response).sendError();
       try {
         return response.toList();
