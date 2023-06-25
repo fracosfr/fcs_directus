@@ -39,6 +39,7 @@ class RequestManager {
         print(value);
       }
     }
+    print("TEST: $value");
   }
 
   void setServerUrl({required String? url}) {
