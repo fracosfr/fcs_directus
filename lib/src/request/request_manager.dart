@@ -32,13 +32,13 @@ class RequestManager {
   }
 
   void print(dynamic value) {
-    if (_debugMode) {
-      if (_onDebugPrint != null) {
-        _onDebugPrint!(value);
-      } else {
-        print(value);
-      }
-    }
+    //if (_debugMode) {
+    //  if (_onDebugPrint != null) {
+    //    _onDebugPrint!(value);
+    //  } else {
+    //    print(value);
+    //  }
+    //}
     print("TEST: $value");
   }
 
