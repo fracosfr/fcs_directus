@@ -1,4 +1,3 @@
-import 'package:fcs_directus/src/fcs_directus_base.dart';
 import 'package:meta/meta.dart';
 
 abstract class DirectusItemModel {
@@ -122,15 +121,6 @@ abstract class DirectusItemModel {
     T Function(Map<String, dynamic> data) creator,
   ) {
     return creator(getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
-  }
-
-  save({FcsDirectus? directusInstance}) async {
-    directusInstance ??= FcsDirectus.instance;
-    final res = identifier.isEmpty
-        ? await directusInstance.object.createOne(this)
-        : await directusInstance.object.updateOne(this);
-
-    rebuild(res.toMap(onlyChanges: false));
   }
 }
 
