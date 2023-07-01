@@ -110,6 +110,12 @@ class ModObject {
     return object;
   }
 
+  /// Create or update an <T>[object], if an identifier is present in object
+  /// the update method was called otherwise, the creation method will be
+  /// called.
+  Future<T> saveOne<T extends DirectusItemModel>(T object) =>
+      object.identifier.isEmpty ? createOne(object) : updateOne(object);
+
   /// Create many [T] objects in Directus, return a [List<T>] with the created objects
   Future<List<T>> createMany<T extends DirectusItemModel>({
     required List<T> objects,
