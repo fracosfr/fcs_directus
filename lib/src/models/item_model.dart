@@ -1,3 +1,6 @@
+import 'package:fcs_directus/src/fcs_directus_base.dart';
+import 'package:meta/meta.dart';
+
 abstract class DirectusItemModel {
   final Map<String, dynamic> _values = {};
   //final Map<String, dynamic> _rawValues = {};
@@ -31,6 +34,8 @@ abstract class DirectusItemModel {
     _values.addAll(data);
   }
 
+  /// set a [value] corresponding with the [key].
+  @protected
   setValue(String key, dynamic value) {
     if (key.contains(".")) {
       final keyList = key.split(".");
@@ -48,7 +53,13 @@ abstract class DirectusItemModel {
     _updatedValues[key] = value;
   }
 
-  /// Retrieve an value correspond with the [key]
+  /// set an [object] corresponding with the [key]
+  @protected
+  setObject(String key, DirectusItemModel object) =>
+      setValue(key, object.toMap(onlyChanges: false));
+
+  /// Retrieve a value correspond with the [key]
+  @protected
   T? getValue<T>(String key) {
     if (key.contains(".")) {
       final keyList = key.split(".");
@@ -104,11 +115,22 @@ abstract class DirectusItemModel {
     return result;
   }
 
+  /// Retrieve an object correspond with the [key]
+  @protected
   T getObject<T extends DirectusItemModel>(
     String key,
     T Function(Map<String, dynamic> data) creator,
   ) {
     return creator(getValue<Map<String, dynamic>>(key) ?? <String, dynamic>{});
+  }
+
+  save({FcsDirectus? directusInstance}) async {
+    directusInstance ??= FcsDirectus.instance;
+    final res = identifier.isEmpty
+        ? await directusInstance.object.createOne(this)
+        : await directusInstance.object.updateOne(this);
+
+    rebuild(res.toMap(onlyChanges: false));
   }
 }
 
