@@ -1,3 +1,5 @@
+import 'package:fcs_directus/src/errors/error_parser.dart';
+import 'package:fcs_directus/src/request/directus_request.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 
 class ModAuthentification {
@@ -32,18 +34,45 @@ class ModAuthentification {
     return true;
   }
 
-  bool requestPasswordReset({required String email}) {
-    print("REQUEST PASSWORD RESET");
-    return false;
+  Future<bool> requestPasswordReset(
+      {required String email, String? resetUrl}) async {
+    try {
+      final response = await _requestManager.executeRequest(
+        url: "/auth/password/request",
+        authentification: false,
+        method: HttpMethod.post,
+        data: resetUrl != null
+            ? {"email": email, "reset_url": resetUrl}
+            : {"email": email},
+      );
+
+      ErrorParser(response).sendError();
+
+      return response.rawData.isEmpty;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   String? get refreshToken => _requestManager.refreshToken;
 
-  bool resetPassword({
+  Future<bool> resetPassword({
     required String resetToken,
     required String newPassword,
-  }) {
-    print("RESET PASSWORD");
-    return false;
+  }) async {
+    try {
+      final response = await _requestManager.executeRequest(
+        url: "/auth/password/reset",
+        authentification: false,
+        method: HttpMethod.post,
+        data: {"token": resetToken, "password": newPassword},
+      );
+
+      ErrorParser(response).sendError();
+
+      return response.rawData.isEmpty;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

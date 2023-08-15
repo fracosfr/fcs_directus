@@ -77,6 +77,8 @@ class DirectusRequest {
 
   Future<DirectusResponse> execute() async {
     headers["Content-Type"] = "application/json";
+    //headers["Access-Control-Allow-Origin"] = "blue.fracos.fr";
+    //headers["Access-Control-Allow-Credentials"] = "true";
 
     onPrint("$method => $url");
     if (data != null) onPrint("Body=> $data");

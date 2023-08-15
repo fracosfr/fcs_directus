@@ -24,6 +24,19 @@ class ModUser {
     }
   }
 
+  Future<bool> acceptInvite(
+      {required String token, required String password}) async {
+    final response = await _requestManager.executeRequest(
+      url: "${UserUrls.base}invite/accept",
+      authentification: false,
+      method: HttpMethod.post,
+      data: {"token": token, "password": password},
+    );
+    ErrorParser(response).sendError();
+
+    return response.rawData.isEmpty;
+  }
+
   Future<DirectusUser?> get(String id) async {
     final params = DirectusParams(fields: ["*.*"]);
     final response = await _requestManager.executeRequest(

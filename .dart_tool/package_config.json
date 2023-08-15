@@ -213,7 +213,7 @@
     },
     {
       "name": "stack_trace",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/stack_trace-1.11.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/stack_trace-1.11.1",
       "packageUri": "lib/",
       "languageVersion": "2.18"
     },
@@ -296,7 +296,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-07-01T09:23:49.480876Z",
+  "generated": "2023-07-16T12:57:38.284281Z",
   "generator": "pub",
-  "generatorVersion": "3.0.5"
+  "generatorVersion": "3.0.6"
 }
