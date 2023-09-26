@@ -1,16 +1,6 @@
-import 'package:fcs_directus/fcs_directus.dart';
-import 'package:test/test.dart';
+import 'test_user.dart';
 
 void main() {
-  group('A group of tests', () {
-    //final awesome = Awesome();
-
-    setUp(() {
-      // Additional setup goes here.
-    });
-
-    test('First Test', () {
-      //expect(awesome.isAwesome, isTrue);
-    });
-  });
+  testUser();
+  //testFilter();
 }
