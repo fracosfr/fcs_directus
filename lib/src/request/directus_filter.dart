@@ -85,14 +85,14 @@ class Filter {
   static DirectusFilterValue dontEndsWith(String column, dynamic value) =>
       DirectusFilterValue("_nends_with", column, value);
 
-  static DirectusFilterNoValue isNull(String column) =>
-      DirectusFilterNoValue("_null", column);
-  static DirectusFilterNoValue isNotNull(String column) =>
-      DirectusFilterNoValue("_nnull", column);
-  static DirectusFilterNoValue isEmpty(String column) =>
-      DirectusFilterNoValue("_empty", column);
-  static DirectusFilterNoValue isNotEmpty(String column) =>
-      DirectusFilterNoValue("_nempty", column);
+  static DirectusFilterValue isNull(String column) =>
+      DirectusFilterValue("_null", column, true);
+  static DirectusFilterValue isNotNull(String column) =>
+      DirectusFilterValue("_nnull", column, true);
+  static DirectusFilterValue isEmpty(String column) =>
+      DirectusFilterValue("_empty", column, true);
+  static DirectusFilterValue isNotEmpty(String column) =>
+      DirectusFilterValue("_nempty", column, true);
 }
 
 class DirectusFilterListFilter extends DirectusFilterContructor {
