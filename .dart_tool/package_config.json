@@ -57,7 +57,7 @@
     },
     {
       "name": "dart_internal",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/dart_internal-0.2.8",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/dart_internal-0.2.9",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -111,7 +111,7 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/lints-2.1.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/lints-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -296,7 +296,7 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2023-07-16T12:57:38.284281Z",
+  "generated": "2023-12-26T17:26:38.363073Z",
   "generator": "pub",
-  "generatorVersion": "3.0.6"
+  "generatorVersion": "3.2.3"
 }
