@@ -36,6 +36,9 @@ abstract class DirectusItemModel {
   /// set a [value] corresponding with the [key].
   @protected
   setValue(String key, dynamic value) {
+    if (value is DateTime) {
+      value = value.toIso8601String();
+    }
     if (key.contains(".")) {
       final keyList = key.split(".");
       Map<String, dynamic> current = {keyList.last: value};

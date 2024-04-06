@@ -46,6 +46,41 @@ class RequestManager {
     _serverUrl = url.endsWith("/") ? url.substring(0, url.length - 1) : url;
   }
 
+  Future<DirectusResponse> uploadFile({
+    required String url,
+    dynamic data,
+    bool authentification = true,
+    bool parseJson = true,
+    required String filePath,
+  }) async {
+    final request = DirectusRequest(
+      url: "$_serverUrl$url",
+      method: HttpMethod.upload,
+      headers: {},
+      token: authentification ? _token : null,
+      onPrint: debugPrint,
+      parseJson: parseJson,
+      data: data,
+    );
+
+    request.addFileAttachement(filePath);
+    final response = await request.execute();
+    if (authentification) {
+      final errorParser = ErrorParser(response?.toMap() ?? {});
+      if (errorParser.errorDetected) {
+        if (errorParser.code == "TOKEN_EXPIRED" ||
+            errorParser.code == "INVALID_CREDENTIALS") {
+          loginWithRefreshToken(_renewToken)
+              .then((value) => onConnexionChange(value));
+        } else {
+          //onConnexionChange(false);
+          errorParser.sendError();
+        }
+      }
+    }
+    return response ?? DirectusResponse.fromJson("{}", (value) => null);
+  }
+
   Future<DirectusResponse> executeRequest({
     required String url,
     dynamic data,
@@ -67,19 +102,20 @@ class RequestManager {
     final response = await request.execute();
 
     if (authentification) {
-      final errorParser = ErrorParser(response.toMap());
+      final errorParser = ErrorParser(response?.toMap() ?? {});
       if (errorParser.errorDetected) {
         if (errorParser.code == "TOKEN_EXPIRED" ||
             errorParser.code == "INVALID_CREDENTIALS") {
-          loginWithRefreshToken(_renewToken);
+          loginWithRefreshToken(_renewToken)
+              .then((value) => onConnexionChange(value));
         } else {
-          onConnexionChange(false);
+          //onConnexionChange(false);
           errorParser.sendError();
         }
       }
     }
 
-    return response;
+    return response ?? DirectusResponse.fromJson("{}", (value) => null);
   }
 
   String? get refreshToken => _renewToken;

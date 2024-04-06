@@ -21,3 +21,4 @@ export 'src/models/server_info_model.dart';
 export 'src/models/server_health_model.dart';
 export 'src/models/directus_role.dart';
 export 'src/models/directus_user.dart';
+export 'src/models/directus_file.dart';

@@ -1,8 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/request/directus_response.dart';
 import 'package:http/http.dart' as http;
+import 'package:mime/mime.dart';
+import 'package:path/path.dart' as p;
+import 'package:http_parser/http_parser.dart';
 
 enum HttpMethod {
   get,
@@ -10,6 +14,7 @@ enum HttpMethod {
   search,
   patch,
   delete,
+  upload,
 }
 
 class DirectusRequest {
@@ -20,6 +25,7 @@ class DirectusRequest {
   final Function(dynamic value) onPrint;
   final bool parseJson;
   Map<String, String> headers;
+  final List<String> _filesAttachement = [];
 
   DirectusRequest({
     required this.url,
@@ -75,14 +81,17 @@ class DirectusRequest {
     headers = const {};
   }
 
-  Future<DirectusResponse> execute() async {
+  addFileAttachement(String filePath) {
+    _filesAttachement.add(filePath);
+  }
+
+  Future<DirectusResponse?> execute() async {
     headers["Content-Type"] = "application/json";
     //headers["Access-Control-Allow-Origin"] = "blue.fracos.fr";
     //headers["Access-Control-Allow-Credentials"] = "true";
 
     onPrint("$method => $url");
     if (data != null) onPrint("Body=> $data");
-
     switch (method) {
       case HttpMethod.get:
         return _executeGetRequest();
@@ -94,6 +103,8 @@ class DirectusRequest {
         return _executePatchRequest();
       case HttpMethod.delete:
         return _executeDeleteRequest();
+      case HttpMethod.upload:
+        return _executeUploadRequest();
     }
   }
 
@@ -126,6 +137,42 @@ class DirectusRequest {
       onPrint("POST RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, onPrint, parseJson);
+    } on DirectusErrorHttpJsonException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw DirectusErrorHttp(e.toString());
+    }
+  }
+
+  Future<DirectusResponse?> _executeUploadRequest() async {
+    //var client = http.Client();
+    if (_filesAttachement.isEmpty) return null;
+    try {
+      final req = http.MultipartRequest("POST", Uri.parse(url));
+      final File file = File(_filesAttachement[0]);
+      final type = lookupMimeType(file.path);
+
+      print((this.data ?? {})["folder"] ?? "");
+      req.fields["folder"] = (this.data ?? {})["folder"] ?? "";
+      req.fields["type"] = type ?? "";
+      req.fields["filename_download"] = p.basename(file.path);
+      req.headers.addAll(headers);
+
+      req.files.add(
+        http.MultipartFile.fromBytes(
+          "file",
+          await file.readAsBytes(),
+          filename: p.basename(file.path),
+          contentType: MediaType.parse(type ?? ""),
+        ),
+      );
+
+      final res = await req.send();
+      final data = await res.stream.bytesToString();
+      onPrint(data);
+
+      return DirectusResponse.fromRequest(
+          url, data, HttpMethod.post, onPrint, parseJson);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {

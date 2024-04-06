@@ -37,6 +37,13 @@ class ModUser {
     return response.rawData.isEmpty;
   }
 
+  Future<bool> changePassword(String newPassword) async {
+    final user = await me;
+    user?.password = newPassword;
+    if (user == null) return false;
+    return (await update(user).onError((error, stackTrace) => null)) != null;
+  }
+
   Future<DirectusUser?> get(String id) async {
     final params = DirectusParams(fields: ["*.*"]);
     final response = await _requestManager.executeRequest(
@@ -90,7 +97,6 @@ class ModUser {
   }
 
   Future<DirectusUser?> update(DirectusUser user) async {
-    print(user.toMap());
     final response = await _requestManager.executeRequest(
       url: "${UserUrls.base}${user.identifier}",
       method: HttpMethod.patch,

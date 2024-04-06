@@ -20,6 +20,7 @@ class DirectusUserModelColums {
   final String externalIdentifier = "external_identifier";
   final String authData = "auth_data";
   final String emailNotifications = "email_notifications";
+  final String password = "password";
 }
 
 class DirectusUser extends DirectusItemModel {
@@ -35,6 +36,9 @@ class DirectusUser extends DirectusItemModel {
 
   String? get firstName => getValue(cols.firstName);
   set firstName(String? value) => setValue(cols.firstName, value);
+
+  DirectusFile? get avatarFile => getObject(cols.avatar, DirectusFile.creator);
+  set avatar(String? value) => setValue(cols.avatar, value);
 
   String? get lastName => getValue(cols.lastName);
   set lastName(String? value) => setValue(cols.lastName, value);
@@ -104,4 +108,6 @@ class DirectusUser extends DirectusItemModel {
 
   bool get emailNotification => getValue(cols.emailNotifications) ?? false;
   set emailNotification(bool value) => setValue(cols.emailNotifications, value);
+
+  set password(String value) => setValue(cols.password, value);
 }
