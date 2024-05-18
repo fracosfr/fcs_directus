@@ -99,7 +99,7 @@ class ModObject {
 
   /// Create an item on Directus with [object] data.
   /// Return the [T] object item created
-  Future<T> createOne<T extends DirectusItemModel>(T object) async {
+  Future<T?> createOne<T extends DirectusItemModel>(T object) async {
     final objInfo = _getObjTest((data) {
       return object;
     });
@@ -113,7 +113,7 @@ class ModObject {
   /// Create or update an <T>[object], if an identifier is present in object
   /// the update method was called otherwise, the creation method will be
   /// called.
-  Future<T> saveOne<T extends DirectusItemModel>(T object) =>
+  Future<T?> saveOne<T extends DirectusItemModel>(T object) =>
       object.identifier.isEmpty ? createOne(object) : updateOne(object);
 
   /// Create many [T] objects in Directus, return a [List<T>] with the created objects
@@ -144,7 +144,7 @@ class ModObject {
   }
 
   /// Update one [T] item in Directus serveur (only values changes if [T] is builds by directus request)
-  Future<T> updateOne<T extends DirectusItemModel>(T object) async {
+  Future<T?> updateOne<T extends DirectusItemModel>(T object) async {
     final objInfo = _getObjTest((data) {
       return object;
     });
