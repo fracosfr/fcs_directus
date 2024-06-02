@@ -3,21 +3,27 @@
   "packages": [
     {
       "name": "_fe_analyzer_shared",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-67.0.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/_fe_analyzer_shared-68.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "_macros",
+      "rootUri": "file:///home/fracos/snap/flutter/common/flutter/bin/cache/dart-sdk/pkg/_macros",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "analyzer",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/analyzer-6.4.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/analyzer-6.5.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.3"
     },
     {
       "name": "args",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/args-2.4.2",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/args-2.5.0",
       "packageUri": "lib/",
-      "languageVersion": "2.19"
+      "languageVersion": "3.0"
     },
     {
       "name": "async",
@@ -45,7 +51,7 @@
     },
     {
       "name": "coverage",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/coverage-1.7.2",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/coverage-1.8.0",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -63,9 +69,9 @@
     },
     {
       "name": "frontend_server_client",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/frontend_server_client-3.2.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "3.0"
     },
     {
       "name": "glob",
@@ -105,15 +111,21 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/lints-3.0.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/lints-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.1"
     },
     {
       "name": "logging",
       "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/logging-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.19"
+    },
+    {
+      "name": "macros",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/macros-0.1.0-main.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
     },
     {
       "name": "matcher",
@@ -123,7 +135,7 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.11.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.15.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -183,9 +195,9 @@
     },
     {
       "name": "shelf_web_socket",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/shelf_web_socket-1.0.4",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/shelf_web_socket-2.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "3.0"
     },
     {
       "name": "source_map_stack_trace",
@@ -231,19 +243,19 @@
     },
     {
       "name": "test",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test-1.25.2",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test-1.25.5",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_api-0.7.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_api-0.7.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
     {
       "name": "test_core",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_core-0.6.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/test_core-0.6.2",
       "packageUri": "lib/",
       "languageVersion": "3.0"
     },
@@ -255,7 +267,7 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/vm_service-14.2.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/vm_service-14.2.2",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -272,8 +284,14 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "web_socket",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/web_socket-0.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
       "name": "web_socket_channel",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/web_socket_channel-2.4.4",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/web_socket_channel-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -296,7 +314,10 @@
       "languageVersion": "2.18"
     }
   ],
-  "generated": "2024-03-28T13:37:05.590173Z",
+  "generated": "2024-05-18T12:27:41.256725Z",
   "generator": "pub",
-  "generatorVersion": "3.3.2"
+  "generatorVersion": "3.4.0",
+  "flutterRoot": "file:///home/fracos/snap/flutter/common/flutter",
+  "flutterVersion": "3.22.0",
+  "pubCache": "file:///home/fracos/.pub-cache"
 }

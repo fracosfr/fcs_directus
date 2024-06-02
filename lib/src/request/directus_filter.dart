@@ -74,16 +74,36 @@ class Filter {
       DirectusFilterValue("_gte", column, value);
   static DirectusFilterValue contains(String column, dynamic value) =>
       DirectusFilterValue("_contains", column, value);
+
+  ///Contains the case-insensitive substring
+  static DirectusFilterValue iContains(String column, dynamic value) =>
+      DirectusFilterValue("_icontains", column, value);
   static DirectusFilterValue notContains(String column, dynamic value) =>
       DirectusFilterValue("_ncontains", column, value);
   static DirectusFilterValue startWith(String column, dynamic value) =>
       DirectusFilterValue("_starts_with", column, value);
   static DirectusFilterValue dontStartWith(String column, dynamic value) =>
       DirectusFilterValue("_nstarts_with", column, value);
+
+  ///Starts with, case-insensitive
+  static DirectusFilterValue iStartWith(String column, dynamic value) =>
+      DirectusFilterValue("_istarts_with", column, value);
+
+  ///Doesn't start with, case-insensitive
+  static DirectusFilterValue iDontStartWith(String column, dynamic value) =>
+      DirectusFilterValue("_nistarts_with", column, value);
   static DirectusFilterValue endsWith(String column, dynamic value) =>
       DirectusFilterValue("_ends_with", column, value);
   static DirectusFilterValue dontEndsWith(String column, dynamic value) =>
       DirectusFilterValue("_nends_with", column, value);
+
+  /// Ends with, case-insensitive
+  static DirectusFilterValue iEndsWith(String column, dynamic value) =>
+      DirectusFilterValue("_iends_with", column, value);
+
+  ///Doesn't end with, case-insensitive
+  static DirectusFilterValue iDontEndsWith(String column, dynamic value) =>
+      DirectusFilterValue("_niends_with", column, value);
 
   static DirectusFilterValue isNull(String column) =>
       DirectusFilterValue("_null", column, true);
