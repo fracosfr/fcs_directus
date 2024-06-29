@@ -1,3 +1,4 @@
+import 'package:fcs_directus/src/modules/activity/activity.dart';
 import 'package:fcs_directus/src/modules/files/file.dart';
 import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/modules/object/object.dart';
@@ -78,6 +79,8 @@ class FcsDirectus {
   ModUser get user => ModUser(_requestManager);
 
   ModFile get file => ModFile(_requestManager);
+
+  ModActivity get activity => ModActivity(_requestManager);
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {

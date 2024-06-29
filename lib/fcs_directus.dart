@@ -22,3 +22,4 @@ export 'src/models/server_health_model.dart';
 export 'src/models/directus_role.dart';
 export 'src/models/directus_user.dart';
 export 'src/models/directus_file.dart';
+export "src/models/directus_activity.dart";
