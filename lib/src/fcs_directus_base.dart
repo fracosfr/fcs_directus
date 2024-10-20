@@ -1,5 +1,6 @@
 import 'package:fcs_directus/src/modules/activity/activity.dart';
 import 'package:fcs_directus/src/modules/files/file.dart';
+import 'package:fcs_directus/src/modules/flow/flow.dart';
 import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/modules/object/object.dart';
 import 'package:fcs_directus/src/modules/server/server.dart';
@@ -79,6 +80,8 @@ class FcsDirectus {
   ModUser get user => ModUser(_requestManager);
 
   ModFile get file => ModFile(_requestManager);
+
+  ModFlow get flow => ModFlow(_requestManager);
 
   ModActivity get activity => ModActivity(_requestManager);
 

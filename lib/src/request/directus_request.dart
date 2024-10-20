@@ -118,6 +118,7 @@ class DirectusRequest {
         HttpMethod.get,
         onPrint,
         parseJson,
+        res.statusCode,
       );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
@@ -136,7 +137,7 @@ class DirectusRequest {
       );
       onPrint("POST RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
-          url, res.body, HttpMethod.post, onPrint, parseJson);
+          url, res.body, HttpMethod.post, onPrint, parseJson, res.statusCode);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -172,7 +173,7 @@ class DirectusRequest {
       onPrint(data);
 
       return DirectusResponse.fromRequest(
-          url, data, HttpMethod.post, onPrint, parseJson);
+          url, data, HttpMethod.post, onPrint, parseJson, res.statusCode);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -190,7 +191,7 @@ class DirectusRequest {
       );
       onPrint("PATCH RAW=> ${res.body}");
       return DirectusResponse.fromRequest(
-          url, res.body, HttpMethod.post, onPrint, parseJson);
+          url, res.body, HttpMethod.post, onPrint, parseJson, res.statusCode);
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {
@@ -212,6 +213,7 @@ class DirectusRequest {
         HttpMethod.delete,
         onPrint,
         parseJson,
+        res.statusCode,
       );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
@@ -236,6 +238,7 @@ class DirectusRequest {
         HttpMethod.post,
         onPrint,
         parseJson,
+        res.statusCode,
       );
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;

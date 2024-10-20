@@ -9,6 +9,7 @@ class DirectusResponse {
   final HttpMethod method;
   final String url;
   final String rawData;
+  final int status;
   dynamic get data => _data;
 
   Map<String, dynamic> toMap() {
@@ -44,11 +45,12 @@ class DirectusResponse {
       "url": url,
       "method": method.name,
       "body": rawData,
+      "status": status,
     });
   }
 
   DirectusResponse.fromRequest(this.url, String body, this.method,
-      Function(dynamic value) onPrint, bool parseJson)
+      Function(dynamic value) onPrint, bool parseJson, this.status)
       : rawData = body {
     if (body.isEmpty) return;
     try {
@@ -67,8 +69,8 @@ class DirectusResponse {
         throw DirectusErrorHttpJsonException();
       }
 
-      return DirectusResponse.fromRequest(
-          d["url"] ?? "", d["body"] ?? {}, HttpMethod.get, onPrint, false);
+      return DirectusResponse.fromRequest(d["url"] ?? "", d["body"] ?? {},
+          HttpMethod.get, onPrint, false, d["status"]);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }

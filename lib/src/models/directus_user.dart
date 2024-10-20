@@ -25,6 +25,18 @@ class DirectusUserModelColums {
 
 class DirectusUser extends DirectusItemModel {
   DirectusUser.creator(super.data) : super.creator();
+  DirectusUser(
+      {String? firstName,
+      String? lastName,
+      String? title,
+      required String email,
+      String? password}) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    if (password != null) this.password = password;
+    this.title = title;
+  }
 
   @override
   int get cascadeLevel => 1;
