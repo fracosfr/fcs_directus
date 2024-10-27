@@ -8,12 +8,19 @@ class RequestManager {
   String? _token;
   String? _renewToken;
   String? _serverUrl;
+  final String? clientName;
   bool _debugMode = false;
   Function(dynamic value)? _onDebugPrint;
   final Function(bool isConnected) onConnexionChange;
   final Function(String? refreshKoken) onRefreshTokenChange;
+  String get serverUrl => _serverUrl ?? "";
+  String? get token => _token;
 
-  RequestManager(this.onConnexionChange, this.onRefreshTokenChange);
+  RequestManager(
+    this.onConnexionChange,
+    this.onRefreshTokenChange,
+    this.clientName,
+  );
 
   bool get debugMode => _debugMode;
 
@@ -89,10 +96,12 @@ class RequestManager {
     bool authentification = true,
     bool parseJson = true,
   }) async {
+    final Map<String, String> saltedHeader = headers ?? {};
+    if (clientName != null) saltedHeader["user-agent"] = clientName ?? "";
     final request = DirectusRequest(
       url: "$_serverUrl$url",
       method: method,
-      headers: headers ?? {},
+      headers: saltedHeader,
       data: data,
       token: authentification ? _token : null,
       onPrint: debugPrint,

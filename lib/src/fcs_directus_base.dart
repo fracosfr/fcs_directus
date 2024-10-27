@@ -3,6 +3,7 @@ import 'package:fcs_directus/src/modules/files/file.dart';
 import 'package:fcs_directus/src/modules/flow/flow.dart';
 import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/modules/object/object.dart';
+import 'package:fcs_directus/src/modules/realtime/realtime.dart';
 import 'package:fcs_directus/src/modules/server/server.dart';
 import 'package:fcs_directus/src/modules/user/user.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
@@ -13,17 +14,20 @@ class FcsDirectus {
   final Function(bool isConnected)? onConnexionChange;
   final Function(String? refreshKoken)? onRefreshTokenChange;
   late RequestManager _requestManager;
+  final String? clientName;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.singleton({
     String? serverUrl,
     String? staticToken,
+    String? clientName,
     Function(bool isConnected)? onConnexionChange,
     Function(String? refreshKoken)? onRefreshTokenChange,
   }) {
     _instance ??= FcsDirectus(
       serverUrl: serverUrl,
       staticToken: staticToken,
+      clientName: clientName,
       onConnexionChange: onConnexionChange,
       onRefreshTokenChange: onRefreshTokenChange,
     );
@@ -50,11 +54,12 @@ class FcsDirectus {
   FcsDirectus({
     String? serverUrl,
     String? staticToken,
+    this.clientName,
     this.onConnexionChange,
     this.onRefreshTokenChange,
   }) {
     _requestManager = RequestManager(onConnexionChange ?? (bool test) {},
-        onRefreshTokenChange ?? (String? refreshKoken) {});
+        onRefreshTokenChange ?? (String? refreshKoken) {}, clientName);
     if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
     if (staticToken != null) {
       _requestManager.setStaticToken(staticToken: staticToken);
@@ -82,6 +87,8 @@ class FcsDirectus {
   ModFile get file => ModFile(_requestManager);
 
   ModFlow get flow => ModFlow(_requestManager);
+
+  ModRealTime get realtime => ModRealTime(_requestManager);
 
   ModActivity get activity => ModActivity(_requestManager);
 
