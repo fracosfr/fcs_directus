@@ -3,6 +3,9 @@ import 'package:fcs_directus/src/models/item_model.dart';
 class DirectusServerInfoModel extends DirectusItemModel {
   DirectusServerInfoModel.fromDirectus(super.data) : super.creator();
 
+  @override
+  String? get itemName => null;
+
   String get projecName => getValue("project.project_name") ?? "";
   String get defaultLanguage => getValue("project.default_language") ?? "";
 

@@ -20,9 +20,9 @@ class DirectusWebsocket<T extends DirectusItemModel> {
     objectName = objTemp.itemName ?? "ERROR!!!";
     print("Ouverture de la connexion");
     final serverUrl = _requestManager.serverUrl
-        .replaceAll("https://", "")
-        .replaceAll("http://", "");
-    _openConnexion("wss://$serverUrl/websocket").then(
+        .replaceAll("https://", "wss://")
+        .replaceAll("http://", "ws://");
+    _openConnexion("$serverUrl/websocket").then(
       (_) {},
     );
   }
@@ -39,22 +39,24 @@ class DirectusWebsocket<T extends DirectusItemModel> {
     //_channel?.sink.add(_prepareSendCommand("items", "read", objectName));
     _send("subscribe", data: {"collection": "public_config"});
 
-    _streamSubscription = _channel?.stream.listen(
-      (event) {
-        final mapEvent = jsonDecode(event);
-        switch (mapEvent["type"] ?? "") {
-          case "ping":
-            _send("pong");
-            break;
-          case "subscription":
-            _callbackFunction(mapEvent);
-            break;
-          default:
-            print(mapEvent);
-            break;
-        }
-      },
-    );
+    _streamSubscription = _channel?.stream.listen((event) {
+      final mapEvent = jsonDecode(event);
+      switch (mapEvent["type"] ?? "") {
+        case "ping":
+          _send("pong");
+          break;
+        case "subscription":
+          _callbackFunction(mapEvent);
+          break;
+        default:
+          print(mapEvent);
+          break;
+      }
+    }, onDone: () {
+      print("DONE");
+    }, onError: (e) {
+      print("ERROR ${e.toString()}");
+    });
   }
 
   void _callbackFunction(dynamic mapEvent) {

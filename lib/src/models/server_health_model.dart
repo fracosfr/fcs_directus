@@ -4,6 +4,9 @@ import 'package:fcs_directus/src/models/server_health_pg_model.dart';
 class DirectusServerHealthModel extends DirectusItemModel {
   DirectusServerHealthModel.fromDirectus(super.data) : super.creator();
 
+  @override
+  String? get itemName => null;
+
   String get status => getValue("status") ?? "";
   String get releaseId => getValue("releaseId") ?? "";
   String get serviceId => getValue("serviceId") ?? "";
