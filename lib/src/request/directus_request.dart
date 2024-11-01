@@ -111,6 +111,7 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
+      onPrint(headers);
       //onPrint("GET RAW=> ${res.body}", data: res.body, title: "GET RAW $url");
       return DirectusResponse.fromRequest(
         url,
@@ -129,6 +130,7 @@ class DirectusRequest {
 
   Future<DirectusResponse> _executePostRequest() async {
     var client = http.Client();
+    print(headers);
     try {
       final res = await client.post(
         Uri.parse(url),

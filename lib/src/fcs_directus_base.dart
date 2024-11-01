@@ -15,6 +15,7 @@ class FcsDirectus {
   final Function(String? refreshKoken)? onRefreshTokenChange;
   late RequestManager _requestManager;
   final String? clientName;
+  final Map<String, String>? headers;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.singleton({
@@ -23,6 +24,7 @@ class FcsDirectus {
     String? clientName,
     Function(bool isConnected)? onConnexionChange,
     Function(String? refreshKoken)? onRefreshTokenChange,
+    Map<String, String>? headers,
   }) {
     _instance ??= FcsDirectus(
       serverUrl: serverUrl,
@@ -30,6 +32,7 @@ class FcsDirectus {
       clientName: clientName,
       onConnexionChange: onConnexionChange,
       onRefreshTokenChange: onRefreshTokenChange,
+      headers: headers,
     );
     return _instance!;
   }
@@ -59,9 +62,10 @@ class FcsDirectus {
     this.clientName,
     this.onConnexionChange,
     this.onRefreshTokenChange,
+    this.headers,
   }) {
     _requestManager = RequestManager(onConnexionChange ?? (bool test) {},
-        onRefreshTokenChange ?? (String? refreshKoken) {}, clientName);
+        onRefreshTokenChange ?? (String? refreshKoken) {}, clientName, headers);
     if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
     if (staticToken != null) {
       _requestManager.setStaticToken(staticToken: staticToken);

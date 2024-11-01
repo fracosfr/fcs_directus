@@ -15,11 +15,13 @@ class RequestManager {
   final Function(String? refreshKoken) onRefreshTokenChange;
   String get serverUrl => _serverUrl ?? "";
   String? get token => _token;
+  final Map<String, String>? headers;
 
   RequestManager(
     this.onConnexionChange,
     this.onRefreshTokenChange,
     this.clientName,
+    this.headers,
   );
 
   bool get debugMode => _debugMode;
@@ -102,8 +104,13 @@ class RequestManager {
     bool authentification = true,
     bool parseJson = true,
   }) async {
-    final Map<String, String> saltedHeader = headers ?? {};
-    if (clientName != null) saltedHeader["user-agent"] = clientName ?? "";
+    final globalHeaders = this.headers ?? {};
+    final Map<String, String> saltedHeader = (headers ?? {});
+    saltedHeader.addAll(globalHeaders);
+
+    if (clientName != null) {
+      saltedHeader["user-agent"] = clientName ?? "FcsDirectus";
+    }
     final request = DirectusRequest(
       url: "$_serverUrl$url",
       method: method,
