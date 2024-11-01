@@ -18,11 +18,11 @@ enum HttpMethod {
 }
 
 class DirectusRequest {
-  final String? token;
+  String? token;
   final String url;
   final dynamic data;
   final HttpMethod method;
-  final Function(dynamic value) onPrint;
+  final Function(dynamic value, {dynamic data, dynamic title}) onPrint;
   final bool parseJson;
   Map<String, String> headers;
   final List<String> _filesAttachement = [];
@@ -90,8 +90,8 @@ class DirectusRequest {
     //headers["Access-Control-Allow-Origin"] = "blue.fracos.fr";
     //headers["Access-Control-Allow-Credentials"] = "true";
 
-    onPrint("$method => $url");
-    if (data != null) onPrint("Body=> $data");
+    //onPrint("$method => $url", data: url, title: method);
+    if (data != null) onPrint("Body=> $data", data: data, title: "Body");
     switch (method) {
       case HttpMethod.get:
         return _executeGetRequest();
@@ -111,7 +111,7 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
-      onPrint("GET RAW=> ${res.body}");
+      //onPrint("GET RAW=> ${res.body}", data: res.body, title: "GET RAW $url");
       return DirectusResponse.fromRequest(
         url,
         res.body,
@@ -135,7 +135,7 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      onPrint("POST RAW=> ${res.body}");
+      //onPrint("POST RAW=> ${res.body}", data: res.body, title: "POST RAW $url");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, onPrint, parseJson, res.statusCode);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -153,7 +153,7 @@ class DirectusRequest {
       final File file = File(_filesAttachement[0]);
       final type = lookupMimeType(file.path);
 
-      print((this.data ?? {})["folder"] ?? "");
+      //print((this.data ?? {})["folder"] ?? "");
       req.fields["folder"] = (this.data ?? {})["folder"] ?? "";
       req.fields["type"] = type ?? "";
       req.fields["filename_download"] = p.basename(file.path);
@@ -170,7 +170,7 @@ class DirectusRequest {
 
       final res = await req.send();
       final data = await res.stream.bytesToString();
-      onPrint(data);
+      //onPrint(data, data: data, title: "UPLOAD");
 
       return DirectusResponse.fromRequest(
           url, data, HttpMethod.post, onPrint, parseJson, res.statusCode);
@@ -189,7 +189,8 @@ class DirectusRequest {
         body: jsonEncode(data),
         headers: headers,
       );
-      onPrint("PATCH RAW=> ${res.body}");
+      //onPrint("PATCH RAW=> ${res.body}",
+      //    data: res.body, title: "PATCH RAW $url");
       return DirectusResponse.fromRequest(
           url, res.body, HttpMethod.post, onPrint, parseJson, res.statusCode);
     } on DirectusErrorHttpJsonException catch (_) {
@@ -206,7 +207,8 @@ class DirectusRequest {
         headers: headers,
         body: data != null ? jsonEncode(data) : null,
       );
-      onPrint("DELETE RAW=> ${res.body}");
+      //onPrint("DELETE RAW=> ${res.body}",
+      //    data: res.body, title: "DELETE RAW $url");
       return DirectusResponse.fromRequest(
         url,
         res.body,

@@ -49,20 +49,26 @@ class DirectusResponse {
     });
   }
 
-  DirectusResponse.fromRequest(this.url, String body, this.method,
-      Function(dynamic value) onPrint, bool parseJson, this.status)
+  DirectusResponse.fromRequest(
+      this.url,
+      String body,
+      this.method,
+      Function(dynamic value, {dynamic data, dynamic title}) onPrint,
+      bool parseJson,
+      this.status)
       : rawData = body {
     if (body.isEmpty) return;
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
-      onPrint("Parsed data=> $_data");
+      onPrint("Parsed data=> $_data",
+          data: _data, title: "${method.name.toUpperCase()} : $url");
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
   }
 
-  factory DirectusResponse.fromJson(
-      String jsonData, Function(dynamic value) onPrint) {
+  factory DirectusResponse.fromJson(String jsonData,
+      Function(dynamic value, {dynamic data, dynamic title}) onPrint) {
     try {
       final d = jsonDecode(jsonData);
       if (d! is Map<String, dynamic>) {

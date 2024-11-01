@@ -45,7 +45,9 @@ class FcsDirectus {
   }
 
   /// Custom print function for debug.
-  void setDebugPrintFunction(void Function(dynamic value) printFunction) {
+  void setDebugPrintFunction(
+      void Function(dynamic toPrint, {dynamic data, dynamic title})
+          printFunction) {
     _requestManager.setDebugPrintFunction(printFunction);
   }
 

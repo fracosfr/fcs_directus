@@ -10,7 +10,7 @@ class RequestManager {
   String? _serverUrl;
   final String? clientName;
   bool _debugMode = false;
-  Function(dynamic value)? _onDebugPrint;
+  Function(dynamic value, {dynamic data, dynamic title})? _onDebugPrint;
   final Function(bool isConnected) onConnexionChange;
   final Function(String? refreshKoken) onRefreshTokenChange;
   String get serverUrl => _serverUrl ?? "";
@@ -34,14 +34,16 @@ class RequestManager {
     _debugMode = debug;
   }
 
-  void setDebugPrintFunction(void Function(dynamic value) printFunction) {
+  void setDebugPrintFunction(
+      void Function(dynamic value, {dynamic data, dynamic title})
+          printFunction) {
     _onDebugPrint = printFunction;
   }
 
-  void debugPrint(dynamic value) {
+  void debugPrint(dynamic value, {dynamic data, dynamic title}) {
     if (_debugMode) {
       if (_onDebugPrint != null) {
-        _onDebugPrint!(value);
+        _onDebugPrint!(value, data: data, title: title);
       } else {
         print(value);
       }
@@ -85,7 +87,11 @@ class RequestManager {
         }
       }
     }
-    return response ?? DirectusResponse.fromJson("{}", (value) => null);
+    return response ??
+        DirectusResponse.fromJson(
+          "{}",
+          (value, {data, title}) => null,
+        );
   }
 
   Future<DirectusResponse> executeRequest({
@@ -108,23 +114,38 @@ class RequestManager {
       parseJson: parseJson,
     );
 
-    final response = await request.execute();
+    print("+++ DEBUG");
+    var response = await request.execute();
+    print(response);
 
     if (authentification) {
+      print("Authentification requise");
       final errorParser = ErrorParser(response?.toMap() ?? {});
+      print("errorParser : ${errorParser.code} (${errorParser.errorDetected})");
       if (errorParser.errorDetected) {
+        print("Erreur détectée !");
+
         if (errorParser.code == "TOKEN_EXPIRED" ||
             errorParser.code == "INVALID_CREDENTIALS") {
-          loginWithRefreshToken(_renewToken)
-              .then((value) => onConnexionChange(value));
+          print("TOKEN_EXPIRED ???");
+          debugPrint("Déconnecté : ${response?.data}",
+              data: response?.data, title: 'Déconnecté !');
+          onConnexionChange(await loginWithRefreshToken(_renewToken));
+          request.token = token;
+          print("On relance la requete");
+          response = await request.execute();
+          print(response);
         } else {
           //onConnexionChange(false);
+          print("ERREUR AUTRE");
           errorParser.sendError();
         }
       }
     }
+    print("--- DEBUG");
 
-    return response ?? DirectusResponse.fromJson("{}", (value) => null);
+    return response ??
+        DirectusResponse.fromJson("{}", (value, {data, title}) => null);
   }
 
   String? get refreshToken => _renewToken;
