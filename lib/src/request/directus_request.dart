@@ -39,6 +39,23 @@ class DirectusRequest {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
 
+  renewToken(String? newToken) {
+    token = newToken;
+    if (headers.keys.contains("Authorization")) {
+      if (token != null) {
+        headers["Authorization"] = "Bearer $token";
+      } else {
+        headers.removeWhere(
+          (key, value) => key == "Authorization",
+        );
+      }
+    } else {
+      if (token != null) {
+        addHeader(key: "Authorization", value: "Bearer $token");
+      }
+    }
+  }
+
   //DirectusRequest.get({
   //  required this.url,
   //  this.data,
@@ -111,7 +128,6 @@ class DirectusRequest {
   Future<DirectusResponse> _executeGetRequest() async {
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
-      onPrint(headers);
       //onPrint("GET RAW=> ${res.body}", data: res.body, title: "GET RAW $url");
       return DirectusResponse.fromRequest(
         url,
@@ -130,7 +146,6 @@ class DirectusRequest {
 
   Future<DirectusResponse> _executePostRequest() async {
     var client = http.Client();
-    print(headers);
     try {
       final res = await client.post(
         Uri.parse(url),

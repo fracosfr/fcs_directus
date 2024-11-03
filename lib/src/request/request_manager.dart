@@ -1,4 +1,5 @@
 import 'package:fcs_directus/src/errors/error_parser.dart';
+import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/modules/auth/models/login_model.dart';
 import 'package:fcs_directus/src/modules/auth/urls.dart';
 import 'package:fcs_directus/src/request/directus_request.dart';
@@ -121,38 +122,32 @@ class RequestManager {
       parseJson: parseJson,
     );
 
-    print("+++ DEBUG");
-    var response = await request.execute();
-    print(response);
+    try {
+      var response = await request.execute();
 
-    if (authentification) {
-      print("Authentification requise");
-      final errorParser = ErrorParser(response?.toMap() ?? {});
-      print("errorParser : ${errorParser.code} (${errorParser.errorDetected})");
-      if (errorParser.errorDetected) {
-        print("Erreur détectée !");
+      if (authentification) {
+        final errorParser = ErrorParser(response?.toMap() ?? {});
 
-        if (errorParser.code == "TOKEN_EXPIRED" ||
-            errorParser.code == "INVALID_CREDENTIALS") {
-          print("TOKEN_EXPIRED ???");
-          debugPrint("Déconnecté : ${response?.data}",
-              data: response?.data, title: 'Déconnecté !');
-          onConnexionChange(await loginWithRefreshToken(_renewToken));
-          request.token = token;
-          print("On relance la requete");
-          response = await request.execute();
-          print(response);
-        } else {
-          //onConnexionChange(false);
-          print("ERREUR AUTRE");
-          errorParser.sendError();
+        if (errorParser.errorDetected) {
+          if (errorParser.code == "TOKEN_EXPIRED" ||
+              errorParser.code == "INVALID_CREDENTIALS") {
+            await loginWithRefreshToken(_renewToken);
+            request.renewToken(token);
+            response = await request.execute();
+          } else {
+            //onConnexionChange(false);
+            errorParser.sendError();
+          }
         }
       }
-    }
-    print("--- DEBUG");
 
-    return response ??
-        DirectusResponse.fromJson("{}", (value, {data, title}) => null);
+      return response ??
+          DirectusResponse.fromJson("{}", (value, {data, title}) => null);
+    } on DirectusError catch (e) {
+      print(e.message);
+    }
+
+    return DirectusResponse.fromJson("{}", (value, {data, title}) => null);
   }
 
   String? get refreshToken => _renewToken;
