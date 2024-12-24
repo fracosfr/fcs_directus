@@ -1,10 +1,11 @@
 import 'package:fcs_directus/src/request/directus_request.dart';
+import 'package:fcs_directus/src/request/directus_response.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 
 class ModFlow {
   ModFlow(this._requestManager);
   final RequestManager _requestManager;
-  Future<bool> runTriggerGet(
+  Future<DirectusResponse> runTriggerGet(
       {required String flowId, Map<String, dynamic> data = const {}}) async {
     String ext = "";
     for (String key in data.keys) {
@@ -14,21 +15,22 @@ class ModFlow {
     }
     final res = await _requestManager.executeRequest(
       url: "/flows/trigger/$flowId$ext",
-      parseJson: false,
+      parseJson: true,
       authentification: false,
     );
-    return res.status == 200;
+    return res;
   }
 
-  Future<bool> runTriggerPost(
+  Future<DirectusResponse> runTriggerPost(
       {required String flowId, Map<String, dynamic> data = const {}}) async {
     final res = await _requestManager.executeRequest(
       method: HttpMethod.post,
       url: "/flows/trigger/$flowId",
       data: data,
-      parseJson: false,
+      parseJson: true,
       authentification: false,
     );
-    return res.status == 200;
+
+    return res;
   }
 }

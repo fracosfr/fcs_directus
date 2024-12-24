@@ -4,10 +4,16 @@ enum DirectusTheme {
   dark,
 }
 
-enum DirectusStatus {
+enum DirectusUserStatus {
   draft,
   invited,
   active,
   suspended,
+  archived,
+}
+
+enum DirectusStatus {
+  draft,
+  published,
   archived,
 }

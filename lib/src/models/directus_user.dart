@@ -21,6 +21,7 @@ class DirectusUserModelColums {
   final String authData = "auth_data";
   final String emailNotifications = "email_notifications";
   final String password = "password";
+  final String policies = "policies";
 }
 
 class DirectusUser extends DirectusItemModel {
@@ -30,12 +31,15 @@ class DirectusUser extends DirectusItemModel {
       String? lastName,
       String? title,
       required String email,
-      String? password}) {
+      String? password,
+      Map<String, dynamic>? customs}) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     if (password != null) this.password = password;
     this.title = title;
+
+    if (customs != null) setCustomMultiple(customs);
   }
 
   @override
@@ -88,19 +92,20 @@ class DirectusUser extends DirectusItemModel {
   String? get tfaSecret => getValue(cols.tfaSecret);
   set tfaSecret(String? value) => setValue(cols.tfaSecret, value);
 
-  DirectusStatus get status {
+  DirectusUserStatus get status {
     final String value = getValue(cols.status) ?? "draft";
-    return DirectusStatus.values.firstWhere(
+    return DirectusUserStatus.values.firstWhere(
       (element) => element.name == value,
-      orElse: () => DirectusStatus.draft,
+      orElse: () => DirectusUserStatus.draft,
     );
   }
 
-  set status(DirectusStatus status) => setValue(cols.status, status.name);
+  set status(DirectusUserStatus status) => setValue(cols.status, status.name);
 
   //ROLE AS OBJECT ?
   DirectusUserRole get role =>
       getObject(cols.role, (data) => DirectusUserRole.creator(data));
+
   set role(DirectusUserRole value) => setValue(cols.role, value.toMap());
 
   DateTime? get lastAccess => getValue(cols.lastAccess);
@@ -122,4 +127,12 @@ class DirectusUser extends DirectusItemModel {
   set emailNotification(bool value) => setValue(cols.emailNotifications, value);
 
   set password(String value) => setValue(cols.password, value);
+
+  T? getCustom<T>(String key) => getValue(key);
+  void setCustom<T>(String key, T value) => setValue(key, value);
+  void setCustomMultiple(Map<String, dynamic> data) {
+    for (final key in data.keys) {
+      setValue(key, data[key]);
+    }
+  }
 }

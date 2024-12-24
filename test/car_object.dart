@@ -3,6 +3,8 @@ import 'package:fcs_directus/fcs_directus.dart';
 import 'brand_object.dart';
 
 class CarObject extends DirectusItemModel {
+  @override
+  String? get itemName => "car";
   CarObject({required String name, required int doors, String? brandId}) {
     this.name = name;
     this.doors = doors;

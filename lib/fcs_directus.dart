@@ -24,3 +24,4 @@ export 'src/models/directus_user.dart';
 export 'src/models/directus_file.dart';
 export "src/models/directus_activity.dart";
 export "src/models/directus_websocket.dart";
+export 'src/models/directus_policie.dart';

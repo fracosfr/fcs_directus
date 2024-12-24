@@ -4,10 +4,9 @@ class DirectusUserRoleModelColums {
   final String name = "name";
   final String icon = "icon";
   final String description = "description";
-  final String ipAccess = "ip_access";
-  final String enforceFfa = "enforce_tfa";
-  final String adminAccess = "admin_access";
-  final String appAccess = "app_access";
+  final String policies = "policies";
+  final String parent = "parent";
+  final String children = "children";
   final String users = "users";
 }
 
@@ -28,17 +27,14 @@ class DirectusUserRole extends DirectusItemModel {
   String? get description => getValue(cols.description);
   set description(String? value) => setValue(cols.description, value);
 
-  String? get ipAccess => getValue(cols.ipAccess);
-  set ipAccess(String? value) => setValue(cols.ipAccess, value);
+  List<String>? get policies => getValue(cols.policies);
+  set policies(List<String>? value) => setValue(cols.policies, value);
 
-  bool get enforceFfa => getValue(cols.enforceFfa) ?? false;
-  set enforceFfa(bool value) => setValue(cols.enforceFfa, value);
+  String? get parent => getValue(cols.parent);
+  set parent(String? value) => setValue(cols.parent, value);
 
-  bool get appAccess => getValue(cols.appAccess) ?? false;
-  set appAccess(bool value) => setValue(cols.appAccess, value);
-
-  bool get adminAccess => getValue(cols.adminAccess) ?? false;
-  set adminAccess(bool value) => setValue(cols.adminAccess, value);
+  List<String>? get children => getValue(cols.children);
+  set children(List<String>? value) => setValue(cols.children, value);
 
   List<String>? get users => getValue(cols.users);
   set users(List<String>? value) => setValue(cols.users, value);

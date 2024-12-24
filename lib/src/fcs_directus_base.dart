@@ -5,6 +5,7 @@ import 'package:fcs_directus/src/modules/item/item.dart';
 import 'package:fcs_directus/src/modules/object/object.dart';
 import 'package:fcs_directus/src/modules/realtime/realtime.dart';
 import 'package:fcs_directus/src/modules/server/server.dart';
+import 'package:fcs_directus/src/modules/user/policie.dart';
 import 'package:fcs_directus/src/modules/user/user.dart';
 import 'package:fcs_directus/src/request/request_manager.dart';
 import 'package:fcs_directus/src/modules/auth/authentification.dart';
@@ -97,6 +98,8 @@ class FcsDirectus {
   ModRealTime get realtime => ModRealTime(_requestManager);
 
   ModActivity get activity => ModActivity(_requestManager);
+
+  ModPolicie get policies => ModPolicie(_requestManager);
 
   /// Set the server url if you dont done it with constructor, or if you are using singleton.
   void setServerUrl({required String url}) {
