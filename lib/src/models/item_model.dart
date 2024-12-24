@@ -132,8 +132,10 @@ extension MapCombineRecursive on Map<String, dynamic> {
     for (final entry in map.entries) {
       if (containsKey(entry.key)) {
         if (entry.value is Map<String, dynamic>) {
-          if (this[entry.key] is! Map<String, dynamic>) this[entry.key] = {};
-          Map<String, dynamic> tmp = this[entry.key];
+          if (this[entry.key] is! Map<String, dynamic>) {
+            this[entry.key] = null;
+          }
+          Map<String, dynamic> tmp = this[entry.key] ?? {};
           tmp.combineRecursive(entry.value);
           this[entry.key] = tmp;
         } else {
@@ -145,3 +147,22 @@ extension MapCombineRecursive on Map<String, dynamic> {
     }
   }
 }
+
+// extension MapCombineRecursive on Map<String, dynamic> {
+//   combineRecursive(Map<String, dynamic> map) {
+//     for (final entry in map.entries) {
+//       if (containsKey(entry.key)) {
+//         if (entry.value is Map<String, dynamic>) {
+//           if (this[entry.key] is! Map<String, dynamic>) this[entry.key] = {};
+//           Map<String, dynamic> tmp = this[entry.key];
+//           tmp.combineRecursive(entry.value);
+//           this[entry.key] = tmp;
+//         } else {
+//           this[entry.key] = entry.value;
+//         }
+//       } else {
+//         this[entry.key] = entry.value;
+//       }
+//     }
+//   }
+// }
