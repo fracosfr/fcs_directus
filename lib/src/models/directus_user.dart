@@ -43,7 +43,7 @@ class DirectusUser extends DirectusItemModel {
   }
 
   @override
-  int get cascadeLevel => 1;
+  int get cascadeLevel => 2;
 
   @override
   String? get itemName => "directus_users";
@@ -107,6 +107,9 @@ class DirectusUser extends DirectusItemModel {
       getObject(cols.role, (data) => DirectusUserRole.creator(data));
 
   set role(DirectusUserRole value) => setValue(cols.role, value.toMap());
+
+  List<DirectusUserAccess> get policies =>
+      getObjectList(cols.policies, DirectusUserAccess.creator);
 
   DateTime? get lastAccess => getValue(cols.lastAccess);
   set lastAccess(DateTime? value) => setValue(cols.lastAccess, value);

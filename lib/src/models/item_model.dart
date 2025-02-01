@@ -108,7 +108,7 @@ abstract class DirectusItemModel {
   List<T> getObjectList<T>(
       String key, T Function(Map<String, dynamic> data) itemCreator) {
     final List<T> result = [];
-    List<dynamic> data = getValue(key);
+    List<dynamic> data = getValue(key) ?? [];
 
     for (final item in data) {
       result.add(itemCreator(item));

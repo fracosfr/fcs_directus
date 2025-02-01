@@ -1,4 +1,4 @@
-import 'package:fcs_directus/src/models/item_model.dart';
+import 'package:fcs_directus/fcs_directus.dart';
 
 class DirectusUserRoleModelColums {
   final String name = "name";
@@ -27,8 +27,9 @@ class DirectusUserRole extends DirectusItemModel {
   String? get description => getValue(cols.description);
   set description(String? value) => setValue(cols.description, value);
 
-  List<String>? get policies => getValue(cols.policies);
-  set policies(List<String>? value) => setValue(cols.policies, value);
+  List<DirectusUserAccess> get policies =>
+      getObjectList(cols.policies, DirectusUserAccess.creator);
+  //set policies(List<String>? value) => setValue(cols.policies, value);
 
   String? get parent => getValue(cols.parent);
   set parent(String? value) => setValue(cols.parent, value);
