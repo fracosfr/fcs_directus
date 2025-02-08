@@ -12,6 +12,7 @@ class ModObject {
   Future<T?> getById<T extends DirectusItemModel>({
     required String id,
     required T Function(Map<String, dynamic> data) itemCreator,
+    Duration? cache,
   }) async {
     // Get item test information with itemCreator
     final test = _getObjTest(itemCreator);
@@ -20,6 +21,7 @@ class ModObject {
     final modItem = ModItem(_requestManager, test.name);
 
     final res = await modItem.readMany(
+      cache: cache ?? test.cache,
       params: DirectusParams(
         filter: Filter.equal("id", id),
         fields: [test.cascadeFilter],
@@ -30,30 +32,10 @@ class ModObject {
 
   /// Get an Item Object (child of [DirectusItemModel] with filter )
   /// Return an [T extends DirectusItemModel] object build with [itemCreator] (use the [DirectusItemModel.creator])
-  Future<T?> getOne<T extends DirectusItemModel>({
-    DirectusParams? params,
-    required T Function(Map<String, dynamic> data) itemCreator,
-  }) async {
-    // Get item test information with itemCreator
-    final test = _getObjTest(itemCreator);
-
-    // Get data
-    final modItem = ModItem(_requestManager, test.name);
-
-    params ??= DirectusParams();
-    params.fields ??= [test.cascadeFilter];
-
-    final res = await modItem.readMany(params: params);
-    return itemCreator(res.first);
-  }
-
-  /// Get an array of Item Object (child of [DirectusItemModel])
-  /// Return an [List<T extends DirectusItemModel>] object list build with [itemCreator] (use the [DirectusItemModel.creator]).
-  /// If the [jsonData] param is != null, the request will be based on the [jsonData] value and no http request will be send.
-  Future<List<T>> getMany<T extends DirectusItemModel>(
-      {required T Function(Map<String, dynamic> data) itemCreator,
-      DirectusParams? params,
-      String? jsonData}) async {
+  Future<T?> getOne<T extends DirectusItemModel>(
+      {DirectusParams? params,
+      required T Function(Map<String, dynamic> data) itemCreator,
+      Duration? cache}) async {
     // Get item test information with itemCreator
     final test = _getObjTest(itemCreator);
 
@@ -65,6 +47,31 @@ class ModObject {
 
     final res = await modItem.readMany(
       params: params,
+      cache: cache ?? test.cache,
+    );
+    return itemCreator(res.first);
+  }
+
+  /// Get an array of Item Object (child of [DirectusItemModel])
+  /// Return an [List<T extends DirectusItemModel>] object list build with [itemCreator] (use the [DirectusItemModel.creator]).
+  /// If the [jsonData] param is != null, the request will be based on the [jsonData] value and no http request will be send.
+  Future<List<T>> getMany<T extends DirectusItemModel>(
+      {required T Function(Map<String, dynamic> data) itemCreator,
+      DirectusParams? params,
+      String? jsonData,
+      Duration? cache}) async {
+    // Get item test information with itemCreator
+    final test = _getObjTest(itemCreator);
+
+    // Get data
+    final modItem = ModItem(_requestManager, test.name);
+
+    params ??= DirectusParams();
+    params.fields ??= [test.cascadeFilter];
+
+    final res = await modItem.readMany(
+      params: params,
+      cache: cache ?? test.cache,
       jsonData: jsonData,
     );
 
@@ -215,7 +222,8 @@ class ModObject {
     final obj = itemCreator({});
     String itemName = obj.itemName ?? "";
     if (itemName.isEmpty) itemName = _getItemNameFromClassName(T.toString());
-    return _ObjTestInfo(name: itemName, cascadeLevel: obj.cascadeLevel);
+    return _ObjTestInfo(
+        name: itemName, cascadeLevel: obj.cascadeLevel, cache: obj.cache);
   }
 
   String _getItemNameFromClassName(String className) {
@@ -238,12 +246,13 @@ class ModObject {
 class _ObjTestInfo {
   final String name;
   final int cascadeLevel;
-
+  final Duration? cache;
   late String cascadeFilter;
 
   _ObjTestInfo({
     required this.name,
     this.cascadeLevel = 0,
+    this.cache,
   }) {
     String fields = "*";
     for (int l = 0; l < cascadeLevel; l++) {

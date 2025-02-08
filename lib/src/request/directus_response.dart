@@ -68,15 +68,16 @@ class DirectusResponse {
   }
 
   factory DirectusResponse.fromJson(String jsonData,
-      Function(dynamic value, {dynamic data, dynamic title}) onPrint) {
+      Function(dynamic value, {dynamic data, dynamic title}) onPrint,
+      {bool parseJson = false}) {
     try {
       final d = jsonDecode(jsonData);
-      if (d! is Map<String, dynamic>) {
+      if (d is! Map<String, dynamic>) {
         throw DirectusErrorHttpJsonException();
       }
 
       return DirectusResponse.fromRequest(d["url"] ?? "", d["body"] ?? {},
-          HttpMethod.get, onPrint, false, d["status"]);
+          HttpMethod.get, onPrint, parseJson, d["status"]);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }

@@ -39,7 +39,7 @@
     },
     {
       "name": "collection",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.19.1",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/collection-1.19.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -135,7 +135,7 @@
     },
     {
       "name": "meta",
-      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.16.0",
+      "rootUri": "file:///home/fracos/.pub-cache/hosted/pub.dev/meta-1.15.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -314,10 +314,10 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2025-01-25T12:05:33.252463Z",
+  "generated": "2025-02-08T21:02:22.544748Z",
   "generator": "pub",
-  "generatorVersion": "3.6.1",
+  "generatorVersion": "3.6.2",
   "flutterRoot": "file:///home/fracos/snap/flutter/common/flutter",
-  "flutterVersion": "3.27.3",
+  "flutterVersion": "3.27.4",
   "pubCache": "file:///home/fracos/.pub-cache"
 }

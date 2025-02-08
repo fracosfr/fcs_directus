@@ -14,8 +14,9 @@ class ModItem {
 
   ModItem(this._requestManager, this._itemName, {this.baseUrl = "/items/"});
 
-  Future<Map<String, dynamic>> readOne(String id) async {
+  Future<Map<String, dynamic>> readOne(String id, {Duration? cache}) async {
     final response = await _requestManager.executeRequest(
+      cache: cache,
       url: "$baseUrl$_itemName/$id",
     );
 
@@ -30,7 +31,7 @@ class ModItem {
   /// Read many items in Directus
   /// If the [jsonData] param is != null, the request will be based on the [jsonData] value and no http request will be send.
   Future<List<dynamic>> readMany(
-      {DirectusParams? params, String? jsonData}) async {
+      {DirectusParams? params, String? jsonData, Duration? cache}) async {
     if (jsonData != null) {
       final response =
           DirectusResponse.fromJson(jsonData, _requestManager.debugPrint);
@@ -46,6 +47,7 @@ class ModItem {
     if (params != null) url = params.generateUrl(url);
 
     final response = await _requestManager.executeRequest(
+      cache: cache,
       url: url,
     );
     ErrorParser(response).sendError();

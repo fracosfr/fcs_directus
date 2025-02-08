@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:fcs_directus/src/cache/cache_provider.dart';
 import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/request/directus_response.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,8 @@ class DirectusRequest {
   final bool parseJson;
   Map<String, String> headers;
   final List<String> _filesAttachement = [];
+  final Duration? cache;
+  final Directory? directory;
 
   DirectusRequest({
     required this.url,
@@ -35,6 +38,8 @@ class DirectusRequest {
     this.headers = const {},
     required this.onPrint,
     this.parseJson = true,
+    this.cache,
+    this.directory,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
@@ -126,10 +131,17 @@ class DirectusRequest {
   }
 
   Future<DirectusResponse> _executeGetRequest() async {
+    final cachedData = await CacheProvider(directory: directory)
+        .read(uid: url, cacheDuration: cache);
+    if (cachedData != null) {
+      return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
+    }
+
     try {
       final res = await http.get(Uri.parse(url), headers: headers);
       //onPrint("GET RAW=> ${res.body}", data: res.body, title: "GET RAW $url");
-      return DirectusResponse.fromRequest(
+
+      final response = DirectusResponse.fromRequest(
         url,
         res.body,
         HttpMethod.get,
@@ -137,6 +149,13 @@ class DirectusRequest {
         parseJson,
         res.statusCode,
       );
+
+      if (cache != null && response.status == 200) {
+        await CacheProvider(directory: directory)
+            .write(uid: url, data: response.toJson());
+      }
+
+      return response;
     } on DirectusErrorHttpJsonException catch (_) {
       rethrow;
     } catch (e) {

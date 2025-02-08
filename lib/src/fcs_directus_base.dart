@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fcs_directus/src/modules/activity/activity.dart';
 import 'package:fcs_directus/src/modules/files/file.dart';
 import 'package:fcs_directus/src/modules/flow/flow.dart';
@@ -18,6 +20,7 @@ class FcsDirectus {
   late RequestManager _requestManager;
   final String? clientName;
   final Map<String, String>? headers;
+  Directory? directory;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.singleton({
@@ -27,6 +30,8 @@ class FcsDirectus {
     Function(bool isConnected)? onConnexionChange,
     Function(String? refreshKoken)? onRefreshTokenChange,
     Map<String, String>? headers,
+    String? appFolderName,
+    Directory? directory,
   }) {
     _instance ??= FcsDirectus(
       serverUrl: serverUrl,
@@ -35,6 +40,7 @@ class FcsDirectus {
       onConnexionChange: onConnexionChange,
       onRefreshTokenChange: onRefreshTokenChange,
       headers: headers,
+      directory: directory,
     );
     return _instance!;
   }
@@ -65,9 +71,15 @@ class FcsDirectus {
     this.onConnexionChange,
     this.onRefreshTokenChange,
     this.headers,
+    this.directory,
   }) {
-    _requestManager = RequestManager(onConnexionChange ?? (bool test) {},
-        onRefreshTokenChange ?? (String? refreshKoken) {}, clientName, headers);
+    _requestManager = RequestManager(
+      onConnexionChange ?? (bool test) {},
+      onRefreshTokenChange ?? (String? refreshKoken) {},
+      clientName,
+      headers,
+      directory,
+    );
     if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
     if (staticToken != null) {
       _requestManager.setStaticToken(staticToken: staticToken);

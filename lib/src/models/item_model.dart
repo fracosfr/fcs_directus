@@ -14,6 +14,8 @@ abstract class DirectusItemModel {
   /// Get the unique identifier of the object
   String get identifier => getValue("id") ?? "";
 
+  Duration? get cache => null;
+
   /// Force multiple level on request => use it if you want retrieve a sub object
   /// level 0 eq *, level 1 eq *.*, level 2 eq *.*.* etc...
   int get cascadeLevel => 0;

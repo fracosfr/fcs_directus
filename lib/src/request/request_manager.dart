@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/modules/auth/models/login_model.dart';
@@ -17,13 +19,10 @@ class RequestManager {
   String get serverUrl => _serverUrl ?? "";
   String? get token => _token;
   final Map<String, String>? headers;
+  final Directory? directory;
 
-  RequestManager(
-    this.onConnexionChange,
-    this.onRefreshTokenChange,
-    this.clientName,
-    this.headers,
-  );
+  RequestManager(this.onConnexionChange, this.onRefreshTokenChange,
+      this.clientName, this.headers, this.directory);
 
   bool get debugMode => _debugMode;
 
@@ -104,6 +103,7 @@ class RequestManager {
     HttpMethod method = HttpMethod.get,
     bool authentification = true,
     bool parseJson = true,
+    Duration? cache,
   }) async {
     final globalHeaders = this.headers ?? {};
     final Map<String, String> saltedHeader = (headers ?? {});
@@ -120,6 +120,8 @@ class RequestManager {
       token: authentification ? _token : null,
       onPrint: debugPrint,
       parseJson: parseJson,
+      cache: cache,
+      directory: directory,
     );
 
     try {
