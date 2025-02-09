@@ -20,7 +20,8 @@ class FcsDirectus {
   late RequestManager _requestManager;
   final String? clientName;
   final Map<String, String>? headers;
-  Directory? directory;
+  final Directory? directory;
+  final bool isWeb;
 
   /// Get an unique instance (singleton) of [FcsDirectus].
   factory FcsDirectus.singleton({
@@ -32,16 +33,17 @@ class FcsDirectus {
     Map<String, String>? headers,
     String? appFolderName,
     Directory? directory,
+    bool isWeb = false,
   }) {
     _instance ??= FcsDirectus(
-      serverUrl: serverUrl,
-      staticToken: staticToken,
-      clientName: clientName,
-      onConnexionChange: onConnexionChange,
-      onRefreshTokenChange: onRefreshTokenChange,
-      headers: headers,
-      directory: directory,
-    );
+        serverUrl: serverUrl,
+        staticToken: staticToken,
+        clientName: clientName,
+        onConnexionChange: onConnexionChange,
+        onRefreshTokenChange: onRefreshTokenChange,
+        headers: headers,
+        directory: directory,
+        isWeb: isWeb);
     return _instance!;
   }
 
@@ -72,6 +74,7 @@ class FcsDirectus {
     this.onRefreshTokenChange,
     this.headers,
     this.directory,
+    this.isWeb = false,
   }) {
     _requestManager = RequestManager(
       onConnexionChange ?? (bool test) {},
@@ -79,6 +82,7 @@ class FcsDirectus {
       clientName,
       headers,
       directory,
+      isWeb,
     );
     if (serverUrl != null) _requestManager.setServerUrl(url: serverUrl);
     if (staticToken != null) {

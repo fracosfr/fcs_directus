@@ -29,6 +29,7 @@ class DirectusRequest {
   final List<String> _filesAttachement = [];
   final Duration? cache;
   final Directory? directory;
+  final bool isWeb;
 
   DirectusRequest({
     required this.url,
@@ -40,6 +41,7 @@ class DirectusRequest {
     this.parseJson = true,
     this.cache,
     this.directory,
+    required this.isWeb,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
@@ -132,7 +134,7 @@ class DirectusRequest {
 
   Future<DirectusResponse> _executeGetRequest() async {
     if (cache != null && directory != null) {
-      final cachedData = await CacheProvider(directory: directory)
+      final cachedData = await CacheProvider(directory: directory, isWeb: isWeb)
           .read(uid: url, cacheDuration: cache);
       if (cachedData != null) {
         return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
@@ -153,7 +155,7 @@ class DirectusRequest {
       );
 
       if (cache != null && response.status == 200) {
-        await CacheProvider(directory: directory)
+        await CacheProvider(directory: directory, isWeb: isWeb)
             .write(uid: url, data: response.toJson());
       }
 

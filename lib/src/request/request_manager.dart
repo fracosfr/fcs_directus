@@ -20,9 +20,10 @@ class RequestManager {
   String? get token => _token;
   final Map<String, String>? headers;
   final Directory? directory;
+  final bool isWeb;
 
   RequestManager(this.onConnexionChange, this.onRefreshTokenChange,
-      this.clientName, this.headers, this.directory);
+      this.clientName, this.headers, this.directory, this.isWeb);
 
   bool get debugMode => _debugMode;
 
@@ -72,6 +73,7 @@ class RequestManager {
       onPrint: debugPrint,
       parseJson: parseJson,
       data: data,
+      isWeb: isWeb,
     );
 
     request.addFileAttachement(filePath);
@@ -122,6 +124,7 @@ class RequestManager {
       parseJson: parseJson,
       cache: cache,
       directory: directory,
+      isWeb: isWeb,
     );
 
     try {

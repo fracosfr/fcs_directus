@@ -2,51 +2,64 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:path/path.dart';
+import 'package:sembast/sembast_io.dart';
+import 'package:sembast_web/sembast_web.dart';
 
 class CacheProvider {
-  CacheProvider({required this.directory});
+  CacheProvider({required this.directory, required this.isWeb});
   final Directory? directory;
-  Future<String> get _localPath async {
-    if (directory == null) return "";
-    if (!(await directory?.exists() ?? true)) {
-      await directory?.create();
+  final bool isWeb;
+
+  Future<Database?> _openStore() async {
+    if (isWeb) {
+      var factory = databaseFactoryWeb;
+      var db = await factory.openDatabase('cache');
+      return db;
+    } else {
+      final dbPath = join(directory?.path ?? "", 'cache.db');
+      DatabaseFactory dbFactory = databaseFactoryIo;
+      Database db = await dbFactory.openDatabase(dbPath);
+      return db;
     }
-    return directory?.path ?? "";
   }
 
-  Future<File?> _localFile(String uid) async {
-    final path = await _localPath;
-    if (path.isEmpty) return null;
-
-    var bytes = utf8.encode(uid); // data being hashed
+  String _hashSha1(String value) {
+    var bytes = utf8.encode(value); // data being hashed
     var digest = sha1.convert(bytes);
-
-    return File('$path/$digest');
+    return "$digest";
   }
 
   Future write({required String uid, required String data}) async {
-    final file = await _localFile(uid);
-    if (file == null) return;
-    file.writeAsString(data);
+    final db = await _openStore();
+    if (db == null) return;
+
+    var store = stringMapStoreFactory.store('transaction');
+    await store
+        .record(_hashSha1(uid))
+        .put(db, {"data": data, "date": DateTime.now().toIso8601String()});
   }
 
   Future<String?> read(
       {required String uid, required Duration? cacheDuration}) async {
     if (cacheDuration == null) return null;
-    final file = await _localFile(uid);
 
-    if (file == null) return null;
+    final db = await _openStore();
+    if (db == null) return null;
 
-    if (await file.exists()) {
-      final fileDate = await file.lastModified();
-      final now = DateTime.now().subtract(cacheDuration);
+    var store = stringMapStoreFactory.store('transaction');
+    final data = await store.record(_hashSha1(uid)).get(db);
+    final dateTest = DateTime.tryParse(data?["date"].toString() ?? "");
+    if (dateTest == null) return null;
 
-      if (fileDate.isAfter(now)) {
-        return await file.readAsString();
-      } else {
-        file.delete();
-      }
+    print(dateTest);
+    final now = DateTime.now().subtract(cacheDuration);
+    if (dateTest.isAfter(now)) {
+      return data?["data"].toString();
+    } else {
+      await store.record(_hashSha1(uid)).delete(db);
     }
+
     return null;
   }
 }
