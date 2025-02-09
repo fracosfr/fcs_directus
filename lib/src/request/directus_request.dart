@@ -131,10 +131,12 @@ class DirectusRequest {
   }
 
   Future<DirectusResponse> _executeGetRequest() async {
-    final cachedData = await CacheProvider(directory: directory)
-        .read(uid: url, cacheDuration: cache);
-    if (cachedData != null) {
-      return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
+    if (cache != null && directory != null) {
+      final cachedData = await CacheProvider(directory: directory)
+          .read(uid: url, cacheDuration: cache);
+      if (cachedData != null) {
+        return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
+      }
     }
 
     try {

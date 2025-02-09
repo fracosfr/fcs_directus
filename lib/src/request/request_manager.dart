@@ -134,6 +134,7 @@ class RequestManager {
           if (errorParser.code == "TOKEN_EXPIRED" ||
               errorParser.code == "INVALID_CREDENTIALS") {
             await loginWithRefreshToken(_renewToken);
+            await Future.delayed(const Duration(milliseconds: 250));
             request.renewToken(token);
             response = await request.execute();
           } else {

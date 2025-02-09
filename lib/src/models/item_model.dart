@@ -15,6 +15,7 @@ abstract class DirectusItemModel {
   String get identifier => getValue("id") ?? "";
 
   Duration? get cache => null;
+  bool get disableCache => false;
 
   /// Force multiple level on request => use it if you want retrieve a sub object
   /// level 0 eq *, level 1 eq *.*, level 2 eq *.*.* etc...

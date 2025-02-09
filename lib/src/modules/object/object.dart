@@ -47,7 +47,7 @@ class ModObject {
 
     final res = await modItem.readMany(
       params: params,
-      cache: cache ?? test.cache,
+      cache: test.disableCache ? null : cache ?? test.cache,
     );
     return itemCreator(res.first);
   }
@@ -71,7 +71,7 @@ class ModObject {
 
     final res = await modItem.readMany(
       params: params,
-      cache: cache ?? test.cache,
+      cache: test.disableCache ? null : cache ?? test.cache,
       jsonData: jsonData,
     );
 
@@ -223,7 +223,11 @@ class ModObject {
     String itemName = obj.itemName ?? "";
     if (itemName.isEmpty) itemName = _getItemNameFromClassName(T.toString());
     return _ObjTestInfo(
-        name: itemName, cascadeLevel: obj.cascadeLevel, cache: obj.cache);
+      name: itemName,
+      cascadeLevel: obj.cascadeLevel,
+      cache: obj.cache,
+      disableCache: obj.disableCache,
+    );
   }
 
   String _getItemNameFromClassName(String className) {
@@ -248,11 +252,13 @@ class _ObjTestInfo {
   final int cascadeLevel;
   final Duration? cache;
   late String cascadeFilter;
+  final bool disableCache;
 
   _ObjTestInfo({
     required this.name,
     this.cascadeLevel = 0,
     this.cache,
+    required this.disableCache,
   }) {
     String fields = "*";
     for (int l = 0; l < cascadeLevel; l++) {

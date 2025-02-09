@@ -46,6 +46,9 @@ class DirectusUser extends DirectusItemModel {
   int get cascadeLevel => 2;
 
   @override
+  bool get disableCache => true;
+
+  @override
   String? get itemName => "directus_users";
 
   static DirectusUserModelColums get cols => DirectusUserModelColums();
