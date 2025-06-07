@@ -16,6 +16,7 @@ enum HttpMethod {
   patch,
   delete,
   upload,
+  asset,
 }
 
 class DirectusRequest {
@@ -30,6 +31,7 @@ class DirectusRequest {
   final Duration? cache;
   final Directory? directory;
   final bool isWeb;
+  final String? cryptKey;
 
   DirectusRequest({
     required this.url,
@@ -42,6 +44,7 @@ class DirectusRequest {
     this.cache,
     this.directory,
     required this.isWeb,
+    this.cryptKey,
   }) {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
@@ -119,6 +122,8 @@ class DirectusRequest {
     switch (method) {
       case HttpMethod.get:
         return _executeGetRequest();
+      case HttpMethod.asset:
+        return _executeAssetRequest();
       case HttpMethod.post:
         return _executePostRequest();
       case HttpMethod.search:
@@ -134,9 +139,17 @@ class DirectusRequest {
 
   Future<DirectusResponse> _executeGetRequest() async {
     if (cache != null && directory != null) {
-      final cachedData = await CacheProvider(directory: directory, isWeb: isWeb)
-          .read(uid: url, cacheDuration: cache);
+      onPrint("Cache Time : ${cache?.inSeconds}s");
+      final cachedData = await CacheProvider(
+        directory: directory,
+        isWeb: isWeb,
+        cryptKey: cryptKey,
+      ).read(uid: url, cacheDuration: cache);
       if (cachedData != null) {
+        try {
+          onPrint("CACHED : $url",
+              data: jsonDecode(cachedData), title: "CACHED : $url");
+        } catch (_) {}
         return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
       }
     }
@@ -152,11 +165,62 @@ class DirectusRequest {
         onPrint,
         parseJson,
         res.statusCode,
+        bytes: res.bodyBytes,
       );
 
       if (cache != null && response.status == 200) {
-        await CacheProvider(directory: directory, isWeb: isWeb)
-            .write(uid: url, data: response.toJson());
+        await CacheProvider(
+          directory: directory,
+          isWeb: isWeb,
+          cryptKey: cryptKey,
+        ).write(uid: url, data: response.toJson());
+      }
+
+      return response;
+    } on DirectusErrorHttpJsonException catch (_) {
+      rethrow;
+    } catch (e) {
+      throw DirectusErrorHttp(e.toString());
+    }
+  }
+
+  Future<DirectusResponse> _executeAssetRequest() async {
+    if (cache != null && directory != null) {
+      onPrint("Cache Time : ${cache?.inSeconds}s");
+      final cachedData = await CacheProvider(
+        directory: directory,
+        isWeb: isWeb,
+        cryptKey: cryptKey,
+      ).read(uid: url, cacheDuration: cache);
+      if (cachedData != null) {
+        try {
+          onPrint("CACHED : $url",
+              data: jsonDecode(cachedData), title: "CACHED : $url");
+        } catch (_) {}
+        return DirectusResponse.fromJson(cachedData, onPrint, parseJson: true);
+      }
+    }
+
+    try {
+      final res = await http.get(Uri.parse(url), headers: headers);
+      //onPrint("GET RAW=> ${res.body}", data: res.body, title: "GET RAW $url");
+
+      final response = DirectusResponse.fromRequest(
+        url,
+        res.body,
+        HttpMethod.get,
+        (dynamic, {dynamic data, dynamic title}) => () {},
+        false,
+        res.statusCode,
+        bytes: res.bodyBytes,
+      );
+
+      if (cache != null && response.status == 200) {
+        await CacheProvider(
+          directory: directory,
+          isWeb: isWeb,
+          cryptKey: cryptKey,
+        ).write(uid: url, data: response.toJson());
       }
 
       return response;

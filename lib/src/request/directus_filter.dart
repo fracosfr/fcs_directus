@@ -119,6 +119,10 @@ class DirectusFilterListFilter extends DirectusFilterContructor {
   DirectusFilterListFilter(super.key, this.items);
   final List<DirectusFilterContructor> items;
 
+  void add(DirectusFilterContructor item) {
+    items.add(item);
+  }
+
   @override
   Map get map {
     List<Map> obj = [];

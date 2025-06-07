@@ -27,7 +27,8 @@ class ModObject {
         fields: [test.cascadeFilter],
       ),
     );
-    return itemCreator(res.first);
+    if (res.isNotEmpty) return itemCreator(res.first);
+    return null;
   }
 
   /// Get an Item Object (child of [DirectusItemModel] with filter )

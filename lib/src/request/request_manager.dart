@@ -21,9 +21,10 @@ class RequestManager {
   final Map<String, String>? headers;
   final Directory? directory;
   final bool isWeb;
+  final String? cryptKey;
 
   RequestManager(this.onConnexionChange, this.onRefreshTokenChange,
-      this.clientName, this.headers, this.directory, this.isWeb);
+      this.clientName, this.headers, this.directory, this.isWeb, this.cryptKey);
 
   bool get debugMode => _debugMode;
 
@@ -73,6 +74,7 @@ class RequestManager {
       onPrint: debugPrint,
       parseJson: parseJson,
       data: data,
+      cryptKey: cryptKey,
       isWeb: isWeb,
     );
 
@@ -119,6 +121,7 @@ class RequestManager {
       method: method,
       headers: saltedHeader,
       data: data,
+      cryptKey: cryptKey,
       token: authentification ? _token : null,
       onPrint: debugPrint,
       parseJson: parseJson,

@@ -34,6 +34,9 @@ class DirectusFile extends DirectusItemModel {
   int get cascadeLevel => 1;
 
   @override
+  Duration? get cache => const Duration(seconds: 600);
+
+  @override
   String? get itemName => "directus_files";
 
   static DirectusFileModelColums get cols => DirectusFileModelColums();

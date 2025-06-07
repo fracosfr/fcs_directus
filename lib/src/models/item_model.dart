@@ -11,6 +11,8 @@ abstract class DirectusItemModel {
   /// Use "MyClassNameObject" or "MyClassNameObj" for "my_class_name" item name in directus.
   String? get itemName;
 
+  Map<String, dynamic> toJson() => _values;
+
   /// Get the unique identifier of the object
   String get identifier => getValue("id") ?? "";
 

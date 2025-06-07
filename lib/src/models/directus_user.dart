@@ -42,6 +42,13 @@ class DirectusUser extends DirectusItemModel {
     if (customs != null) setCustomMultiple(customs);
   }
 
+  Map<String, dynamic> toSafeJson() {
+    final data = toJson();
+    data.remove("role");
+    data.remove("policies");
+    return data;
+  }
+
   @override
   int get cascadeLevel => 2;
 

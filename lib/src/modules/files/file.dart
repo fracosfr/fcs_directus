@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:fcs_directus/src/errors/error_parser.dart';
 import 'package:fcs_directus/src/models/directus_file.dart';
 import 'package:fcs_directus/src/modules/files/urls.dart';
@@ -9,6 +11,16 @@ class ModFile {
   ModFile(this._requestManager);
 
   final RequestManager _requestManager;
+
+  Future<Uint8List?> getAsset(String id) async {
+    final params = DirectusParams(fields: ["*.*"]);
+    final response = await _requestManager.executeRequest(
+      url: params.generateUrl("${FileUrls.asset}$id"),
+      method: HttpMethod.asset,
+    );
+
+    return response.bodyBytes;
+  }
 
   Future<DirectusFile?> get(String id) async {
     final params = DirectusParams(fields: ["*.*"]);

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:fcs_directus/src/errors/errors.dart';
 import 'package:fcs_directus/src/request/directus_request.dart';
@@ -10,6 +11,7 @@ class DirectusResponse {
   final String url;
   final String rawData;
   final int status;
+  final Uint8List? bodyBytes;
   dynamic get data => _data;
 
   Map<String, dynamic> toMap() {
@@ -55,13 +57,18 @@ class DirectusResponse {
       this.method,
       Function(dynamic value, {dynamic data, dynamic title}) onPrint,
       bool parseJson,
-      this.status)
-      : rawData = body {
+      this.status,
+      {bool json = false,
+      Uint8List? bytes})
+      : rawData = body,
+        bodyBytes = bytes {
     if (body.isEmpty) return;
     try {
       _data = parseJson ? jsonDecode(rawData) : {"data": rawData};
       onPrint("Parsed data=> $_data",
-          data: _data, title: "${method.name.toUpperCase()} : $url");
+          data: _data,
+          title:
+              "${method.name.toUpperCase()}${json ? " from JSON" : ""} : $url");
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
@@ -71,13 +78,15 @@ class DirectusResponse {
       Function(dynamic value, {dynamic data, dynamic title}) onPrint,
       {bool parseJson = false}) {
     try {
+      if (jsonData.isEmpty) throw DirectusErrorHttpJsonException();
       final d = jsonDecode(jsonData);
       if (d is! Map<String, dynamic>) {
         throw DirectusErrorHttpJsonException();
       }
 
       return DirectusResponse.fromRequest(d["url"] ?? "", d["body"] ?? {},
-          HttpMethod.get, onPrint, parseJson, d["status"]);
+          HttpMethod.get, onPrint, parseJson, d["status"],
+          json: true);
     } catch (e) {
       throw DirectusErrorHttpJsonException();
     }
