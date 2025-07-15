@@ -38,6 +38,28 @@ class ErrorParser {
 
   DirectusError _getError() {
     switch (code) {
+      case "FAILED_VALIDATION":
+        return DirectusErroFailedValidation(code, message);
+      case "INVALID_TOKEN":
+        return DirectusErrorInvalidToken(code, message);
+      case "TOKEN_EXPIRED":
+        return DirectusErrorTokenExpired(code, message);
+      case "INVALID_IP":
+        return DirectusErrorInvalidIp(code, message);
+      case "INVALID_OTP":
+        return DirectusErrorInvalidOtp(code, message);
+      case "INVALID_QUERY":
+        return DirectusErrorInvalidQuery(code, message);
+      case "UNSUPPORTED_MEDIA_TYPE":
+        return DirectusErrorUnsuportedMediaType(code, message);
+      case "REQUESTS_EXCEEDED":
+        return DirectusErrorRequestExceeded(code, message);
+      case "ROUTE_NOT_FOUND":
+        return DirectusErrorRouteNotFound(code, message);
+      case "SERVICE_UNAVAILABLE":
+        return DirectusErrorServiceUnavailable(code, message);
+      case "UNPROCESSABLE_CONTENT":
+        return DirectusErrorUnprocessableContent(code, message);
       case "INVALID_CREDENTIALS":
         return DirectusErrorAuthCredentials(code, message);
       case "INVALID_PAYLOAD":
