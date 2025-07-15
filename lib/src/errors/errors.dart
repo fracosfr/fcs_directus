@@ -94,6 +94,30 @@ class DirectusErrorAuthForbidden extends DirectusErrorAuth {
   }
 }
 
+class DirectusErrorInvalidOtp extends DirectusErrorAuth {
+  DirectusErrorInvalidOtp(super.code, super.msg) {
+    _code = 1003;
+  }
+}
+
+class DirectusErrorInvalidIp extends DirectusErrorAuth {
+  DirectusErrorInvalidIp(super.code, super.msg) {
+    _code = 1004;
+  }
+}
+
+class DirectusErrorTokenExpired extends DirectusErrorAuth {
+  DirectusErrorTokenExpired(super.code, super.msg) {
+    _code = 1005;
+  }
+}
+
+class DirectusErrorInvalidToken extends DirectusErrorAuth {
+  DirectusErrorInvalidToken(super.code, super.msg) {
+    _code = 1006;
+  }
+}
+
 class DirectusErrorAuthUnknow extends DirectusErrorAuth {
   DirectusErrorAuthUnknow(super.code, super.msg) {
     _code = 1010;
@@ -105,5 +129,47 @@ class DirectusErrorObjectClassName extends DirectusError {
     _message =
         "Please use a legal Class name for $className or override getter itemName";
     _code = 2000;
+  }
+}
+
+class DirectusErroFailedValidation extends DirectusErrorAuth {
+  DirectusErroFailedValidation(super.code, super.msg) {
+    _code = 2001;
+  }
+}
+
+class DirectusErrorInvalidQuery extends DirectusErrorAuth {
+  DirectusErrorInvalidQuery(super.code, super.msg) {
+    _code = 2002;
+  }
+}
+
+class DirectusErrorUnsuportedMediaType extends DirectusErrorAuth {
+  DirectusErrorUnsuportedMediaType(super.code, super.msg) {
+    _code = 2003;
+  }
+}
+
+class DirectusErrorRequestExceeded extends DirectusErrorAuth {
+  DirectusErrorRequestExceeded(super.code, super.msg) {
+    _code = 2004;
+  }
+}
+
+class DirectusErrorRouteNotFound extends DirectusErrorAuth {
+  DirectusErrorRouteNotFound(super.code, super.msg) {
+    _code = 2005;
+  }
+}
+
+class DirectusErrorServiceUnavailable extends DirectusErrorAuth {
+  DirectusErrorServiceUnavailable(super.code, super.msg) {
+    _code = 2006;
+  }
+}
+
+class DirectusErrorUnprocessableContent extends DirectusErrorAuth {
+  DirectusErrorUnprocessableContent(super.code, super.msg) {
+    _code = 2007;
   }
 }
