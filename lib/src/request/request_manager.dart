@@ -193,6 +193,17 @@ class RequestManager {
   }
 
   void logout() {
+    if (_renewToken != null) {
+      final data = {"refresh_token": _renewToken};
+      executeRequest(
+        url: AuthentificationUrls.logout,
+        data: data,
+        authentification: false,
+        method: HttpMethod.post,
+      ).catchError((e) {
+        // Handle logout error if needed
+      });
+    }
     _token = null;
     _renewToken = null;
     onRefreshTokenChange(null);
