@@ -44,6 +44,43 @@ class ModUser {
     return (await update(user).onError((error, stackTrace) => null)) != null;
   }
 
+  Future<(String secret, String otpauthUrl)> tfaGenerate(
+      {required String password}) async {
+    final response = await _requestManager.executeRequest(
+      url: UserUrls.generateTfa,
+      method: HttpMethod.post,
+      data: {"password": password},
+    );
+    ErrorParser(response).sendError();
+
+    return (
+      response.toMap()["secret"].toString(),
+      response.toMap()["otpauth_url"].toString()
+    );
+  }
+
+  Future<bool> tfaEnable({required String secret, required String code}) async {
+    final response = await _requestManager.executeRequest(
+      url: UserUrls.enableTfa,
+      method: HttpMethod.post,
+      data: {"secret": secret, "otp": code},
+    );
+    ErrorParser(response).sendError();
+
+    return response.rawData.isEmpty;
+  }
+
+  Future<bool> tfaDisable({required String code}) async {
+    final response = await _requestManager.executeRequest(
+      url: UserUrls.disableTfa,
+      method: HttpMethod.post,
+      data: {"otp": code},
+    );
+    ErrorParser(response).sendError();
+
+    return response.rawData.isEmpty;
+  }
+
   Future<DirectusUser?> get(String id) async {
     final params = DirectusParams(fields: ["*.*"]);
     final response = await _requestManager.executeRequest(

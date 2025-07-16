@@ -21,9 +21,11 @@ class ModAuthentification {
     }
   }
 
-  Future<bool> login({required String login, required String password}) async {
+  Future<bool> login(
+      {required String login, required String password, String? otp}) async {
     try {
-      return await _requestManager.login(login: login, password: password);
+      return await _requestManager.login(
+          login: login, password: password, otp: otp);
     } catch (e) {
       rethrow;
     }

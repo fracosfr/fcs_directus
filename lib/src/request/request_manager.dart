@@ -164,8 +164,13 @@ class RequestManager {
   Future<bool> login({
     required String login,
     required String password,
+    String? otp,
   }) async {
-    final data = {"email": login, "password": password};
+    final data = {
+      "email": login,
+      "password": password,
+      if (otp != null) "otp": otp
+    };
     final result = await executeRequest(
       url: AuthentificationUrls.login,
       data: data,
@@ -193,10 +198,19 @@ class RequestManager {
   }
 
   void logout() {
-    _token = null;
-    _renewToken = null;
     onRefreshTokenChange(null);
     onConnexionChange(false);
+    if (_renewToken != null) {
+      final data = {"refresh_token": _renewToken};
+      executeRequest(
+        url: AuthentificationUrls.logout,
+        data: data,
+        authentification: false,
+        method: HttpMethod.post,
+      );
+    }
+    _token = null;
+    _renewToken = null;
   }
 
   Future<bool> loginWithRefreshToken(String? refreshToken) async {
