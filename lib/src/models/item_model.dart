@@ -91,8 +91,10 @@ abstract class DirectusItemModel {
     if (!vals.containsKey(key)) return null;
 
     if (T == DateTime) {
-      String dateString = vals[key];
-      return DateTime.tryParse(dateString) as T;
+      String dateString = vals[key] ?? "";
+      final dt = DateTime.tryParse(dateString);
+      if (dt == null) return null;
+      return dt.toLocal() as T;
     }
     try {
       return vals[key];
