@@ -92,9 +92,9 @@ abstract class DirectusItemModel {
 
     if (T == DateTime) {
       String dateString = vals[key] ?? "";
-      final dt = DateTime.tryParse(dateString);
+      final dt = DateTime.tryParse(dateString)?.toLocal();
       if (dt == null) return null;
-      return dt.toLocal() as T;
+      return dt as T;
     }
     try {
       return vals[key];

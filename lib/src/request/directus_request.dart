@@ -49,7 +49,7 @@ class DirectusRequest {
     if (token != null) addHeader(key: "Authorization", value: "Bearer $token");
   }
 
-  renewToken(String? newToken) {
+  void renewToken(String? newToken) {
     token = newToken;
     if (headers.keys.contains("Authorization")) {
       if (token != null) {
@@ -90,25 +90,25 @@ class DirectusRequest {
   //  this.debugMode = false,
   //}) : method = HttpMethod.search;
 
-  addHeader({required String key, required String value}) {
+  void addHeader({required String key, required String value}) {
     headers[key] = value;
   }
 
-  addMultiplesHeaders({required Map<String, String> headerList}) {
+  void addMultiplesHeaders({required Map<String, String> headerList}) {
     headers.addAll(headerList);
   }
 
-  removeHeader({required String key}) {
+  void removeHeader({required String key}) {
     headers.removeWhere(
       (k, v) => k == key,
     );
   }
 
-  deleteAllHeaders() {
+  void deleteAllHeaders() {
     headers = const {};
   }
 
-  addFileAttachement(String filePath) {
+  void addFileAttachement(String filePath) {
     _filesAttachement.add(filePath);
   }
 
