@@ -52,6 +52,7 @@ export 'src/models/directus_filter.dart';
 export 'src/models/directus_deep.dart';
 export 'src/models/directus_aggregate.dart';
 export 'src/models/directus_functions.dart';
+export 'src/models/directus_user.dart';
 
 // WebSocket
 export 'src/websocket/directus_websocket_client.dart';

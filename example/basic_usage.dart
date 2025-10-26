@@ -187,7 +187,7 @@ void main() async {
     // 12. Informations sur l'utilisateur connecté
     print('\n👤 Informations utilisateur...');
     final me = await client.users.me();
-    print('✅ Connecté en tant que: ${me['email']}');
+    print('✅ Connecté en tant que: ${me.email.value}');
 
     // 13. Déconnexion
     print('\n🔒 Déconnexion...');
