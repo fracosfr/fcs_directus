@@ -152,6 +152,23 @@ class RequestManager {
 
       return response ??
           DirectusResponse.fromJson("{}", (value, {data, title}) => null);
+    } on DirectusErrorTokenExpired catch (_) {
+      try {
+        await loginWithRefreshToken(_renewToken);
+        await Future.delayed(const Duration(milliseconds: 250));
+        request.renewToken(token);
+        var response = await request.execute();
+        return response ??
+            DirectusResponse.fromJson("{}", (value, {data, title}) => null);
+      } catch (e) {
+        rethrow;
+      }
+    } on DirectusErrorInvalidToken catch (_) {
+      onConnexionChange(false);
+      rethrow;
+    } on DirectusErrorAuthCredentials catch (_) {
+      onConnexionChange(false);
+      rethrow;
     } on DirectusError catch (e) {
       print(e.message);
     }
@@ -199,7 +216,7 @@ class RequestManager {
 
   void logout() {
     onRefreshTokenChange(null);
-    onConnexionChange(false);
+    if (connected) onConnexionChange(false);
     if (_renewToken != null) {
       final data = {"refresh_token": _renewToken};
       executeRequest(

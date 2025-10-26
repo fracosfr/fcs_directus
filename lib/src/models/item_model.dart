@@ -40,7 +40,7 @@ abstract class DirectusItemModel {
 
   /// set a [value] corresponding with the [key].
   @protected
-  setValue(String key, dynamic value) {
+  void setValue(String key, dynamic value) {
     if (value is DateTime) {
       value = value.toIso8601String();
     }
@@ -62,7 +62,7 @@ abstract class DirectusItemModel {
 
   /// set an [object] corresponding with the [key]
   @protected
-  setObject(String key, DirectusItemModel object) =>
+  void setObject(String key, DirectusItemModel object) =>
       setValue(key, object.toMap(onlyChanges: false));
 
   /// Retrieve a value correspond with the [key]
@@ -135,7 +135,7 @@ abstract class DirectusItemModel {
 }
 
 extension MapCombineRecursive on Map<String, dynamic> {
-  combineRecursive(Map<String, dynamic> map) {
+  void combineRecursive(Map<String, dynamic> map) {
     for (final entry in map.entries) {
       if (containsKey(entry.key)) {
         if (entry.value is Map<String, dynamic>) {
