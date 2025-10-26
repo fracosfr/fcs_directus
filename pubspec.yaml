@@ -1,7 +1,8 @@
 name: fcs_directus
-description: "A new Flutter package project."
-version: 0.0.1
-homepage:
+description: A comprehensive Dart library for interacting with Directus API, including REST and WebSocket support with builder pattern for clean model serialization.
+version: 0.2.0
+homepage: https://github.com/fracosfr/fcs_directus
+repository: https://github.com/fracosfr/fcs_directus
 
 environment:
   sdk: ^3.9.2
@@ -10,11 +11,30 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # HTTP Client
+  dio: ^5.7.0
+  
+  # WebSocket support
+  web_socket_channel: ^3.0.1
+  
+  # JSON serialization
+  json_annotation: ^4.9.0
+  
+  # Logging
+  logging: ^1.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  
+  # JSON serialization code generation
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
+  
+  # Testing
+  mockito: ^5.4.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
