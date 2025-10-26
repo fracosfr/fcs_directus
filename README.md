@@ -1,2 +1,0 @@
-# fcs_directus
- 
