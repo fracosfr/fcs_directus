@@ -82,12 +82,13 @@ final newArticle = await articles.createOne({
   'status': 'published',
 });
 
-// Lire
+// Lire avec filtres type-safe ✨
 final allArticles = await articles.readMany(
   query: QueryParameters(
     limit: 10,
     sort: ['-date_created'],
-    filter: {'status': {'_eq': 'published'}},
+    // Nouveau: API de filtres intuitive
+    filter: Filter.field('status').equals('published'),
   ),
 );
 
@@ -101,6 +102,127 @@ await articles.updateOne('article-id', {
 // Supprimer
 await articles.deleteOne('article-id');
 ```
+
+### Filtres type-safe ✨
+
+Le système de filtres type-safe permet de construire des requêtes complexes sans connaître les opérateurs Directus :
+
+```dart
+// Filtre simple
+filter: Filter.field('status').equals('active')
+
+// Filtres combinés
+filter: Filter.and([
+  Filter.field('status').equals('published'),
+  Filter.field('price').greaterThan(100),
+  Filter.field('stock').greaterThan(0),
+])
+
+// Filtres imbriqués
+filter: Filter.or([
+  Filter.and([
+    Filter.field('category').equals('electronics'),
+    Filter.field('price').lessThan(500),
+  ]),
+  Filter.field('featured').equals(true),
+])
+
+// Opérateurs de chaîne
+filter: Filter.field('title').contains('laptop')
+filter: Filter.field('name').startsWith('Apple')
+
+// Listes
+filter: Filter.field('category').inList(['electronics', 'computers'])
+
+// Relations
+filter: Filter.relation('category').where(
+  Filter.field('name').equals('Premium'),
+)
+```
+
+Voir le [Guide des Filtres](docs/FILTERS_GUIDE.md) pour plus de détails.
+
+### Relations imbriquées avec Deep ✨
+
+Le système Deep permet de charger des relations imbriquées de manière type-safe et intuitive :
+
+```dart
+// Deep simple avec sélection de champs
+final query = QueryParameters(
+  deep: Deep({
+    'author': DeepQuery().fields(['id', 'name', 'email']),
+  }),
+);
+
+// Deep avec limite et tri
+final query = QueryParameters(
+  deep: Deep({
+    'comments': DeepQuery()
+        .limit(5)
+        .sortDesc('created_at')
+        .fields(['id', 'content', 'created_at']),
+  }),
+);
+
+// Deep avec filtres
+final query = QueryParameters(
+  deep: Deep({
+    'categories': DeepQuery()
+        .filter(Filter.field('status').equals('published'))
+        .sortAsc('name'),
+  }),
+);
+
+// Deep imbriqué (relations dans des relations)
+final query = QueryParameters(
+  deep: Deep({
+    'author': DeepQuery()
+        .fields(['id', 'name', 'avatar'])
+        .deep({
+          'avatar': DeepQuery().fields(['id', 'filename_disk']),
+        }),
+  }),
+);
+
+// Deep multiple (plusieurs relations)
+final query = QueryParameters(
+  deep: Deep({
+    'author': DeepQuery().fields(['name', 'email']),
+    'categories': DeepQuery().limit(10).sortAsc('name'),
+    'featured_image': DeepQuery().fields(['id', 'filename_disk']),
+  }),
+);
+
+// Combinaison Filter + Deep
+final query = QueryParameters(
+  filter: Filter.field('status').equals('published'),
+  deep: Deep({
+    'author': DeepQuery()
+        .fields(['id', 'name', 'avatar'])
+        .deep({
+          'avatar': DeepQuery().fields(['id', 'filename_disk']),
+        }),
+    'comments': DeepQuery()
+        .filter(Filter.field('status').equals('approved'))
+        .sortDesc('created_at')
+        .limit(10),
+  }),
+  limit: 20,
+);
+
+final articles = await client.items('articles').readMany(query);
+```
+
+**Méthodes d'extension utilitaires:**
+```dart
+DeepQuery()
+  .allFields()              // Tous les champs (*)
+  .sortAsc('name')          // Tri ascendant
+  .sortDesc('created_at')   // Tri descendant
+  .first(3)                 // 3 premiers items
+```
+
+Voir le [Guide Deep](docs/DEEP_GUIDE.md) pour plus d'exemples et de détails.
 
 ### Modèles personnalisés
 

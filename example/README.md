@@ -5,8 +5,7 @@ Ce dossier contient des exemples d'utilisation de la librairie fcs_directus.
 ## Exemples disponibles
 
 - `basic_usage.dart` - Utilisation basique (CRUD)
-- `custom_model.dart` - Création de modèles personnalisés avec DirectusModel
-- `directus_model_example.dart` - Utilisation simple de DirectusModel (Product, Category)
+- `directus_model_example.dart` - Utilisation du pattern Active Record avec DirectusModel
 - `websocket_example.dart` - Utilisation des WebSockets
 
 ## Comment exécuter les exemples

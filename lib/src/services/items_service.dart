@@ -1,10 +1,12 @@
 import '../core/directus_http_client.dart';
-import '../models/directus_active_model.dart';
+import '../models/directus_model.dart';
+import '../models/directus_filter.dart';
+import '../models/directus_deep.dart';
 
 /// Paramètres de requête pour filtrer, trier et paginer les données
 class QueryParameters {
-  /// Filtres à appliquer
-  final Map<String, dynamic>? filter;
+  /// Filtres à appliquer (objet Filter ou Map pour compatibilité)
+  final dynamic filter;
 
   /// Champs à retourner
   final List<String>? fields;
@@ -24,8 +26,8 @@ class QueryParameters {
   /// Recherche full-text
   final String? search;
 
-  /// Relations à inclure (deep)
-  final Map<String, dynamic>? deep;
+  /// Relations à inclure (objet Deep ou Map pour compatibilité)
+  final dynamic deep;
 
   QueryParameters({
     this.filter,
@@ -43,7 +45,12 @@ class QueryParameters {
     final params = <String, dynamic>{};
 
     if (filter != null) {
-      params['filter'] = filter;
+      // Convertir Filter en Map si nécessaire
+      if (filter is Filter) {
+        params['filter'] = (filter as Filter).toJson();
+      } else if (filter is Map<String, dynamic>) {
+        params['filter'] = filter;
+      }
     }
     if (fields != null && fields!.isNotEmpty) {
       params['fields'] = fields!.join(',');
@@ -64,7 +71,13 @@ class QueryParameters {
       params['search'] = search;
     }
     if (deep != null) {
-      params['deep'] = deep;
+      // Si deep est un objet Deep, convertir en JSON
+      if (deep is Deep) {
+        params['deep'] = deep.toJson();
+      } else {
+        // Sinon, utiliser directement (pour compatibilité Map)
+        params['deep'] = deep;
+      }
     }
 
     return params;
@@ -122,12 +135,12 @@ class ItemsService<T> {
 
   ItemsService(this._httpClient, this.collection);
 
-  // Convenience methods to work with DirectusActiveModel without requiring
+  // Convenience methods to work with DirectusModel without requiring
   // a specific model class. These methods return dynamic maps wrapped in
-  // DirectusActiveModel for callers who prefer the Active Record pattern.
+  // DirectusModel for callers who prefer the Active Record pattern.
 
-  /// Récupère plusieurs items sous forme de `DirectusActiveModel`
-  Future<DirectusResponse<DynamicActiveModel>> readManyActive({
+  /// Récupère plusieurs items sous forme de `DirectusModel`
+  Future<DirectusResponse<DynamicModel>> readManyActive({
     QueryParameters? query,
   }) async {
     final response = await _httpClient.get(
@@ -141,14 +154,14 @@ class ItemsService<T> {
         : null;
 
     final items = data
-        .map((item) => DynamicActiveModel(item as Map<String, dynamic>))
+        .map((item) => DynamicModel(item as Map<String, dynamic>))
         .toList();
 
     return DirectusResponse(data: items, meta: meta);
   }
 
-  /// Récupère un item par son ID et le retourne en `DirectusActiveModel`
-  Future<DynamicActiveModel> readOneActive(
+  /// Récupère un item par son ID et le retourne en `DirectusModel`
+  Future<DynamicModel> readOneActive(
     String id, {
     QueryParameters? query,
   }) async {
@@ -158,19 +171,19 @@ class ItemsService<T> {
     );
 
     final data = response.data['data'] as Map<String, dynamic>;
-    return DynamicActiveModel(data);
+    return DynamicModel(data);
   }
 
-  /// Crée un nouvel item et retourne un `DirectusActiveModel`
-  Future<DynamicActiveModel> createOneActive(Map<String, dynamic> data) async {
+  /// Crée un nouvel item et retourne un `DirectusModel`
+  Future<DynamicModel> createOneActive(Map<String, dynamic> data) async {
     final response = await _httpClient.post('/items/$collection', data: data);
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicActiveModel(responseData);
+    return DynamicModel(responseData);
   }
 
-  /// Met à jour un item et retourne un `DirectusActiveModel`
-  Future<DynamicActiveModel> updateOneActive(
+  /// Met à jour un item et retourne un `DirectusModel`
+  Future<DynamicModel> updateOneActive(
     String id,
     Map<String, dynamic> data,
   ) async {
@@ -180,7 +193,7 @@ class ItemsService<T> {
     );
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicActiveModel(responseData);
+    return DynamicModel(responseData);
   }
 
   /// Récupère plusieurs items

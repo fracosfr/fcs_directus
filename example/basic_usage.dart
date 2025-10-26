@@ -32,6 +32,8 @@ void main() async {
         limit: 10,
         sort: ['-date_created'],
         fields: ['id', 'title', 'status'],
+        // Nouveau: utilisation de Filter au lieu de Map
+        filter: Filter.field('status').notEquals('archived'),
       ),
     );
 
@@ -70,9 +72,8 @@ void main() async {
     print('\n🔍 Recherche d\'articles publiés...');
     final publishedArticles = await articlesService.readMany(
       query: QueryParameters(
-        filter: {
-          'status': {'_eq': 'published'},
-        },
+        // Nouveau: utilisation de Filter
+        filter: Filter.field('status').equals('published'),
         limit: 5,
       ),
     );
