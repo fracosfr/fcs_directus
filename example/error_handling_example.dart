@@ -110,9 +110,7 @@ Future<void> handleWithErrorCodes(DirectusClient directus) async {
 Future<void> handleWithExtensions(DirectusClient directus) async {
   try {
     // Tentative de création d'un doublon
-    await directus.items('users').createOne({
-      'email': 'existing@example.com',
-    });
+    await directus.items('users').createOne({'email': 'existing@example.com'});
   } on DirectusDatabaseException catch (e) {
     if (e.errorCode == DirectusErrorCode.recordNotUnique.code) {
       print('✗ Enregistrement en double');

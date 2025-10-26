@@ -220,10 +220,14 @@ class DirectusValidationException extends DirectusException {
     // Tenter de parser les erreurs de champs depuis les extensions
     final errors = extensions!['field_errors'];
     if (errors is Map) {
-      return errors.map((key, value) => MapEntry(
-            key.toString(),
-            value is List ? value.map((e) => e.toString()).toList() : [value.toString()],
-          ));
+      return errors.map(
+        (key, value) => MapEntry(
+          key.toString(),
+          value is List
+              ? value.map((e) => e.toString()).toList()
+              : [value.toString()],
+        ),
+      );
     }
     return null;
   }

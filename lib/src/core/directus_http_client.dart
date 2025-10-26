@@ -185,10 +185,12 @@ class DirectusHttpClient {
     // Extraire le code d'erreur Directus si présent
     String? errorCode;
     Map<String, dynamic>? extensions;
-    
+
     if (data is Map<String, dynamic>) {
       // Format Directus standard
-      if (data.containsKey('errors') && data['errors'] is List && (data['errors'] as List).isNotEmpty) {
+      if (data.containsKey('errors') &&
+          data['errors'] is List &&
+          (data['errors'] as List).isNotEmpty) {
         final firstError = (data['errors'] as List).first;
         if (firstError is Map<String, dynamic>) {
           extensions = firstError['extensions'] as Map<String, dynamic>?;
@@ -258,7 +260,10 @@ class DirectusHttpClient {
         }
 
       case DioExceptionType.cancel:
-        return DirectusException(message: 'Requête annulée', extensions: extensions);
+        return DirectusException(
+          message: 'Requête annulée',
+          extensions: extensions,
+        );
 
       case DioExceptionType.connectionError:
         return DirectusNetworkException(
