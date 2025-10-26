@@ -2,8 +2,21 @@ import 'package:fcs_directus/fcs_directus.dart';
 
 /// Exemple d'utilisation du système de filtres type-safe
 ///
-/// Démontre comment utiliser la classe Filter pour construire
-/// des requêtes complexes de manière intuitive
+/// Ce fichier démontre 13 scénarios d'utilisation des filtres:
+///
+/// 1. Filtres simples (égalité, comparaisons)
+/// 2. Opérateurs de comparaison (gt, gte, lt, lte)
+/// 3. Opérateurs de chaînes (contains, starts_with, ends_with)
+/// 4. Opérateurs de listes (in, between)
+/// 5. Opérateurs null et empty
+/// 6. Combinaisons logiques (and, or)
+/// 7. Négation (not)
+/// 8. Filtres complexes imbriqués
+/// 9. Filtres sur relations
+/// 10. Recherche insensible à la casse
+/// 11. Filtres O2M (some/none)
+/// 12. Validation avec regex
+/// 13. Comparaison ancien vs nouveau système
 void main() async {
   final config = DirectusConfig(baseUrl: 'https://your-directus-instance.com');
   final client = DirectusClient(config);
@@ -201,8 +214,76 @@ void main() async {
     );
     print('   → ${response.data.length} résultats\n');
 
-    // === 10. Comparaison ancien vs nouveau ===
-    print('📌 10. Comparaison ancien vs nouveau système\n');
+    // === 10. Recherche insensible à la casse ===
+    print('📌 10. Recherche insensible à la casse\n');
+
+    print('   Produits contenant "laptop" (insensible):');
+    response = await productsService.readMany(
+      query: QueryParameters(
+        filter: Filter.field('name').containsInsensitive('LAPTOP'),
+        limit: 5,
+      ),
+    );
+    print('   → ${response.data.length} résultats\n');
+
+    print('   Emails se terminant par ".com" (insensible):');
+    response = await client
+        .items('users')
+        .readMany(
+          query: QueryParameters(
+            filter: Filter.field('email').endsWithInsensitive('.COM'),
+            limit: 5,
+          ),
+        );
+    print('   → ${response.data.length} résultats\n');
+
+    // === 11. Filtres O2M (some/none) ===
+    print('📌 11. Filtres sur relations One-to-Many\n');
+
+    print('   Auteurs avec AU MOINS un article publié:');
+    response = await client
+        .items('authors')
+        .readMany(
+          query: QueryParameters(
+            filter: Filter.some(
+              'articles',
+            ).where(Filter.field('status').equals('published')),
+            limit: 5,
+          ),
+        );
+    print('   → ${response.data.length} résultats\n');
+
+    print('   Utilisateurs SANS violations critiques:');
+    response = await client
+        .items('users')
+        .readMany(
+          query: QueryParameters(
+            filter: Filter.none(
+              'violations',
+            ).where(Filter.field('severity').equals('critical')),
+            limit: 5,
+          ),
+        );
+    print('   → ${response.data.length} résultats\n');
+
+    // === 12. Validation avec regex ===
+    print('📌 12. Validation avec expressions régulières\n');
+
+    print('   Emails valides:');
+    response = await client
+        .items('users')
+        .readMany(
+          query: QueryParameters(
+            filter: Filter.field(
+              'email',
+            ).regex(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'),
+            limit: 5,
+          ),
+        );
+    print('   → ${response.data.length} résultats\n');
+
+    // === 13. Comparaison ancien vs nouveau ===
+    print('📌 13. Comparaison ancien vs nouveau système\n');
 
     print('   ❌ ANCIEN (Map manuel):');
     print('   filter: {');

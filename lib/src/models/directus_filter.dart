@@ -48,6 +48,14 @@ abstract class Filter {
   static RelationFilter relation(String relationName) =>
       RelationFilter(relationName);
 
+  /// Au moins un élément de la relation correspond (pour O2M)
+  static RelationalFilter some(String relationName) =>
+      RelationalFilter._('_some', relationName);
+
+  /// Aucun élément de la relation ne correspond (pour O2M)
+  static RelationalFilter none(String relationName) =>
+      RelationalFilter._('_none', relationName);
+
   // === Helpers ===
 
   /// Crée un filtre vide (retourne tout)
@@ -130,7 +138,60 @@ class FieldFilter extends Filter {
   OperatorFilter notEndsWith(String value) =>
       OperatorFilter(_fieldName, '_nends_with', value);
 
-  // === Opérateurs de null ===
+  // === Opérateurs de chaîne (insensibles à la casse) ===
+
+  /// Contient (insensible à la casse) (ILIKE %value%)
+  OperatorFilter containsInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_icontains', value);
+
+  /// Ne contient pas (insensible à la casse) (NOT ILIKE %value%)
+  OperatorFilter notContainsInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_nicontains', value);
+
+  /// Commence par (insensible à la casse) (ILIKE value%)
+  OperatorFilter startsWithInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_istarts_with', value);
+
+  /// Ne commence pas par (insensible à la casse) (NOT ILIKE value%)
+  OperatorFilter notStartsWithInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_nistarts_with', value);
+
+  /// Se termine par (insensible à la casse) (ILIKE %value)
+  OperatorFilter endsWithInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_iends_with', value);
+
+  /// Ne se termine pas par (insensible à la casse) (NOT ILIKE %value)
+  OperatorFilter notEndsWithInsensitive(String value) =>
+      OperatorFilter(_fieldName, '_niends_with', value);
+
+  // === Opérateurs géographiques ===
+
+  /// Intersecte avec une géométrie (pour champs geometry)
+  OperatorFilter intersects(dynamic geometry) =>
+      OperatorFilter(_fieldName, '_intersects', geometry);
+
+  /// N'intersecte pas avec une géométrie
+  OperatorFilter notIntersects(dynamic geometry) =>
+      OperatorFilter(_fieldName, '_nintersects', geometry);
+
+  /// Intersecte avec une boîte englobante (bounding box)
+  OperatorFilter intersectsBBox(dynamic bbox) =>
+      OperatorFilter(_fieldName, '_intersects_bbox', bbox);
+
+  /// N'intersecte pas avec une boîte englobante
+  OperatorFilter notIntersectsBBox(dynamic bbox) =>
+      OperatorFilter(_fieldName, '_nintersects_bbox', bbox);
+
+  // === Opérateurs de validation (pour formulaires) ===
+
+  /// Correspond à une expression régulière
+  OperatorFilter regex(String pattern) =>
+      OperatorFilter(_fieldName, '_regex', pattern);
+
+  /// Champ soumis (pour validation de formulaire)
+  OperatorFilter submitted() => OperatorFilter(_fieldName, '_submitted', true);
+
+  // === Opérateurs null ===
 
   /// Est null (IS NULL)
   OperatorFilter isNull() => OperatorFilter(_fieldName, '_null', true);
@@ -200,6 +261,31 @@ class RelationFilter extends Filter {
       throw UnsupportedError('RelationFilter must have a .where() clause');
     }
     return {_relationName: _filter!.toJson()};
+  }
+}
+
+/// Filtre relationnel pour O2M (_some, _none)
+class RelationalFilter extends Filter {
+  final String _operator; // '_some' ou '_none'
+  final String _relationName;
+  Filter? _filter;
+
+  RelationalFilter._(this._operator, this._relationName);
+
+  /// Applique un filtre sur la relation
+  RelationalFilter where(Filter filter) {
+    _filter = filter;
+    return this;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    if (_filter == null) {
+      throw UnsupportedError('RelationalFilter must have a .where() clause');
+    }
+    return {
+      _relationName: {_operator: _filter!.toJson()},
+    };
   }
 }
 

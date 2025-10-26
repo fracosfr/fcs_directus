@@ -221,6 +221,100 @@ void main() {
       });
     });
 
+    group('Opérateurs de chaîne insensibles à la casse', () {
+      test('containsInsensitive génère le bon JSON', () {
+        final filter = Filter.field('name').containsInsensitive('laptop');
+        expect(filter.toJson(), {
+          'name': {'_icontains': 'laptop'},
+        });
+      });
+
+      test('startsWithInsensitive génère le bon JSON', () {
+        final filter = Filter.field('name').startsWithInsensitive('mac');
+        expect(filter.toJson(), {
+          'name': {'_istarts_with': 'mac'},
+        });
+      });
+
+      test('endsWithInsensitive génère le bon JSON', () {
+        final filter = Filter.field('name').endsWithInsensitive('pro');
+        expect(filter.toJson(), {
+          'name': {'_iends_with': 'pro'},
+        });
+      });
+    });
+
+    group('Opérateurs géographiques', () {
+      test('intersects génère le bon JSON', () {
+        final geometry = {
+          'type': 'Point',
+          'coordinates': [125.6, 10.1],
+        };
+        final filter = Filter.field('location').intersects(geometry);
+        expect(filter.toJson(), {
+          'location': {'_intersects': geometry},
+        });
+      });
+
+      test('intersectsBBox génère le bon JSON', () {
+        final bbox = {
+          'type': 'Polygon',
+          'coordinates': [
+            [
+              [-180, -90],
+              [-180, 90],
+              [180, 90],
+              [180, -90],
+              [-180, -90],
+            ],
+          ],
+        };
+        final filter = Filter.field('location').intersectsBBox(bbox);
+        expect(filter.toJson(), {
+          'location': {'_intersects_bbox': bbox},
+        });
+      });
+    });
+
+    group('Opérateurs de validation', () {
+      test('regex génère le bon JSON', () {
+        final filter = Filter.field(
+          'email',
+        ).regex(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+        expect(filter.toJson(), {
+          'email': {'_regex': r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'},
+        });
+      });
+    });
+
+    group('Opérateurs relationnels O2M', () {
+      test('some génère le bon JSON', () {
+        final filter = Filter.some(
+          'articles',
+        ).where(Filter.field('status').equals('published'));
+        expect(filter.toJson(), {
+          'articles': {
+            '_some': {
+              'status': {'_eq': 'published'},
+            },
+          },
+        });
+      });
+
+      test('none génère le bon JSON', () {
+        final filter = Filter.none(
+          'articles',
+        ).where(Filter.field('status').equals('archived'));
+        expect(filter.toJson(), {
+          'articles': {
+            '_none': {
+              'status': {'_eq': 'archived'},
+            },
+          },
+        });
+      });
+    });
+
     group('Filtre vide', () {
       test('empty génère un objet vide', () {
         final filter = Filter.empty();

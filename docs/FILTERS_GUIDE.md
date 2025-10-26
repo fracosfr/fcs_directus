@@ -67,17 +67,72 @@ Filter.field('price').notBetween(10, 20)
 ### Chaînes de caractères
 
 ```dart
-// Contient
+// Contient (sensible à la casse)
 Filter.field('title').contains('laptop')
 Filter.field('title').notContains('refurbished')
 
-// Commence par
+// Contient (insensible à la casse)
+Filter.field('title').containsInsensitive('LAPTOP')
+Filter.field('title').notContainsInsensitive('REFURBISHED')
+
+// Commence par (sensible à la casse)
 Filter.field('name').startsWith('Apple')
 Filter.field('name').notStartsWith('Generic')
 
-// Se termine par
+// Commence par (insensible à la casse)
+Filter.field('name').startsWithInsensitive('apple')
+Filter.field('name').notStartsWithInsensitive('generic')
+
+// Se termine par (sensible à la casse)
 Filter.field('email').endsWith('@example.com')
 Filter.field('email').notEndsWith('@spam.com')
+
+// Se termine par (insensible à la casse)
+Filter.field('email').endsWithInsensitive('@EXAMPLE.COM')
+Filter.field('email').notEndsWithInsensitive('@SPAM.COM')
+
+// Expression régulière
+Filter.field('email').regex(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+```
+
+### Géographie (champs geometry)
+
+```dart
+// Intersecte avec une géométrie
+Filter.field('location').intersects({
+  'type': 'Point',
+  'coordinates': [125.6, 10.1],
+})
+
+Filter.field('location').notIntersects(geometry)
+
+// Intersecte avec une boîte englobante (bounding box)
+Filter.field('location').intersectsBBox({
+  'type': 'Polygon',
+  'coordinates': [[
+    [-180, -90],
+    [-180, 90],
+    [180, 90],
+    [180, -90],
+    [-180, -90],
+  ]],
+})
+
+Filter.field('location').notIntersectsBBox(bbox)
+```
+
+### Relations One-to-Many
+
+```dart
+// Au moins un élément correspond
+Filter.some('articles').where(
+  Filter.field('status').equals('published'),
+)
+
+// Aucun élément ne correspond
+Filter.none('violations').where(
+  Filter.field('severity').equals('critical'),
+)
 ```
 
 ### Listes
@@ -106,7 +161,56 @@ Filter.field('notes').isEmpty()
 Filter.field('content').isNotEmpty()
 ```
 
-## 🔗 Combinaisons de filtres
+## � Tableau récapitulatif des opérateurs
+
+| Catégorie | Méthode | Opérateur Directus | Description |
+|-----------|---------|-------------------|-------------|
+| **Comparaison** | | | |
+| | `equals(value)` | `_eq` | Égal à |
+| | `notEquals(value)` | `_neq` | Différent de |
+| | `lessThan(value)` | `_lt` | Inférieur à |
+| | `lessThanOrEqual(value)` | `_lte` | Inférieur ou égal à |
+| | `greaterThan(value)` | `_gt` | Supérieur à |
+| | `greaterThanOrEqual(value)` | `_gte` | Supérieur ou égal à |
+| **Collection** | | | |
+| | `inList(values)` | `_in` | Dans la liste |
+| | `notInList(values)` | `_nin` | Pas dans la liste |
+| | `between(min, max)` | `_between` | Entre deux valeurs |
+| | `notBetween(min, max)` | `_nbetween` | Pas entre deux valeurs |
+| **Chaîne** | | | |
+| | `contains(text)` | `_contains` | Contient (sensible) |
+| | `notContains(text)` | `_ncontains` | Ne contient pas (sensible) |
+| | `containsInsensitive(text)` | `_icontains` | Contient (insensible) |
+| | `notContainsInsensitive(text)` | `_nicontains` | Ne contient pas (insensible) |
+| | `startsWith(text)` | `_starts_with` | Commence par (sensible) |
+| | `notStartsWith(text)` | `_nstarts_with` | Ne commence pas par (sensible) |
+| | `startsWithInsensitive(text)` | `_istarts_with` | Commence par (insensible) |
+| | `notStartsWithInsensitive(text)` | `_nistarts_with` | Ne commence pas par (insensible) |
+| | `endsWith(text)` | `_ends_with` | Se termine par (sensible) |
+| | `notEndsWith(text)` | `_nends_with` | Ne se termine pas par (sensible) |
+| | `endsWithInsensitive(text)` | `_iends_with` | Se termine par (insensible) |
+| | `notEndsWithInsensitive(text)` | `_niends_with` | Ne se termine pas par (insensible) |
+| **Null/Empty** | | | |
+| | `isNull()` | `_null` | Est null |
+| | `isNotNull()` | `_nnull` | N'est pas null |
+| | `isEmpty()` | `_empty` | Est vide (null ou "") |
+| | `isNotEmpty()` | `_nempty` | N'est pas vide |
+| **Géographie** | | | |
+| | `intersects(geometry)` | `_intersects` | Intersecte une géométrie |
+| | `notIntersects(geometry)` | `_nintersects` | N'intersecte pas une géométrie |
+| | `intersectsBBox(bbox)` | `_intersects_bbox` | Intersecte une boîte englobante |
+| | `notIntersectsBBox(bbox)` | `_nintersects_bbox` | N'intersecte pas une boîte englobante |
+| **Validation** | | | |
+| | `regex(pattern)` | `_regex` | Correspond à une regex |
+| | `submitted()` | `_submitted` | Champ soumis (formulaire) |
+| **Relations O2M** | | | |
+| | `Filter.some(relation).where(...)` | `_some` | Au moins un élément correspond |
+| | `Filter.none(relation).where(...)` | `_none` | Aucun élément ne correspond |
+| **Logique** | | | |
+| | `Filter.and([...])` | `_and` | Tous les filtres doivent être vrais |
+| | `Filter.or([...])` | `_or` | Au moins un filtre doit être vrai |
+
+## �🔗 Combinaisons de filtres
 
 ### AND (tous les critères doivent être vrais)
 
