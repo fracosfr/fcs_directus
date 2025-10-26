@@ -2,6 +2,7 @@ import '../core/directus_http_client.dart';
 import '../models/directus_model.dart';
 import '../models/directus_filter.dart';
 import '../models/directus_deep.dart';
+import '../models/directus_aggregate.dart';
 
 /// Paramètres de requête pour filtrer, trier et paginer les données
 class QueryParameters {
@@ -29,6 +30,12 @@ class QueryParameters {
   /// Relations à inclure (objet Deep ou Map pour compatibilité)
   final dynamic deep;
 
+  /// Agrégations à effectuer (objet Aggregate ou Map pour compatibilité)
+  final dynamic aggregate;
+
+  /// Regroupement des résultats (objet GroupBy, List<String> ou Map pour compatibilité)
+  final dynamic groupBy;
+
   QueryParameters({
     this.filter,
     this.fields,
@@ -38,6 +45,8 @@ class QueryParameters {
     this.page,
     this.search,
     this.deep,
+    this.aggregate,
+    this.groupBy,
   });
 
   /// Convertit les paramètres en Map pour les query parameters
@@ -77,6 +86,26 @@ class QueryParameters {
       } else {
         // Sinon, utiliser directement (pour compatibilité Map)
         params['deep'] = deep;
+      }
+    }
+    if (aggregate != null) {
+      // Si aggregate est un objet Aggregate, convertir en JSON
+      if (aggregate is Aggregate) {
+        params['aggregate'] = aggregate.toJson();
+      } else {
+        // Sinon, utiliser directement (pour compatibilité Map)
+        params['aggregate'] = aggregate;
+      }
+    }
+    if (groupBy != null) {
+      // Si groupBy est un objet GroupBy, convertir en JSON
+      if (groupBy is GroupBy) {
+        params['groupBy'] = (groupBy as GroupBy).toJson().join(',');
+      } else if (groupBy is List<String>) {
+        params['groupBy'] = groupBy.join(',');
+      } else {
+        // Sinon, utiliser directement (pour compatibilité Map/String)
+        params['groupBy'] = groupBy;
       }
     }
 

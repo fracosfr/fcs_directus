@@ -49,6 +49,8 @@ export 'src/exceptions/directus_exception.dart';
 export 'src/models/directus_model.dart';
 export 'src/models/directus_filter.dart';
 export 'src/models/directus_deep.dart';
+export 'src/models/directus_aggregate.dart';
+export 'src/models/directus_functions.dart';
 
 // WebSocket
 export 'src/websocket/directus_websocket_client.dart';

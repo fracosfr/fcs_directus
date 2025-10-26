@@ -25,11 +25,15 @@ Une librairie Dart/Flutter complète pour interagir avec l'API Directus via REST
 - ✅ **WebSocket** - Mises à jour en temps réel
 - ✅ **Gestion des fichiers** - Upload, download, transformations
 - ✅ **Collections personnalisées** - Support pour toutes vos collections Directus
-- ✅ **Modèles typés** - Créez vos propres modèles Dart
-- ✅ **Filtres et requêtes** - Filtrage, tri, pagination, recherche
-- ✅ **Gestion d'erreurs** - Exceptions typées et gestion robuste
+- ✅ **Modèles typés** - Créez vos propres modèles Dart avec builders
+- ✅ **Filtres type-safe** - API intuitive avec opérateurs chainables
+- ✅ **Relations imbriquées (Deep)** - Chargement de relations M2O, O2M, M2M
+- ✅ **Agrégations** - 9 opérations statistiques (count, sum, avg, min, max...)
+- ✅ **Fonctions date/temps** - 9 fonctions pour analyse temporelle
+- ✅ **Variables dynamiques** - $NOW, $CURRENT_USER, $CURRENT_ROLE...
+- ✅ **Gestion d'erreurs complète** - 31 codes d'erreur Directus avec types spécifiques
 - ✅ **Documentation complète** - Dartdoc pour toutes les API publiques
-- ✅ **Tests unitaires** - Code testé et fiable
+- ✅ **Tests unitaires** - 76 tests, code testé et fiable
 
 ## 📦 Installation
 
@@ -223,6 +227,80 @@ DeepQuery()
 ```
 
 Voir le [Guide Deep](docs/DEEP_GUIDE.md) pour plus d'exemples et de détails.
+
+### Agrégations et statistiques ✨
+
+Effectuez des calculs statistiques puissants avec l'API type-safe d'agrégations.
+
+```dart
+// Statistiques simples
+final stats = await client.items('products').readMany(
+  query: QueryParameters(
+    aggregate: Aggregate()
+      ..countAll()
+      ..sum(['price'])
+      ..avg(['rating'])
+      ..min(['price'])
+      ..max(['price']),
+  ),
+);
+
+// Agrégation avec regroupement
+final salesByCategory = await client.items('orders').readMany(
+  query: QueryParameters(
+    aggregate: Aggregate()
+      ..count(['*'])
+      ..sum(['amount']),
+    groupBy: GroupBy.fields(['category']),
+    sort: ['-sum.amount'],
+  ),
+);
+
+// Analyse temporelle avec fonctions de date
+final monthlySales = await client.items('orders').readMany(
+  query: QueryParameters(
+    filter: Filter.field(Func.year('created_at')).equals(2024),
+    aggregate: Aggregate()
+      ..count(['*'])
+      ..sum(['amount']),
+    groupBy: GroupBy.fields([
+      Func.month('created_at'),
+    ]),
+  ),
+);
+
+// Variables dynamiques
+final myTasks = await client.items('tasks').readMany(
+  query: QueryParameters(
+    filter: Filter.and([
+      Filter.field('assigned_to').equals(DynamicVar.currentUser),
+      Filter.field('due_date').greaterThan(DynamicVar.now),
+    ]),
+  ),
+);
+```
+
+**Agrégations disponibles:**
+- `count(['*'])` - Compter les items
+- `countDistinct(['field'])` - Valeurs uniques
+- `sum(['field'])` - Somme
+- `avg(['field'])` - Moyenne
+- `min(['field'])` - Minimum
+- `max(['field'])` - Maximum
+
+**Fonctions de date:**
+- `Func.year('field')` - Extraire l'année
+- `Func.month('field')` - Extraire le mois (1-12)
+- `Func.day('field')` - Extraire le jour (1-31)
+- `Func.hour('field')` - Extraire l'heure (0-23)
+- `Func.weekday('field')` - Jour de la semaine (0-6)
+
+**Variables dynamiques:**
+- `DynamicVar.now` - Timestamp actuel
+- `DynamicVar.currentUser` - ID utilisateur connecté
+- `DynamicVar.currentRole` - Rôle de l'utilisateur
+
+Voir le [Guide des Agrégations](docs/AGGREGATIONS_GUIDE.md) pour tous les détails.
 
 ### Modèles personnalisés
 
@@ -567,23 +645,90 @@ final response = await client.items('articles').readMany(
 );
 ```
 
-### Gestion des erreurs
+### Gestion des erreurs ✨
+
+La librairie implémente **tous les 31 codes d'erreur officiels de Directus** avec des exceptions typées pour chaque catégorie d'erreur.
 
 ```dart
 try {
   await client.items('articles').readOne('invalid-id');
 } on DirectusNotFoundException catch (e) {
+  // Code: ROUTE_NOT_FOUND
   print('Article non trouvé: ${e.message}');
 } on DirectusAuthException catch (e) {
-  print('Erreur d\'authentification: ${e.message}');
+  // Codes: INVALID_CREDENTIALS, TOKEN_EXPIRED, INVALID_OTP, USER_SUSPENDED
+  if (e.errorCode == DirectusErrorCode.tokenExpired.code) {
+    // Rafraîchir le token
+    await client.auth.refresh();
+  }
 } on DirectusValidationException catch (e) {
-  print('Erreur de validation: ${e.fieldErrors}');
+  // Codes: INVALID_PAYLOAD, INVALID_QUERY, VALUE_TOO_LONG, etc.
+  print('Erreur de validation: ${e.message}');
+  if (e.fieldErrors != null) {
+    e.fieldErrors!.forEach((field, errors) {
+      print('  $field: ${errors.join(", ")}');
+    });
+  }
+} on DirectusPermissionException catch (e) {
+  // Code: FORBIDDEN
+  print('Accès refusé: ${e.message}');
+} on DirectusRateLimitException catch (e) {
+  // Codes: REQUESTS_EXCEEDED, EMAIL_LIMIT_EXCEEDED, LIMIT_EXCEEDED
+  print('Trop de requêtes, réessayez plus tard');
 } on DirectusNetworkException catch (e) {
   print('Erreur réseau: ${e.message}');
 } on DirectusException catch (e) {
-  print('Erreur Directus: ${e.message} [${e.statusCode}]');
+  // Toutes les autres erreurs
+  print('Erreur Directus [${e.errorCode}]: ${e.message}');
 }
 ```
+
+**Types d'exceptions disponibles:**
+
+| Exception | Description | Codes d'erreur |
+|-----------|-------------|----------------|
+| `DirectusAuthException` | Erreurs d'authentification | INVALID_CREDENTIALS, TOKEN_EXPIRED, INVALID_OTP, etc. |
+| `DirectusValidationException` | Erreurs de validation | INVALID_PAYLOAD, VALUE_TOO_LONG, NOT_NULL_VIOLATION, etc. |
+| `DirectusPermissionException` | Erreurs de permission | FORBIDDEN |
+| `DirectusNotFoundException` | Ressource introuvable | ROUTE_NOT_FOUND |
+| `DirectusServerException` | Erreurs serveur | INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, etc. |
+| `DirectusFileException` | Erreurs de fichiers | CONTENT_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE, etc. |
+| `DirectusRateLimitException` | Limite de taux dépassée | REQUESTS_EXCEEDED, EMAIL_LIMIT_EXCEEDED, etc. |
+| `DirectusDatabaseException` | Erreurs de base de données | INVALID_FOREIGN_KEY, RECORD_NOT_UNIQUE |
+| `DirectusMethodNotAllowedException` | Méthode HTTP non autorisée | METHOD_NOT_ALLOWED |
+| `DirectusRangeException` | Plage invalide | RANGE_NOT_SATISFIABLE |
+| `DirectusConfigException` | Erreurs de configuration | INVALID_IP, INVALID_PROVIDER, etc. |
+| `DirectusNetworkException` | Erreurs réseau | Timeout, pas de connexion, etc. |
+
+**Accès aux extensions:**
+
+Les erreurs Directus peuvent contenir des informations supplémentaires dans le champ `extensions`:
+
+```dart
+on DirectusDatabaseException catch (e) {
+  print('Collection: ${e.collection}');
+  print('Champ: ${e.field}');
+  print('Code: ${e.errorCode}');
+}
+
+on DirectusMethodNotAllowedException catch (e) {
+  print('Méthodes autorisées: ${e.allowedMethods?.join(", ")}');
+}
+```
+
+**Enum des codes d'erreur:**
+
+Utilisez l'enum `DirectusErrorCode` pour comparer les codes d'erreur:
+
+```dart
+if (e.errorCode == DirectusErrorCode.tokenExpired.code) {
+  // Token expiré
+} else if (e.errorCode == DirectusErrorCode.recordNotUnique.code) {
+  // Doublon dans la base de données
+}
+```
+
+Voir le [Guide complet des codes d'erreur](docs/ERROR_CODES.md) pour tous les détails.
 
 ### Refresh token automatique
 

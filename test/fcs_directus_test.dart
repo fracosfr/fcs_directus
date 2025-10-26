@@ -131,9 +131,11 @@ void main() {
       final exception = DirectusValidationException(
         message: 'Validation échouée',
         statusCode: 400,
-        fieldErrors: {
-          'email': ['Email invalide'],
-          'password': ['Trop court'],
+        extensions: {
+          'field_errors': {
+            'email': ['Email invalide'],
+            'password': ['Trop court'],
+          },
         },
       );
 

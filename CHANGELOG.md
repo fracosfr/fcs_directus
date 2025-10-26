@@ -5,11 +5,38 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
-# Changelog
-
 ## [0.2.0] - 2024-01-15
 
 ### ✨ Nouvelles fonctionnalités majeures
+
+#### Gestion complète des erreurs Directus ⭐ NOUVEAU
+- **31 codes d'erreur officiels implémentés** avec types d'exceptions spécifiques
+  - `DirectusErrorCode` enum pour tous les codes Directus
+  - `DirectusException.fromJson()` factory pour mapping automatique
+  - Nouveaux types d'exceptions :
+    - `DirectusFileException` - Erreurs de fichiers (CONTENT_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE)
+    - `DirectusRateLimitException` - Rate limiting (REQUESTS_EXCEEDED, EMAIL_LIMIT_EXCEEDED)
+    - `DirectusMethodNotAllowedException` - Méthode HTTP non autorisée
+    - `DirectusDatabaseException` - Erreurs BDD (INVALID_FOREIGN_KEY, RECORD_NOT_UNIQUE)
+    - `DirectusRangeException` - Plage invalide (RANGE_NOT_SATISFIABLE)
+    - `DirectusConfigException` - Configuration (INVALID_IP, INVALID_PROVIDER)
+  - Accès aux extensions Directus (code d'erreur, informations supplémentaires)
+  - Mapping intelligent selon le code d'erreur dans `DirectusHttpClient`
+
+#### Agrégations et statistiques ⭐ NOUVEAU
+- **Système d'agrégation type-safe** avec API fluide
+  - 9 opérations : `count`, `countDistinct`, `countAll`, `sum`, `sumDistinct`, `avg`, `avgDistinct`, `min`, `max`
+  - `Aggregate` class avec méthodes chaînables
+  - `GroupBy` pour regroupements par champs
+  
+- **Fonctions de date/temps**
+  - 9 fonctions : `year`, `month`, `week`, `day`, `weekday`, `hour`, `minute`, `second`, `count`
+  - `Func` class pour utilisation dans filtres et groupBy
+  
+- **Variables dynamiques**
+  - 4 variables système : `$NOW`, `$CURRENT_USER`, `$CURRENT_ROLE`, `$CURRENT_POLICIES`
+  - `DynamicVar` class avec constantes statiques
+  - Utilisation dans filtres pour contexte utilisateur
 
 #### Builder Pattern pour les modèles
 - **DirectusModelBuilder** : Parse le JSON avec des getters type-safe

@@ -182,13 +182,38 @@ class DirectusHttpClient {
           data['message']?.toString() ?? data['error']?.toString() ?? message;
     }
 
+    // Extraire le code d'erreur Directus si présent
+    String? errorCode;
+    Map<String, dynamic>? extensions;
+    
+    if (data is Map<String, dynamic>) {
+      // Format Directus standard
+      if (data.containsKey('errors') && data['errors'] is List && (data['errors'] as List).isNotEmpty) {
+        final firstError = (data['errors'] as List).first;
+        if (firstError is Map<String, dynamic>) {
+          extensions = firstError['extensions'] as Map<String, dynamic>?;
+          errorCode = extensions?['code'] as String?;
+          message = firstError['message'] as String? ?? message;
+        }
+      }
+    }
+
+    // Si on a un code d'erreur Directus, utiliser fromJson
+    if (errorCode != null) {
+      return DirectusException.fromJson({
+        'message': message,
+        'extensions': extensions,
+      });
+    }
+
+    // Sinon, mapper selon le code HTTP
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
         return DirectusNetworkException(
           message: 'Timeout: La requête a pris trop de temps',
-          data: data,
+          extensions: extensions,
         );
 
       case DioExceptionType.badResponse:
@@ -197,55 +222,55 @@ class DirectusHttpClient {
             return DirectusValidationException(
               message: message,
               statusCode: statusCode,
-              data: data,
+              extensions: extensions,
             );
           case 401:
             return DirectusAuthException(
               message: 'Non authentifié: $message',
               statusCode: statusCode,
-              data: data,
+              extensions: extensions,
             );
           case 403:
             return DirectusPermissionException(
               message: 'Permission refusée: $message',
               statusCode: statusCode,
-              data: data,
+              extensions: extensions,
             );
           case 404:
             return DirectusNotFoundException(
               message: 'Ressource non trouvée: $message',
               statusCode: statusCode,
-              data: data,
+              extensions: extensions,
             );
           default:
             if (statusCode != null && statusCode >= 500) {
               return DirectusServerException(
                 message: 'Erreur serveur: $message',
                 statusCode: statusCode,
-                data: data,
+                extensions: extensions,
               );
             }
             return DirectusException(
               message: message,
               statusCode: statusCode,
-              data: data,
+              extensions: extensions,
             );
         }
 
       case DioExceptionType.cancel:
-        return DirectusException(message: 'Requête annulée', data: data);
+        return DirectusException(message: 'Requête annulée', extensions: extensions);
 
       case DioExceptionType.connectionError:
         return DirectusNetworkException(
           message: 'Erreur de connexion: Impossible de joindre le serveur',
-          data: data,
+          extensions: extensions,
         );
 
       default:
         return DirectusException(
           message: message,
           statusCode: statusCode,
-          data: data,
+          extensions: extensions,
         );
     }
   }
