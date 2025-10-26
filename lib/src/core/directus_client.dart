@@ -5,6 +5,7 @@ import '../services/items_service.dart';
 import '../services/collections_service.dart';
 import '../services/users_service.dart';
 import '../services/files_service.dart';
+import '../models/directus_model.dart';
 
 /// Client principal pour interagir avec l'API Directus.
 ///
@@ -22,8 +23,11 @@ import '../services/files_service.dart';
 ///   password: 'password',
 /// );
 ///
-/// // Récupérer des items
+/// // Récupérer des items avec le nom de collection
 /// final items = await client.items('articles').readMany();
+///
+/// // Ou utiliser directement un modèle DirectusModel
+/// final items = await client.itemsOf<Product>().readMany();
 /// ```
 class DirectusClient {
   final DirectusConfig config;
@@ -56,6 +60,43 @@ class DirectusClient {
   /// final data = await articles.readMany();
   /// ```
   ItemsService<T> items<T>(String collection) {
+    return ItemsService<T>(_httpClient, collection);
+  }
+
+  /// Crée un service pour accéder aux items d'une collection en utilisant un DirectusModel
+  ///
+  /// Le nom de la collection est automatiquement récupéré depuis le modèle via le getter `itemName`.
+  ///
+  /// Exemple:
+  /// ```dart
+  /// class Product extends DirectusModel {
+  ///   @override
+  ///   String get itemName => 'products';
+  ///
+  ///   Product(super.data);
+  ///   // ...
+  /// }
+  ///
+  /// // Utilisation
+  /// final products = client.itemsOf<Product>();
+  /// final allProducts = await products.readMany();
+  /// ```
+  ItemsService<T> itemsOf<T extends DirectusModel>() {
+    // Récupérer le itemName depuis une instance du modèle
+    // Note: Dart ne permet pas d'accéder directement aux membres statiques via les types génériques
+    // On doit donc créer une instance temporaire via la factory
+    final factory = DirectusModel.getFactory<T>();
+    if (factory == null) {
+      throw StateError(
+        'No factory registered for type $T. '
+        'Please register a factory using DirectusModel.registerFactory<$T>(...)',
+      );
+    }
+
+    // Créer une instance temporaire avec un objet vide pour obtenir le itemName
+    final tempInstance = factory({}) as T;
+    final collection = tempInstance.itemName;
+
     return ItemsService<T>(_httpClient, collection);
   }
 

@@ -8,6 +8,9 @@ import 'package:fcs_directus/fcs_directus.dart';
 
 /// Modèle Product avec Active Record pattern
 class Product extends DirectusModel {
+  @override
+  String get itemName => 'products';
+
   /// Constructeur depuis JSON - une seule ligne !
   Product(super.data);
 
@@ -67,6 +70,9 @@ class Product extends DirectusModel {
 
 /// Modèle Category simplifié
 class Category extends DirectusModel {
+  @override
+  String get itemName => 'categories';
+
   Category(super.data);
   Category.empty() : super.empty();
 
@@ -82,6 +88,9 @@ class Category extends DirectusModel {
 
 /// Modèle User avec relations
 class User extends DirectusModel {
+  @override
+  String get itemName => 'users';
+
   User(super.data);
   User.empty() : super.empty();
 
@@ -105,6 +114,9 @@ class User extends DirectusModel {
 
 /// Modèle Order avec une liste de produits
 class Order extends DirectusModel {
+  @override
+  String get itemName => 'orders';
+
   Order(super.data);
   Order.empty() : super.empty();
 
@@ -306,14 +318,32 @@ void main() {
   print('   User créateur: ${product.userCreated}');
   print('   User modificateur: ${product.userUpdated}\n');
 
-  // === 9. Comparaison ===
-  print('⚖️  9. Comparaison du code');
+  // === 9. Utilisation avec DirectusClient.itemsOf() ===
+  print('🔌 9. Utilisation avec DirectusClient.itemsOf()');
+  print('   Méthode 1 - Traditionnelle (avec nom de collection):');
+  print("   final items = client.items('products');");
+  print('   final allProducts = await items.readMany();');
+  print('');
+  print('   Méthode 2 - Type-safe (avec DirectusModel):');
+  print('   final items = client.itemsOf<Product>();');
+  print('   final allProducts = await items.readMany();');
+  print('');
+  print('   ✨ Avantages de itemsOf<T>():');
+  print('   ✅ Pas besoin de spécifier le nom de collection');
+  print('   ✅ Type-safe (compile-time check)');
+  print('   ✅ Auto-complétion IDE');
+  print('   ✅ Le itemName est lu depuis le modèle\n');
+
+  // === 10. Comparaison ===
+  print('⚖️  10. Comparaison du code');
   print('   Classe Product:');
+  print('   - 1 ligne itemName getter');
+  print('   - 1 ligne constructeur');
   print('   - 0 ligne de fromJson (géré par DirectusModel)');
   print('   - 0 ligne de toMap (géré par DirectusModel)');
   print('   - 7 getters (une ligne chacun)');
   print('   - 7 setters (une ligne chacun)');
-  print('   - Total: ~20 lignes');
+  print('   - Total: ~18 lignes');
   print('');
   print('   Vs classe traditionnelle:');
   print('   - 15 lignes de fromJson');
@@ -321,7 +351,7 @@ void main() {
   print('   - Champs déclarés');
   print('   - Total: ~40 lignes');
   print('');
-  print('   Réduction: 50% de code !');
+  print('   Réduction: 55% de code !');
   print('');
   print('✨ Avantages de DirectusModel:');
   print('   ✅ Pas de fromJson à écrire');
@@ -331,4 +361,5 @@ void main() {
   print('   ✅ Modification directe des données');
   print('   ✅ Champs calculés possibles');
   print('   ✅ Méthodes métier intégrées');
+  print('   ✅ itemsOf<T>() sans spécifier collection');
 }

@@ -183,7 +183,10 @@ class ItemsService<T> {
         : null;
 
     final items = data
-        .map((item) => DynamicModel(item as Map<String, dynamic>))
+        .map(
+          (item) =>
+              DynamicModel(item as Map<String, dynamic>, itemName: collection),
+        )
         .toList();
 
     return DirectusResponse(data: items, meta: meta);
@@ -200,7 +203,7 @@ class ItemsService<T> {
     );
 
     final data = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(data);
+    return DynamicModel(data, itemName: collection);
   }
 
   /// Crée un nouvel item et retourne un `DirectusModel`
@@ -208,7 +211,7 @@ class ItemsService<T> {
     final response = await _httpClient.post('/items/$collection', data: data);
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(responseData);
+    return DynamicModel(responseData, itemName: collection);
   }
 
   /// Met à jour un item et retourne un `DirectusModel`
@@ -222,7 +225,7 @@ class ItemsService<T> {
     );
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(responseData);
+    return DynamicModel(responseData, itemName: collection);
   }
 
   /// Récupère plusieurs items

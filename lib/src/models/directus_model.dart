@@ -6,7 +6,10 @@
 /// Exemple d'utilisation:
 /// ```dart
 /// class Product extends DirectusModel {
-///   Product(Map<String, dynamic> data) : super(data);
+///   Product(super.data);
+///
+///   @override
+///   String get itemName => 'products';
 ///
 ///   String get name => getString('name');
 ///   set name(String value) => setString('name', value);
@@ -24,6 +27,9 @@
 abstract class DirectusModel {
   /// Données JSON internes
   final Map<String, dynamic> _data;
+
+  /// Nom de la collection Directus
+  String get itemName;
 
   /// Crée un modèle depuis des données JSON
   DirectusModel(Map<String, dynamic> data) : _data = Map.from(data);
@@ -439,6 +445,12 @@ abstract class DirectusModel {
     _factories.clear();
   }
 
+  /// Retourne la factory pour un type donné (usage interne)
+  static DirectusModel Function(Map<String, dynamic>)?
+  getFactory<T extends DirectusModel>() {
+    return _factories[T];
+  }
+
   /// Crée une instance du type T depuis des données
   T _createInstance<T extends DirectusModel>(Map<String, dynamic> data) {
     final factory = _factories[T];
@@ -466,7 +478,7 @@ abstract class DirectusModel {
 
   @override
   String toString() {
-    return '$runtimeType(id: $id, data: $_data)';
+    return itemName;
   }
 
   @override
@@ -486,7 +498,10 @@ abstract class DirectusModel {
 /// Utilisez `DynamicModel` lorsque vous souhaitez travailler avec
 /// un `DirectusModel` sans créer une classe spécifique.
 class DynamicModel extends DirectusModel {
-  DynamicModel(super.data);
+  @override
+  final String itemName;
 
-  DynamicModel.empty() : super.empty();
+  DynamicModel(super.data, {required this.itemName});
+
+  DynamicModel.empty({required this.itemName}) : super.empty();
 }
