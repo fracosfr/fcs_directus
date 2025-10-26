@@ -1,9 +1,11 @@
+import 'directus_property.dart';
+
 /// Modèle Directus avec stockage JSON interne (Active Record pattern).
 ///
 /// Cette approche stocke les données JSON directement dans l'objet
 /// et fournit des méthodes typées pour y accéder et les modifier.
 ///
-/// Exemple d'utilisation:
+/// Exemple d'utilisation classique:
 /// ```dart
 /// class Product extends DirectusModel {
 ///   Product(super.data);
@@ -17,12 +19,24 @@
 ///   double get price => getDouble('price');
 ///   set price(double value) => setDouble('price', value);
 /// }
+/// ```
 ///
-/// // Utilisation
-/// final product = Product({'name': 'Laptop', 'price': 999.99});
-/// print(product.name);  // Laptop
-/// product.price = 1299.99;
-/// print(product.toJson());  // JSON mis à jour
+/// Exemple avec property wrappers (simplifié):
+/// ```dart
+/// class Product extends DirectusModel {
+///   Product(super.data);
+///
+///   @override
+///   String get itemName => 'products';
+///
+///   late final name = stringValue('name');
+///   late final price = doubleValue('price');
+///
+///   // Utilisation:
+///   // print(product.name);        // Lecture
+///   // product.name.set('Laptop'); // Écriture
+///   // print(product.name.name);   // "name"
+/// }
 /// ```
 abstract class DirectusModel {
   /// Données JSON internes
@@ -476,9 +490,64 @@ abstract class DirectusModel {
     return null;
   }
 
+  // === Property Wrappers Factory Methods ===
+
+  /// Crée un property wrapper pour String
+  ///
+  /// Exemple:
+  /// ```dart
+  /// late final name = stringValue('name');
+  /// print(name);           // Lecture: product.name
+  /// name.set('Laptop');    // Écriture
+  /// print(name.name);      // "name"
+  /// ```
+  StringProperty stringValue(String key, {String defaultValue = ''}) {
+    return StringProperty(this, key, defaultValue: defaultValue);
+  }
+
+  /// Crée un property wrapper pour int
+  IntProperty intValue(String key, {int defaultValue = 0}) {
+    return IntProperty(this, key, defaultValue: defaultValue);
+  }
+
+  /// Crée un property wrapper pour double
+  DoubleProperty doubleValue(String key, {double defaultValue = 0.0}) {
+    return DoubleProperty(this, key, defaultValue: defaultValue);
+  }
+
+  /// Crée un property wrapper pour bool
+  BoolProperty boolValue(String key, {bool defaultValue = false}) {
+    return BoolProperty(this, key, defaultValue: defaultValue);
+  }
+
+  /// Crée un property wrapper pour DateTime
+  DateTimeProperty dateTimeValue(String key) {
+    return DateTimeProperty(this, key);
+  }
+
+  /// Crée un property wrapper pour List
+  ListProperty<T> listValue<T>(String key) {
+    return ListProperty<T>(this, key);
+  }
+
+  /// Crée un property wrapper pour Map
+  ObjectProperty objectValue(String key) {
+    return ObjectProperty(this, key);
+  }
+
+  /// Crée un property wrapper pour DirectusModel nested
+  ModelProperty<T> modelValue<T extends DirectusModel>(String key) {
+    return ModelProperty<T>(this, key);
+  }
+
+  /// Crée un property wrapper pour List<DirectusModel>
+  ModelListProperty<T> modelListValue<T extends DirectusModel>(String key) {
+    return ModelListProperty<T>(this, key);
+  }
+
   @override
   String toString() {
-    return itemName;
+    return '$runtimeType(id: $id, data: $_data)';
   }
 
   @override

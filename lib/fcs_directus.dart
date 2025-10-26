@@ -47,6 +47,7 @@ export 'src/exceptions/directus_exception.dart';
 
 // Models
 export 'src/models/directus_model.dart';
+export 'src/models/directus_property.dart';
 export 'src/models/directus_filter.dart';
 export 'src/models/directus_deep.dart';
 export 'src/models/directus_aggregate.dart';
