@@ -54,6 +54,14 @@ Erreurs d'authentification et d'autorisation.
 - `401 Unauthorized` : Credentials invalides ou token expiré
 - `403 Forbidden` : Permissions insuffisantes
 
+### Helpers disponibles
+
+- `isOtpRequired` : OTP requis (2FA activée)
+- `isInvalidCredentials` : Credentials invalides
+- `isInvalidToken` : Token invalide ou expiré
+- `isUserSuspended` : Utilisateur suspendu
+- `hasErrorCode(DirectusErrorCode)` : Vérifier un code spécifique
+
 ### Cas d'usage
 
 ```dart
@@ -63,11 +71,26 @@ try {
     password: 'wrong-password',
   );
 } on DirectusAuthException catch (e) {
-  if (e.code == 401) {
+  // Utiliser les helpers (recommandé)
+  if (e.isInvalidCredentials) {
     showError('Email ou mot de passe incorrect');
-  } else if (e.code == 403) {
-    showError('Accès non autorisé');
+  } else if (e.isOtpRequired) {
+    showOtpDialog();
+  } else if (e.isInvalidToken) {
+    showError('Session expirée');
   }
+  
+  // Ou vérifier avec DirectusErrorCode
+  if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
+    showError('Code 2FA invalide');
+  }
+}
+
+// Erreur 403 : Utiliser DirectusPermissionException
+try {
+  await directus.items('admin_only').readMany();
+} on DirectusPermissionException catch (e) {
+  showError('Accès non autorisé');
 }
 ```
 
@@ -77,7 +100,6 @@ try {
 - `"Token expired"` : Access token expiré
 - `"Invalid token"` : Token corrompu ou invalide
 - `"Invalid OTP"` : Code 2FA incorrect
-
 ## DirectusValidationException
 
 Erreurs de validation des données.

@@ -194,6 +194,35 @@ class DirectusAuthException extends DirectusException {
     super.extensions,
   });
 
+  /// Vérifie si l'exception correspond à un code d'erreur spécifique
+  bool hasErrorCode(DirectusErrorCode code) {
+    return errorCode == code.code;
+  }
+
+  /// Vérifie si l'OTP est requis (2FA activée)
+  bool get isOtpRequired {
+    return hasErrorCode(DirectusErrorCode.invalidOtp) ||
+        message.toLowerCase().contains('otp') ||
+        message.toLowerCase().contains('two-factor') ||
+        message.toLowerCase().contains('2fa');
+  }
+
+  /// Vérifie si les credentials sont invalides
+  bool get isInvalidCredentials {
+    return hasErrorCode(DirectusErrorCode.invalidCredentials);
+  }
+
+  /// Vérifie si le token est invalide ou expiré
+  bool get isInvalidToken {
+    return hasErrorCode(DirectusErrorCode.invalidToken) ||
+        hasErrorCode(DirectusErrorCode.tokenExpired);
+  }
+
+  /// Vérifie si l'utilisateur est suspendu
+  bool get isUserSuspended {
+    return hasErrorCode(DirectusErrorCode.userSuspended);
+  }
+
   @override
   String toString() {
     final parts = <String>['DirectusAuthException'];

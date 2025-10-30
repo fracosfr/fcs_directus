@@ -64,6 +64,18 @@ await directus.auth.login(
 
 // Utilisation des services
 final items = await directus.items('articles').readMany();
+
+// Gestion d'erreur avec helpers
+try {
+  await directus.auth.login(email: email, password: password);
+} on DirectusAuthException catch (e) {
+  if (e.isOtpRequired) {
+    print('Code 2FA requis');
+  }
+  if (e.isInvalidCredentials) {
+    print('Identifiants incorrects');
+  }
+}
 ```
 
 Pour plus de détails, consultez le [guide Getting Started](01-getting-started.md).

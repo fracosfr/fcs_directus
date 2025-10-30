@@ -45,8 +45,8 @@ try {
 } on DirectusAuthException catch (e) {
   print('❌ Erreur d\'authentification: ${e.message}');
   
-  // Gérer les erreurs spécifiques
-  if (e.code == 401) {
+  // Gérer les erreurs spécifiques avec helpers
+  if (e.isInvalidCredentials) {
     print('Email ou mot de passe incorrect');
   }
 }
@@ -70,6 +70,444 @@ try {
   if (e.message.contains('OTP')) {
     print('Code OTP invalide ou expiré');
   }
+}
+```
+
+### Login en 2 étapes avec détection OTP
+
+Pour une meilleure expérience utilisateur, vous pouvez implémenter un flux en 2 étapes qui détecte automatiquement si l'OTP est requis :
+
+#### Étape 1 : Première tentative de connexion
+
+```dart
+Future<bool> attemptLogin(String email, String password) async {
+  try {
+    // Tentative de connexion sans OTP
+    final response = await directus.auth.login(
+      email: email,
+      password: password,
+    );
+    
+    print('✅ Connexion réussie sans 2FA');
+    return true; // Login réussi
+    
+  } on DirectusAuthException catch (e) {
+    // Vérifier si l'erreur indique qu'un OTP est requis
+    if (e.isOtpRequired) {
+      print('🔐 2FA activée, code OTP requis');
+      return false; // OTP requis, passer à l'étape 2
+    }
+    
+    // Autre erreur d'authentification
+    print('❌ Erreur: ${e.message}');
+    if (e.isInvalidCredentials) {
+      throw Exception('Email ou mot de passe incorrect');
+    }
+    rethrow;
+  }
+}
+```
+
+#### Étape 2 : Connexion avec OTP
+
+```dart
+Future<void> loginWithOtp(String email, String password, String otp) async {
+  try {
+    final response = await directus.auth.login(
+      email: email,
+      password: password,
+      otp: otp,
+    );
+    
+    print('✅ Connexion 2FA réussie');
+    
+  } on DirectusAuthException catch (e) {
+    // Gérer les erreurs spécifiques à l'OTP
+    if (e.isOtpRequired) {
+      throw Exception('Code OTP invalide ou expiré');
+    } else if (e.isInvalidCredentials) {
+      throw Exception('Email ou mot de passe incorrect');
+    }
+    
+    print('❌ Erreur lors de la connexion: ${e.message}');
+    rethrow;
+  }
+}
+```
+
+#### Exemple complet : Flux d'authentification
+
+```dart
+class AuthenticationFlow {
+  final DirectusClient directus;
+  
+  AuthenticationFlow(this.directus);
+  
+  /// Tente de se connecter et retourne true si OTP est requis
+  Future<LoginResult> login(String email, String password, {String? otp}) async {
+    try {
+      final response = await directus.auth.login(
+        email: email,
+        password: password,
+        otp: otp,
+      );
+      
+      return LoginResult.success(
+        accessToken: response.accessToken,
+        expiresIn: response.expiresIn,
+      );
+      
+    } on DirectusAuthException catch (e) {
+      // OTP requis
+      if (otp == null && e.isOtpRequired) {
+        return LoginResult.otpRequired();
+      }
+      
+      // OTP invalide
+      if (otp != null && e.isOtpRequired) {
+        return LoginResult.invalidOtp();
+      }
+      
+      // Credentials invalides
+      if (e.isInvalidCredentials) {
+        return LoginResult.invalidCredentials();
+      }
+      
+      // Autre erreur
+      return LoginResult.error(e.message);
+    } catch (e) {
+      return LoginResult.error(e.toString());
+    }
+  }
+}
+
+/// Résultat d'une tentative de login
+class LoginResult {
+  final LoginStatus status;
+  final String? accessToken;
+  final int? expiresIn;
+  final String? errorMessage;
+  
+  LoginResult.success({required this.accessToken, required this.expiresIn})
+    : status = LoginStatus.success,
+      errorMessage = null;
+  
+  LoginResult.otpRequired()
+    : status = LoginStatus.otpRequired,
+      accessToken = null,
+      expiresIn = null,
+      errorMessage = null;
+  
+  LoginResult.invalidOtp()
+    : status = LoginStatus.invalidOtp,
+      accessToken = null,
+      expiresIn = null,
+      errorMessage = 'Code OTP invalide ou expiré';
+  
+  LoginResult.invalidCredentials()
+    : status = LoginStatus.invalidCredentials,
+      accessToken = null,
+      expiresIn = null,
+      errorMessage = 'Email ou mot de passe incorrect';
+  
+  LoginResult.error(this.errorMessage)
+    : status = LoginStatus.error,
+      accessToken = null,
+      expiresIn = null;
+}
+
+enum LoginStatus {
+  success,
+  otpRequired,
+  invalidOtp,
+  invalidCredentials,
+  error,
+}
+```
+
+#### Utilisation dans une interface Flutter
+
+```dart
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _otpController = TextEditingController();
+  
+  bool _showOtpField = false;
+  bool _isLoading = false;
+  String? _errorMessage;
+  
+  late final AuthenticationFlow _authFlow;
+  
+  @override
+  void initState() {
+    super.initState();
+    _authFlow = AuthenticationFlow(directus);
+  }
+  
+  Future<void> _handleLogin() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    
+    final result = await _authFlow.login(
+      _emailController.text,
+      _passwordController.text,
+      otp: _showOtpField ? _otpController.text : null,
+    );
+    
+    setState(() {
+      _isLoading = false;
+    });
+    
+    switch (result.status) {
+      case LoginStatus.success:
+        // Naviguer vers l'écran principal
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+        break;
+        
+      case LoginStatus.otpRequired:
+        setState(() {
+          _showOtpField = true;
+          _errorMessage = 'Entrez votre code 2FA';
+        });
+        break;
+        
+      case LoginStatus.invalidOtp:
+        setState(() {
+          _errorMessage = 'Code OTP invalide ou expiré';
+          _otpController.clear();
+        });
+        break;
+        
+      case LoginStatus.invalidCredentials:
+        setState(() {
+          _errorMessage = 'Email ou mot de passe incorrect';
+          _showOtpField = false;
+          _otpController.clear();
+        });
+        break;
+        
+      case LoginStatus.error:
+        setState(() {
+          _errorMessage = result.errorMessage ?? 'Erreur de connexion';
+        });
+        break;
+    }
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Connexion')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                errorText: _errorMessage,
+              ),
+              keyboardType: TextInputType.emailAddress,
+              enabled: !_showOtpField, // Désactiver si OTP demandé
+            ),
+            SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Mot de passe'),
+              obscureText: true,
+              enabled: !_showOtpField, // Désactiver si OTP demandé
+            ),
+            
+            // Champ OTP (visible uniquement si requis)
+            if (_showOtpField) ...[
+              SizedBox(height: 16),
+              TextField(
+                controller: _otpController,
+                decoration: InputDecoration(
+                  labelText: 'Code 2FA (6 chiffres)',
+                  hintText: '123456',
+                  prefixIcon: Icon(Icons.security),
+                ),
+                keyboardType: TextInputType.number,
+                maxLength: 6,
+                autofocus: true,
+              ),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _showOtpField = false;
+                    _otpController.clear();
+                    _errorMessage = null;
+                  });
+                },
+                child: Text('Modifier email/mot de passe'),
+              ),
+            ],
+            
+            SizedBox(height: 24),
+            
+            ElevatedButton(
+              onPressed: _isLoading ? null : _handleLogin,
+              child: _isLoading
+                ? CircularProgressIndicator()
+                : Text(_showOtpField ? 'Valider le code' : 'Se connecter'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+### Détection d'erreur : Types d'erreurs possibles
+
+```dart
+try {
+  await directus.auth.login(
+    email: email,
+    password: password,
+    otp: otp,
+  );
+} on DirectusAuthException catch (e) {
+  // Utiliser les helpers de DirectusAuthException
+  if (e.isOtpRequired) {
+    print('❌ Code OTP invalide ou expiré');
+    // Demander à l'utilisateur de réessayer
+  } else if (e.isInvalidCredentials) {
+    print('❌ Email ou mot de passe incorrect');
+    // Effacer les champs de connexion
+  } else if (e.isInvalidToken) {
+    print('❌ Token invalide ou expiré');
+    // Demander une reconnexion
+  } else if (e.isUserSuspended) {
+    print('❌ Compte utilisateur suspendu');
+    // Afficher un message approprié
+  }
+} on DirectusRateLimitException catch (e) {
+  print('⏳ Trop de tentatives, veuillez réessayer plus tard');
+  // Bloquer temporairement les tentatives
+} on DirectusServerException catch (e) {
+  print('🔥 Erreur serveur, veuillez réessayer');
+} on DirectusException catch (e) {
+  print('❌ Erreur: ${e.message}');
+  
+  // Vérifier un code d'erreur spécifique
+  if (e.errorCode == DirectusErrorCode.invalidOtp.code) {
+    print('Code OTP invalide');
+  }
+  
+  // Informations supplémentaires dans extensions
+  if (e.extensions != null) {
+    print('Code erreur: ${e.extensions!['code']}');
+    print('Détails: ${e.extensions!['reason']}');
+  }
+}
+```
+
+### Utilisation de DirectusErrorCode
+
+La librairie fournit des helpers pour vérifier facilement les types d'erreurs :
+
+```dart
+try {
+  await directus.auth.login(email: email, password: password);
+} on DirectusAuthException catch (e) {
+  // Utiliser les propriétés helpers (recommandé)
+  if (e.isOtpRequired) {
+    print('OTP requis');
+  }
+  
+  if (e.isInvalidCredentials) {
+    print('Identifiants invalides');
+  }
+  
+  if (e.isInvalidToken) {
+    print('Token invalide ou expiré');
+  }
+  
+  if (e.isUserSuspended) {
+    print('Utilisateur suspendu');
+  }
+  
+  // Ou vérifier directement avec DirectusErrorCode
+  if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
+    print('Code OTP invalide');
+  }
+  
+  if (e.hasErrorCode(DirectusErrorCode.invalidCredentials)) {
+    print('Credentials invalides');
+  }
+  
+  if (e.hasErrorCode(DirectusErrorCode.tokenExpired)) {
+    print('Token expiré');
+  }
+}
+```
+
+### Codes d'erreur d'authentification disponibles
+
+| Helper | DirectusErrorCode | Description |
+|--------|-------------------|-------------|
+| `isOtpRequired` | `invalidOtp` | OTP requis ou invalide (2FA) |
+| `isInvalidCredentials` | `invalidCredentials` | Email/mot de passe incorrect |
+| `isInvalidToken` | `invalidToken`, `tokenExpired` | Token invalide ou expiré |
+| `isUserSuspended` | `userSuspended` | Compte utilisateur suspendu |
+
+
+### Messages d'erreur personnalisés
+
+```dart
+String getAuthErrorMessage(DirectusAuthException e, {bool hasOtp = false}) {
+  // Utiliser les helpers pour une détection plus fiable
+  if (e.isOtpRequired) {
+    if (hasOtp) {
+      return 'Le code 2FA est invalide ou a expiré. Veuillez réessayer.';
+    } else {
+      return 'Authentification à deux facteurs requise.';
+    }
+  }
+  
+  if (e.isInvalidCredentials) {
+    return 'Email ou mot de passe incorrect.';
+  }
+  
+  if (e.isInvalidToken) {
+    return 'Votre session a expiré. Veuillez vous reconnecter.';
+  }
+  
+  if (e.isUserSuspended) {
+    return 'Votre compte a été suspendu. Contactez un administrateur.';
+  }
+  
+  // Fallback sur le message d'origine
+  return 'Erreur de connexion: ${e.message}';
+}
+
+// Utilisation
+try {
+  await directus.auth.login(email: email, password: password, otp: otp);
+} on DirectusAuthException catch (e) {
+  final message = getAuthErrorMessage(e, hasOtp: otp != null);
+  showErrorDialog(context, message);
+} on DirectusRateLimitException catch (e) {
+  showErrorDialog(context, 
+    'Trop de tentatives de connexion. Veuillez patienter quelques minutes.');
+} on DirectusServerException catch (e) {
+  showErrorDialog(context, 
+    'Erreur serveur. Veuillez réessayer ultérieurement.');
 }
 ```
 
@@ -102,7 +540,13 @@ await directus.auth.login(
 
 ## 🎫 Login avec token statique
 
-Vous pouvez utiliser un token statique généré depuis Directus (pour les scripts, services backend, etc.) :
+Les tokens statiques sont utiles pour :
+- Scripts automatisés et tâches planifiées (cron jobs)
+- Services backend server-to-server
+- Intégrations avec des systèmes externes
+- Applications qui n'ont pas d'interface utilisateur
+
+### Utilisation d'un token statique
 
 ```dart
 final directus = DirectusClient(
@@ -118,14 +562,120 @@ await directus.auth.loginWithToken('your-static-token');
 final items = await directus.items('articles').readMany();
 ```
 
-### Générer un token statique
+### Générer un token statique dans Directus
 
-1. Connectez-vous à votre instance Directus
-2. Allez dans **Settings** → **Access Tokens**
-3. Cliquez sur **Create Token**
-4. Définissez les permissions et copiez le token généré
+#### Via l'interface admin
 
-⚠️ **Attention** : Les tokens statiques ne peuvent pas être révoqués facilement. Utilisez-les avec précaution et limitez leurs permissions.
+1. Connectez-vous à votre instance Directus (interface admin)
+2. Allez dans **Settings** (⚙️) → **Access Tokens**
+3. Cliquez sur **Create Token** (+)
+4. Configurez le token :
+   - **Name** : Nom descriptif (ex: "API Backend Service")
+   - **Policy** : Sélectionnez la politique de permissions appropriée
+   - **Expiration** : Définissez une date d'expiration (optionnel mais recommandé)
+5. Cliquez sur **Save**
+6. **Copiez immédiatement le token** : Il ne sera plus visible après cette étape
+7. Stockez-le de manière sécurisée (variables d'environnement, secrets manager)
+
+#### Via l'API Directus
+
+Vous pouvez aussi créer un token via l'API après vous être authentifié en tant qu'admin :
+
+```dart
+// 1. Se connecter en tant qu'admin
+await directus.auth.login(
+  email: 'admin@example.com',
+  password: 'admin-password',
+);
+
+// 2. Créer un utilisateur système ou utiliser un utilisateur existant
+// 3. Créer une politique avec les bonnes permissions
+// 4. Générer un token pour cet utilisateur
+
+// Note: Cette approche nécessite des droits d'administration
+```
+
+### Cas d'usage : Service backend
+
+```dart
+import 'package:fcs_directus/fcs_directus.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+Future<void> syncData() async {
+  // Charger le token depuis les variables d'environnement
+  final token = dotenv.env['DIRECTUS_STATIC_TOKEN']!;
+  
+  final directus = DirectusClient(
+    DirectusConfig(
+      baseUrl: dotenv.env['DIRECTUS_URL']!,
+    ),
+  );
+  
+  // Authentification avec le token statique
+  await directus.auth.loginWithToken(token);
+  
+  // Effectuer des opérations
+  final articles = await directus.items('articles').readMany(
+    query: QueryParameters(
+      filter: Filter.eq('status', 'published'),
+    ),
+  );
+  
+  print('${articles.data?.length} articles synchronisés');
+  
+  directus.dispose();
+}
+```
+
+### Vérifier si le token est valide
+
+```dart
+try {
+  await directus.auth.loginWithToken('your-token');
+  
+  // Tester avec une requête simple
+  await directus.users.me();
+  
+  print('✅ Token valide');
+} on DirectusAuthException catch (e) {
+  print('❌ Token invalide: ${e.message}');
+}
+```
+
+### Bonnes pratiques pour les tokens statiques
+
+✅ **À faire** :
+- Stocker les tokens dans des variables d'environnement (`.env`)
+- Utiliser un secrets manager en production (AWS Secrets Manager, Azure Key Vault, etc.)
+- Définir des permissions minimales (principe du moindre privilège)
+- Définir une date d'expiration raisonnable
+- Utiliser des noms descriptifs pour identifier l'usage du token
+- Révoquer immédiatement les tokens compromis
+- Faire une rotation régulière des tokens (tous les 3-6 mois)
+
+❌ **À éviter** :
+- Hardcoder les tokens dans le code source
+- Commiter les tokens dans le contrôle de version (Git)
+- Donner des permissions administrateur complètes
+- Partager les tokens par email ou chat non sécurisé
+- Réutiliser le même token pour plusieurs services
+- Utiliser des tokens sans expiration en production
+
+### Différence token statique vs session token
+
+| Caractéristique | Token statique | Session token (login) |
+|----------------|----------------|----------------------|
+| **Génération** | Manuellement via admin | Automatiquement au login |
+| **Expiration** | Optionnelle, configurable | Courte durée (15-30 min) |
+| **Refresh** | Non applicable | Refresh token disponible |
+| **Révocation** | Manuel via admin | Logout automatique |
+| **Usage** | Services backend, scripts | Applications utilisateur |
+| **Sécurité** | Permanence = risque élevé | Rotation automatique |
+
+⚠️ **Important** : Les tokens statiques ne peuvent pas être révoqués automatiquement. Si un token est compromis, vous devez :
+1. Le supprimer manuellement dans Directus (Settings → Access Tokens)
+2. Générer un nouveau token
+3. Mettre à jour votre application avec le nouveau token
 
 ## 🔄 Refresh tokens
 
@@ -334,10 +884,9 @@ print('${permissions.data?.length} permissions');
 ```dart
 try {
   await directus.items('admin_only_collection').readMany();
-} on DirectusAuthException catch (e) {
-  if (e.code == 403) {
-    print('❌ Vous n\'avez pas la permission d\'accéder à cette ressource');
-  }
+} on DirectusPermissionException catch (e) {
+  print('❌ Vous n\'avez pas la permission d\'accéder à cette ressource');
+  print('Code: ${e.statusCode}'); // 403
 }
 ```
 
@@ -424,7 +973,7 @@ await directus.auth.login(
 try {
   final items = await directus.items('articles').readMany();
 } on DirectusAuthException catch (e) {
-  if (e.code == 401) {
+  if (e.isInvalidToken) {
     // Token expiré, rafraîchir ou reconnecter
     try {
       await directus.auth.refresh();

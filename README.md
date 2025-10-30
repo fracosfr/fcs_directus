@@ -624,24 +624,55 @@ await cacheUtil.clear();
 
 ### Gestion des erreurs
 
+La librairie fournit des exceptions typées avec des helpers pour faciliter la gestion d'erreur :
+
 ```dart
 try {
   final article = await client.items('articles').readOne('999');
 } on DirectusNotFoundException catch (e) {
   print('Article non trouvé: ${e.message}');
 } on DirectusAuthException catch (e) {
-  print('Erreur d\'authentification: ${e.message}');
+  // Utiliser les helpers
+  if (e.isOtpRequired) {
+    print('Code 2FA requis');
+  } else if (e.isInvalidCredentials) {
+    print('Identifiants incorrects');
+  } else if (e.isInvalidToken) {
+    print('Token expiré');
+  } else if (e.isUserSuspended) {
+    print('Compte suspendu');
+  }
+  
+  // Ou vérifier avec DirectusErrorCode
+  if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
+    print('OTP invalide');
+  }
 } on DirectusValidationException catch (e) {
   print('Validation échouée');
   if (e.fieldErrors != null) {
     print('Erreurs par champ: ${e.fieldErrors}');
   }
+} on DirectusPermissionException catch (e) {
+  print('Permission refusée: ${e.message}');
+} on DirectusRateLimitException catch (e) {
+  print('Rate limit atteint: ${e.message}');
+} on DirectusServerException catch (e) {
+  print('Erreur serveur: ${e.message}');
 } on DirectusException catch (e) {
   print('Erreur Directus: ${e.message}');
   print('Code: ${e.errorCode}');
   print('Status: ${e.statusCode}');
 }
 ```
+
+**Helpers DirectusAuthException disponibles** :
+- `isOtpRequired` : OTP requis (2FA)
+- `isInvalidCredentials` : Credentials invalides
+- `isInvalidToken` : Token invalide/expiré
+- `isUserSuspended` : Utilisateur suspendu
+- `hasErrorCode(DirectusErrorCode)` : Vérifier un code spécifique
+
+Pour plus de détails, consultez la [documentation complète sur la gestion des erreurs](docs/11-error-handling.md).
 
 ### Dispose
 
