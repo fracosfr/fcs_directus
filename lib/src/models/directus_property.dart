@@ -415,6 +415,20 @@ class ModelProperty<T extends DirectusModel> extends DirectusProperty<T?> {
   @override
   void set(T? value) => _model.setDirectusModelOrNull(name, value);
 
+  /// Définit l'ID directement (utile pour les relations Many-to-One)
+  ///
+  /// Exemple :
+  /// ```dart
+  /// user.role.setById('role-id-123');
+  /// ```
+  void setById(String? id) {
+    if (id == null) {
+      _model.remove(name);
+    } else {
+      _model.setString(name, id);
+    }
+  }
+
   /// Version non-nullable qui lève une exception si null
   T get valueOrThrow {
     final val = value;
@@ -435,6 +449,16 @@ class ModelListProperty<T extends DirectusModel>
 
   @override
   void set(List<T> value) => _model.setDirectusModelList(name, value);
+
+  /// Définit la liste d'IDs directement (utile pour les relations Many-to-Many)
+  ///
+  /// Exemple :
+  /// ```dart
+  /// user.policies.setByIds(['policy-1', 'policy-2']);
+  /// ```
+  void setByIds(List<String> ids) {
+    _model.setList<String>(name, ids);
+  }
 
   /// Ajoute un modèle
   void add(T item) {

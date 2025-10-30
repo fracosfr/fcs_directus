@@ -41,6 +41,8 @@ export 'src/services/items_service.dart';
 export 'src/services/collections_service.dart';
 export 'src/services/users_service.dart';
 export 'src/services/files_service.dart';
+export 'src/services/roles_service.dart';
+export 'src/services/policies_service.dart';
 
 // Exceptions
 export 'src/exceptions/directus_exception.dart';
@@ -53,6 +55,8 @@ export 'src/models/directus_deep.dart';
 export 'src/models/directus_aggregate.dart';
 export 'src/models/directus_functions.dart';
 export 'src/models/directus_user.dart';
+export 'src/models/directus_role.dart';
+export 'src/models/directus_policy.dart';
 
 // WebSocket
 export 'src/websocket/directus_websocket_client.dart';

@@ -1,4 +1,6 @@
 import 'directus_model.dart';
+import 'directus_role.dart';
+import 'directus_policy.dart';
 
 /// Représente un utilisateur Directus avec toutes les propriétés système.
 ///
@@ -60,13 +62,13 @@ class DirectusUser extends DirectusModel {
   late final status = stringValue('status');
 
   /// Rôle de l'utilisateur (Many-to-One vers roles)
-  late final role = stringValue('role');
+  late final role = modelValue<DirectusRole>('role');
 
   /// Token statique pour l'utilisateur
   late final token = stringValue('token');
 
   /// Politiques associées à cet utilisateur (Many-to-Many vers policies)
-  late final policies = stringValue('policies');
+  late final policies = modelListValue<DirectusPolicy>('policies');
 
   /// Date et heure de la dernière utilisation de l'API
   late final lastAccess = dateTimeValue('last_access');
@@ -150,5 +152,57 @@ class DirectusUser extends DirectusModel {
       throw ArgumentError('Mode must be: auto, light, or dark');
     }
     appearance.set(mode);
+  }
+
+  /// Récupère toutes les politiques de l'utilisateur
+  ///
+  /// Cette méthode retourne les politiques assignées directement à l'utilisateur
+  /// ainsi que celles héritées de son rôle, en éliminant les doublons.
+  ///
+  /// Pour que cette méthode fonctionne correctement, l'utilisateur doit être récupéré
+  /// avec les champs suivants :
+  /// - `policies.*` pour les politiques directes
+  /// - `role.policies.*` pour les politiques du rôle
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final me = await users.me(
+  ///   query: QueryParameters()
+  ///     ..fields = ['*', 'policies.*', 'role.policies.*'],
+  /// );
+  ///
+  /// final allPolicies = me.getAllPolicies();
+  /// print('Total policies: ${allPolicies.length}');
+  ///
+  /// for (final policy in allPolicies) {
+  ///   print('- ${policy.name.value}: admin=${policy.isAdminPolicy}');
+  /// }
+  /// ```
+  List<DirectusPolicy> getAllPolicies() {
+    // Récupérer les politiques directes de l'utilisateur
+    final userPolicies = policies.value;
+
+    // Récupérer les politiques du rôle
+    final userRole = role.value;
+    final rolePolicies = userRole?.policies.value ?? [];
+
+    // Combiner les deux listes
+    final allPolicies = <DirectusPolicy>[...userPolicies];
+
+    // Ajouter les politiques du rôle qui ne sont pas déjà présentes
+    for (final rolePolicy in rolePolicies) {
+      // Vérifier si la politique n'est pas déjà dans la liste
+      // On compare par ID
+      final policyId = rolePolicy.id;
+      if (policyId == null) continue;
+
+      final alreadyExists = allPolicies.any((p) => p.id == policyId);
+
+      if (!alreadyExists) {
+        allPolicies.add(rolePolicy);
+      }
+    }
+
+    return allPolicies;
   }
 }

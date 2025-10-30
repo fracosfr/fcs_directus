@@ -214,7 +214,7 @@ void main() async {
     ..password.set('Pass123!')
     ..firstName.set('Model')
     ..lastName.set('User')
-    ..role.set('role-id')
+    ..role.setById('role-id')
     ..language.set('fr-FR')
     ..appearance.set('dark')
     ..emailNotifications.set(true);
@@ -247,7 +247,7 @@ void main() async {
     ..password.set('Password123!')
     ..firstName.set('Custom')
     ..lastName.set('User')
-    ..role.set('role-id')
+    ..role.setById('role-id')
     // Champs personnalisés
     ..department.set('Engineering')
     ..phoneNumber.set('+33 6 12 34 56 78')
