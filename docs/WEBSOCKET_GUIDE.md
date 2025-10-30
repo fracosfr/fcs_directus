@@ -81,6 +81,24 @@ print('Connecté au WebSocket Directus');
 
 ## Utilisation
 
+### Types d'événements
+
+Les événements CRUD utilisent l'enum `DirectusItemEvent` pour la type-safety:
+
+```dart
+enum DirectusItemEvent {
+  create,   // Un nouvel item a été créé
+  update,   // Un item existant a été modifié
+  delete,   // Un item a été supprimé
+}
+```
+
+**Avantages:**
+- ✅ Type-safety - Impossible de passer une valeur incorrecte
+- ✅ Auto-complétion dans l'IDE
+- ✅ Documentation claire des valeurs possibles
+- ✅ Conversion automatique depuis les strings JSON
+
 ### Souscription basique à une collection
 
 ```dart
@@ -88,7 +106,7 @@ final subscriptionId = await wsClient.subscribe(
   collection: 'articles',
   onMessage: (message) {
     print('Type: ${message.type}');
-    print('Event: ${message.event}');
+    print('Event: ${message.event}');  // DirectusItemEvent?
     print('Data: ${message.data}');
   },
 );
@@ -100,7 +118,7 @@ final subscriptionId = await wsClient.subscribe(
 // Uniquement les créations
 final createSubId = await wsClient.subscribe(
   collection: 'articles',
-  event: 'create',
+  event: DirectusItemEvent.create,
   onMessage: (message) {
     print('Nouvel article créé: ${message.data}');
   },
@@ -109,7 +127,7 @@ final createSubId = await wsClient.subscribe(
 // Uniquement les mises à jour
 final updateSubId = await wsClient.subscribe(
   collection: 'articles',
-  event: 'update',
+  event: DirectusItemEvent.update,
   onMessage: (message) {
     print('Article mis à jour: ${message.data}');
   },
@@ -118,7 +136,7 @@ final updateSubId = await wsClient.subscribe(
 // Uniquement les suppressions
 final deleteSubId = await wsClient.subscribe(
   collection: 'articles',
-  event: 'delete',
+  event: DirectusItemEvent.delete,
   onMessage: (message) {
     print('Article supprimé: ${message.data}');
   },
@@ -178,7 +196,7 @@ final activitySubId = await wsClient.subscribeToActivity(
 ```dart
 // Détecter les nouveaux uploads
 final filesSubId = await wsClient.subscribeToFiles(
-  event: 'create',
+  event: DirectusItemEvent.create,
   onMessage: (message) {
     print('Nouveau fichier uploadé: ${message.data['filename_download']}');
   },
@@ -240,7 +258,7 @@ final revisionsSubId = await wsClient.subscribeToRevisions(
 ```dart
 // Détecter les nouveaux partages
 final sharesSubId = await wsClient.subscribeToShares(
-  event: 'create',
+  event: DirectusItemEvent.create,
   onMessage: (message) {
     print('Nouveau partage créé: ${message.data}');
   },
@@ -758,7 +776,7 @@ Future<void> main() async {
   // 6. S'abonner à une collection personnalisée
   final articlesSubId = await wsClient.subscribe(
     collection: 'articles',
-    event: 'create',
+    event: DirectusItemEvent.create,
     query: {
       'filter': {'status': {'_eq': 'published'}}
     },

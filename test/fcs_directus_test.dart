@@ -202,7 +202,7 @@ void main() {
         type: 'subscribe',
         data: {'collection': 'articles'},
         uid: 'sub_1',
-        event: 'create',
+        event: DirectusItemEvent.create,
       );
 
       final json = message.toJson();

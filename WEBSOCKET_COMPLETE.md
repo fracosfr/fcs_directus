@@ -4,9 +4,46 @@
 
 Le système WebSocket de `fcs_directus` a été enrichi avec des méthodes helper pour toutes les collections système Directus supportant les événements en temps réel.
 
+**🆕 Mise à jour:** Utilisation d'un enum `DirectusItemEvent` pour les événements CRUD (type-safety).
+
 ---
 
 ## ✨ Fonctionnalités ajoutées
+
+### 0. Enum DirectusItemEvent (Type-Safety) 🆕
+
+Un enum a été ajouté pour typer les événements CRUD au lieu d'utiliser des strings:
+
+```dart
+enum DirectusItemEvent {
+  create,   // Un nouvel item a été créé
+  update,   // Un item existant a été modifié
+  delete,   // Un item a été supprimé
+}
+```
+
+**Avantages:**
+- ✅ Type-safety - Impossible de passer une valeur incorrecte
+- ✅ Auto-complétion dans l'IDE  
+- ✅ Documentation claire des valeurs possibles
+- ✅ Conversion automatique string ↔ enum
+
+**Exemple:**
+```dart
+// Avant (string)
+await wsClient.subscribe(
+  collection: 'articles',
+  event: 'create',  // String - erreur possible
+  onMessage: (msg) => print(msg),
+);
+
+// Maintenant (enum)
+await wsClient.subscribe(
+  collection: 'articles',
+  event: DirectusItemEvent.create,  // Enum - type-safe
+  onMessage: (msg) => print(msg),
+);
+```
 
 ### 1. Documentation de classe améliorée
 
@@ -43,7 +80,7 @@ Toutes les collections système Directus ont maintenant des méthodes helper dé
 **Signature commune:**
 ```dart
 Future<String> subscribeToX({
-  String? event,                              // Optionnel: 'create', 'update', 'delete'
+  DirectusItemEvent? event,                   // 🆕 Enum au lieu de String
   Map<String, dynamic>? query,                // Optionnel: filtres serveur
   required Function(DirectusWebSocketMessage) onMessage,
 })
