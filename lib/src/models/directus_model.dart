@@ -39,48 +39,82 @@ import 'directus_property.dart';
 /// }
 /// ```
 abstract class DirectusModel {
-  /// Données JSON internes
+  /// Données JSON internes (état actuel)
   final Map<String, dynamic> _data;
+
+  /// Données originales (état initial, pour tracking des modifications)
+  final Map<String, dynamic> _originalData;
+
+  /// Champs qui ont été modifiés depuis la création/chargement
+  final Set<String> _dirtyFields = {};
 
   /// Nom de la collection Directus
   String get itemName;
 
   /// Crée un modèle depuis des données JSON
-  DirectusModel(Map<String, dynamic> data) : _data = Map.from(data);
+  DirectusModel(Map<String, dynamic> data)
+    : _data = Map.from(data),
+      _originalData = Map.from(data);
 
   /// Crée un modèle vide
-  DirectusModel.empty() : _data = {};
+  DirectusModel.empty() : _data = {}, _originalData = {};
 
   // === Champs standards Directus ===
 
   /// Identifiant unique
   String? get id => _data['id']?.toString();
-  set id(String? value) =>
-      value == null ? _data.remove('id') : _data['id'] = value;
+  set id(String? value) {
+    if (value == null) {
+      _data.remove('id');
+    } else {
+      _data['id'] = value;
+    }
+    _dirtyFields.add('id');
+  }
 
   /// Date de création
   DateTime? get dateCreated => _parseDate(_data['date_created']);
-  set dateCreated(DateTime? value) => value == null
-      ? _data.remove('date_created')
-      : _data['date_created'] = value.toIso8601String();
+  set dateCreated(DateTime? value) {
+    if (value == null) {
+      _data.remove('date_created');
+    } else {
+      _data['date_created'] = value.toIso8601String();
+    }
+    _dirtyFields.add('date_created');
+  }
 
   /// Date de dernière modification
   DateTime? get dateUpdated => _parseDate(_data['date_updated']);
-  set dateUpdated(DateTime? value) => value == null
-      ? _data.remove('date_updated')
-      : _data['date_updated'] = value.toIso8601String();
+  set dateUpdated(DateTime? value) {
+    if (value == null) {
+      _data.remove('date_updated');
+    } else {
+      _data['date_updated'] = value.toIso8601String();
+    }
+    _dirtyFields.add('date_updated');
+  }
 
   /// Utilisateur créateur
   String? get userCreated => _data['user_created']?.toString();
-  set userCreated(String? value) => value == null
-      ? _data.remove('user_created')
-      : _data['user_created'] = value;
+  set userCreated(String? value) {
+    if (value == null) {
+      _data.remove('user_created');
+    } else {
+      _data['user_created'] = value;
+    }
+    _dirtyFields.add('user_created');
+  }
 
   /// Utilisateur modificateur
   String? get userUpdated => _data['user_updated']?.toString();
-  set userUpdated(String? value) => value == null
-      ? _data.remove('user_updated')
-      : _data['user_updated'] = value;
+  set userUpdated(String? value) {
+    if (value == null) {
+      _data.remove('user_updated');
+    } else {
+      _data['user_updated'] = value;
+    }
+    _dirtyFields.add('user_updated');
+  }
 
   // === Getters typés ===
 
@@ -293,6 +327,7 @@ abstract class DirectusModel {
   /// Définit une valeur String
   void setString(String key, String value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur String nullable
@@ -302,11 +337,13 @@ abstract class DirectusModel {
     } else {
       _data[key] = value;
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur int
   void setInt(String key, int value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur int nullable
@@ -316,11 +353,13 @@ abstract class DirectusModel {
     } else {
       _data[key] = value;
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur double
   void setDouble(String key, double value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur double nullable
@@ -330,11 +369,13 @@ abstract class DirectusModel {
     } else {
       _data[key] = value;
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur bool
   void setBool(String key, bool value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur bool nullable
@@ -344,11 +385,13 @@ abstract class DirectusModel {
     } else {
       _data[key] = value;
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur DateTime
   void setDateTime(String key, DateTime value) {
     _data[key] = value.toIso8601String();
+    _dirtyFields.add(key);
   }
 
   /// Définit une valeur DateTime nullable
@@ -358,16 +401,19 @@ abstract class DirectusModel {
     } else {
       _data[key] = value.toIso8601String();
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une liste
   void setList<T>(String key, List<T> value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit un objet nested
   void setObject(String key, Map<String, dynamic> value) {
     _data[key] = value;
+    _dirtyFields.add(key);
   }
 
   /// Définit un modèle DirectusModel nested
@@ -378,6 +424,7 @@ abstract class DirectusModel {
   /// ```
   void setDirectusModel(String key, DirectusModel value) {
     _data[key] = value.toJson();
+    _dirtyFields.add(key);
   }
 
   /// Définit un modèle DirectusModel nested nullable
@@ -387,6 +434,7 @@ abstract class DirectusModel {
     } else {
       _data[key] = value.toJson();
     }
+    _dirtyFields.add(key);
   }
 
   /// Définit une liste de modèles DirectusModel
@@ -397,6 +445,7 @@ abstract class DirectusModel {
   /// ```
   void setDirectusModelList(String key, List<DirectusModel> value) {
     _data[key] = value.map((model) => model.toJson()).toList();
+    _dirtyFields.add(key);
   }
 
   /// Définit une liste de modèles DirectusModel (nullable)
@@ -406,11 +455,13 @@ abstract class DirectusModel {
     } else {
       _data[key] = value.map((model) => model.toJson()).toList();
     }
+    _dirtyFields.add(key);
   }
 
   /// Supprime une clé
   void remove(String key) {
     _data.remove(key);
+    _dirtyFields.add(key);
   }
 
   // === Sérialisation ===
@@ -428,6 +479,114 @@ abstract class DirectusModel {
     map.remove('user_updated');
     return map;
   }
+
+  /// Retourne uniquement les champs qui ont été modifiés
+  ///
+  /// Utilisé pour les opérations UPDATE afin d'envoyer uniquement
+  /// les modifications à Directus.
+  ///
+  /// Pour les relations (Many-to-One et Many-to-Many), si le champ
+  /// a été modifié et contient un objet complet, seul l'ID sera inclus.
+  ///
+  /// Exemple:
+  /// ```dart
+  /// final user = DirectusUser(await users.getUser('123'));
+  /// // _dirtyFields = {}
+  ///
+  /// user.firstName.set('Jean');
+  /// // _dirtyFields = {'first_name'}
+  ///
+  /// user.role.setById('role-456');
+  /// // _dirtyFields = {'first_name', 'role'}
+  ///
+  /// await users.updateUser(user.id!, user.toJsonDirty());
+  /// // Envoie seulement: {"first_name": "Jean", "role": "role-456"}
+  /// ```
+  Map<String, dynamic> toJsonDirty() {
+    final dirty = <String, dynamic>{};
+
+    for (final key in _dirtyFields) {
+      if (!_data.containsKey(key)) {
+        // Le champ a été supprimé
+        continue;
+      }
+
+      final value = _data[key];
+
+      // Si c'est un objet avec un 'id', c'est probablement une relation
+      // On n'envoie que l'ID pour les relations Many-to-One
+      if (value is Map<String, dynamic> && value.containsKey('id')) {
+        dirty[key] = value['id'];
+      }
+      // Si c'est une liste d'objets avec 'id', c'est une relation Many-to-Many
+      else if (value is List && value.isNotEmpty && value.first is Map) {
+        final firstItem = value.first as Map<String, dynamic>;
+        if (firstItem.containsKey('id')) {
+          // Extraire uniquement les IDs
+          dirty[key] = value
+              .map((item) => (item as Map<String, dynamic>)['id'])
+              .where((id) => id != null)
+              .toList();
+        } else {
+          dirty[key] = value;
+        }
+      } else {
+        dirty[key] = value;
+      }
+    }
+
+    return dirty;
+  }
+
+  // === Gestion du dirty tracking ===
+
+  /// Vérifie si le modèle a des modifications non sauvegardées
+  bool get isDirty => _dirtyFields.isNotEmpty;
+
+  /// Vérifie si un champ spécifique a été modifié
+  bool isDirtyField(String key) => _dirtyFields.contains(key);
+
+  /// Retourne la liste des champs modifiés
+  Set<String> get dirtyFields => Set.from(_dirtyFields);
+
+  /// Marque le modèle comme "propre" (pas de modifications)
+  ///
+  /// À appeler après une sauvegarde réussie vers Directus.
+  ///
+  /// Exemple:
+  /// ```dart
+  /// user.firstName.set('Jean');
+  /// await users.updateUser(user.id!, user.toJsonDirty());
+  /// user.markClean();  // Réinitialise le tracking
+  /// ```
+  void markClean() {
+    _dirtyFields.clear();
+    _originalData.clear();
+    _originalData.addAll(_data);
+  }
+
+  /// Annule toutes les modifications et restaure les données originales
+  ///
+  /// Exemple:
+  /// ```dart
+  /// user.firstName.set('Jean');
+  /// user.lastName.set('Dupont');
+  /// print(user.isDirty);  // true
+  ///
+  /// user.revert();
+  /// print(user.isDirty);  // false
+  /// print(user.firstName.value);  // Valeur originale restaurée
+  /// ```
+  void revert() {
+    _data.clear();
+    _data.addAll(_originalData);
+    _dirtyFields.clear();
+  }
+
+  /// Retourne la valeur originale d'un champ (avant modifications)
+  ///
+  /// Retourne null si le champ n'existait pas dans les données originales.
+  dynamic getOriginalValue(String key) => _originalData[key];
 
   // === Helpers ===
 

@@ -5,6 +5,59 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.3.0] - 2024-01-20
+
+### ✨ Nouvelles fonctionnalités majeures
+
+#### Dirty Tracking (Suivi des modifications) ⭐ NOUVEAU
+- **Système de tracking automatique des modifications** dans `DirectusModel`
+  - Tracking transparent : Les getters retournent toujours les valeurs actuelles (originales ou modifiées)
+  - Stockage à trois niveaux :
+    - `_data` : État actuel (mutable)
+    - `_originalData` : État initial (immutable)
+    - `_dirtyFields` : Set des champs modifiés
+  - Tous les setters (17 méthodes) trackent automatiquement les modifications via `_dirtyFields.add(key)`
+  
+- **Nouvelle méthode `toJsonDirty()`** ⭐
+  - Retourne uniquement les champs modifiés (optimisation des UPDATE)
+  - Extraction automatique des IDs pour les relations Many-to-One
+  - Extraction automatique des listes d'IDs pour les relations Many-to-Many
+  - Détection intelligente des objets relationnels (vérifie la présence de clé `id`)
+  - Réduit considérablement la bande passante lors des mises à jour
+  
+- **API de gestion du tracking**
+  - `isDirty` : Getter booléen pour vérifier si le modèle a été modifié
+  - `isDirtyField(String key)` : Vérifier si un champ spécifique est modifié
+  - `dirtyFields` : Getter retournant le Set des noms de champs modifiés
+  - `markClean()` : Marquer le modèle comme propre après sauvegarde (synchronise `_originalData` avec `_data`)
+  - `revert()` : Annuler toutes les modifications (rollback vers `_originalData`)
+  - `getOriginalValue(String key)` : Obtenir la valeur originale d'un champ avant modification
+  
+- **Comportement transparent**
+  - Getters : Retournent toujours `_data[key]` (valeur actuelle, modifiée ou non)
+  - Setters : Mettent à jour `_data[key]` ET ajoutent `key` à `_dirtyFields`
+  - Lecture immédiate des modifications : `user.firstName.set('Jean')` → `user.firstName.value` retourne `'Jean'`
+  - Aucune intervention manuelle requise : Tracking automatique dans tous les setters
+  
+- **Avantages**
+  - ✅ Optimisation réseau : UPDATE envoie uniquement les modifications
+  - ✅ Clarté : `toJson()` pour CREATE complet, `toJsonDirty()` pour UPDATE partiel
+  - ✅ Gestion d'état : `revert()`, `markClean()`, `isDirty` pour contrôle complet
+  - ✅ Relations intelligentes : Conversion automatique objets → IDs
+  - ✅ Debuggable : `dirtyFields`, `getOriginalValue()` pour inspection
+  - ✅ Zero breaking changes : Backward compatible avec code existant
+
+- **Documentation et exemples**
+  - Section complète dans README.md avec 8 exemples d'utilisation
+  - Fichier d'exemple dédié : `example/dirty_tracking_example.dart`
+  - Workflow complet : GET → MODIFY → UPDATE avec `toJsonDirty()` → `markClean()`
+
+### 🔄 Modifications
+
+- **Constructeurs `DirectusModel`**
+  - Constructeur principal : Copie `data` dans `_originalData` pour tracking initial
+  - Constructeur `empty()` : Initialise `_originalData` à `{}` (nouveau modèle sans état initial)
+
 ## [0.2.0] - 2024-01-15
 
 ### ✨ Nouvelles fonctionnalités majeures

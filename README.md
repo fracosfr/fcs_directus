@@ -518,6 +518,175 @@ class Product extends DirectusModel with DirectusSerializable<Product> {
 - `@DirectusRelation()` : Indique un champ de relation
 - `@DirectusIgnore()` : Exclut un champ de la sérialisation
 
+### Dirty Tracking (Suivi des modifications) ✨
+
+Le système de dirty tracking permet de tracker automatiquement les modifications d'un modèle et d'envoyer **uniquement les champs modifiés** lors des mises à jour (UPDATE). Ce système est **totalement transparent** : les getters retournent toujours les valeurs actuelles, qu'elles soient modifiées ou non.
+
+#### Fonctionnement automatique
+
+Toute modification via les setters est automatiquement trackée :
+
+```dart
+// Récupérer un utilisateur depuis Directus
+final userData = await client.users.getUser('user-123');
+final user = DirectusUser(userData);
+
+// État initial
+print(user.isDirty);  // false
+print(user.dirtyFields);  // {}
+
+// Modifier des champs
+user.firstName.set('Jean');
+user.lastName.set('Dupont');
+user.appearance.set('dark');
+
+// Les modifications sont automatiquement trackées
+print(user.isDirty);  // true
+print(user.dirtyFields);  // {first_name, last_name, appearance}
+
+// La lecture est transparente (retourne la valeur modifiée)
+print(user.firstName.value);  // 'Jean' ✅
+```
+
+#### Envoi des modifications avec toJsonDirty()
+
+La méthode `toJsonDirty()` retourne **uniquement les champs modifiés** :
+
+```dart
+// toJson() retourne TOUT (y compris les relations complètes)
+final fullJson = user.toJson();
+print(fullJson.keys.length);  // 15+ champs
+
+// toJsonDirty() retourne UNIQUEMENT les modifications
+final dirtyJson = user.toJsonDirty();
+print(dirtyJson);
+// {first_name: "Jean", last_name: "Dupont", appearance: "dark"}
+
+// Envoyer à Directus (optimisé, bande passante réduite)
+await client.users.updateUser(user.id!, user.toJsonDirty());
+```
+
+#### Gestion automatique des relations
+
+Le système extrait automatiquement les IDs des relations :
+
+```dart
+// Après récupération, le rôle est un objet complet
+final user = DirectusUser(await client.users.getUser('user-123'));
+print(user.role.value);  // DirectusRole{id: 'role-admin-123', name: 'Administrator', ...}
+
+// Modifier le rôle
+user.role.setById('role-editor-456');
+
+// toJsonDirty() extrait automatiquement l'ID
+final updates = user.toJsonDirty();
+print(updates['role']);  // 'role-editor-456' (juste l'ID, pas l'objet complet) ✅
+
+// Many-to-Many : liste d'objets → liste d'IDs
+user.policies.setByIds(['policy-1', 'policy-2']);
+final updates2 = user.toJsonDirty();
+print(updates2['policies']);  // ['policy-1', 'policy-2'] ✅
+```
+
+#### API de gestion du tracking
+
+```dart
+// Vérifier si le modèle a été modifié
+if (user.isDirty) {
+  print('Le modèle a été modifié');
+}
+
+// Vérifier un champ spécifique
+if (user.isDirtyField('first_name')) {
+  print('Le prénom a été modifié');
+}
+
+// Obtenir la liste des champs modifiés
+final modified = user.dirtyFields;
+print('Champs modifiés: $modified');  // {first_name, last_name}
+
+// Obtenir la valeur originale d'un champ
+final originalName = user.getOriginalValue('first_name');
+print('Ancien: $originalName, Nouveau: ${user.firstName.value}');
+
+// Annuler toutes les modifications (rollback)
+user.revert();
+print(user.firstName.value);  // Restauré à la valeur originale
+print(user.isDirty);  // false
+
+// Marquer comme propre après sauvegarde réussie
+await client.users.updateUser(user.id!, user.toJsonDirty());
+user.markClean();  // Reset le tracking
+print(user.isDirty);  // false
+```
+
+#### Workflow complet
+
+```dart
+// 1. Récupérer un objet existant
+final user = DirectusUser(await client.users.getUser('user-123'));
+print(user.isDirty);  // false
+
+// 2. Modifier plusieurs champs
+user.firstName.set('Jean');
+user.status.set('invited');
+user.role.setById('role-editor-123');
+print(user.isDirty);  // true
+print(user.dirtyFields);  // {first_name, status, role}
+
+// 3. Vérifier les modifications avant sauvegarde
+if (user.isDirty) {
+  print('Modifications à envoyer:');
+  for (final field in user.dirtyFields) {
+    print('- $field: ${user.getOriginalValue(field)} → ${user.get(field)}');
+  }
+}
+
+// 4. Envoyer UNIQUEMENT les modifications
+await client.users.updateUser(
+  user.id!,
+  user.toJsonDirty(),  // {"first_name": "Jean", "status": "invited", "role": "role-editor-123"}
+);
+
+// 5. Marquer comme propre après succès
+user.markClean();
+print(user.isDirty);  // false
+
+// 6. Nouvelles modifications trackées à partir de l'état sauvegardé
+user.appearance.set('light');
+print(user.dirtyFields);  // {appearance}
+```
+
+#### Différences entre les méthodes de sérialisation
+
+```dart
+final user = DirectusUser(userData);
+user.firstName.set('Modified');
+
+// toJson() - TOUT (pour CREATE ou export complet)
+final full = user.toJson();
+// {id, email, first_name, last_name, role, date_created, date_updated, ...}
+
+// toMap() - Champs personnalisés uniquement (sans champs système)
+final custom = user.toMap();
+// {email, first_name, last_name, role, ...} (sans id, date_created, etc.)
+
+// toJsonDirty() - UNIQUEMENT les modifications (pour UPDATE)
+final dirty = user.toJsonDirty();
+// {first_name: "Modified"}
+```
+
+#### Avantages
+
+✅ **Totalement transparent** : Getters retournent toujours les valeurs actuelles  
+✅ **Automatique** : Aucun code manuel pour tracker les modifications  
+✅ **Optimisé** : Réduit la bande passante (envoie seulement les changements)  
+✅ **Relations intelligentes** : Conversion automatique objets → IDs  
+✅ **Gestion d'état** : revert(), markClean(), isDirty pour contrôle complet  
+✅ **Debuggable** : dirtyFields, getOriginalValue() pour inspection  
+
+Voir [example/dirty_tracking_example.dart](example/dirty_tracking_example.dart) pour des exemples complets.
+
 ---
 
 ### WebSocket (Temps réel)
