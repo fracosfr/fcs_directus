@@ -51,6 +51,21 @@ export 'src/services/extensions_service.dart';
 export 'src/services/fields_service.dart';
 export 'src/services/flows_service.dart';
 export 'src/services/folders_service.dart';
+export 'src/services/notifications_service.dart';
+export 'src/services/permissions_service.dart';
+export 'src/services/presets_service.dart';
+export 'src/services/relations_service.dart';
+export 'src/services/revisions_service.dart';
+export 'src/services/operations_service.dart';
+export 'src/services/panels_service.dart';
+export 'src/services/metrics_service.dart';
+export 'src/services/schema_service.dart';
+export 'src/services/server_service.dart';
+export 'src/services/settings_service.dart';
+export 'src/services/shares_service.dart';
+export 'src/services/translations_service.dart';
+export 'src/services/utilities_service.dart';
+export 'src/services/versions_service.dart';
 
 // Exceptions
 export 'src/exceptions/directus_exception.dart';
@@ -74,6 +89,10 @@ export 'src/models/directus_field.dart';
 export 'src/models/directus_flow.dart';
 export 'src/models/directus_operation.dart';
 export 'src/models/directus_folder.dart';
+export 'src/models/directus_notification.dart';
+export 'src/models/directus_permission.dart';
+export 'src/models/directus_preset.dart';
+export 'src/models/directus_relation.dart';
 export 'src/models/asset_transforms.dart';
 
 // WebSocket
