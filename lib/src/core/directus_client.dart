@@ -13,6 +13,16 @@ import '../services/extensions_service.dart';
 import '../services/fields_service.dart';
 import '../services/flows_service.dart';
 import '../services/folders_service.dart';
+import '../services/notifications_service.dart';
+import '../services/permissions_service.dart';
+import '../services/presets_service.dart';
+import '../services/relations_service.dart';
+import '../services/revisions_service.dart';
+import '../services/roles_service.dart';
+import '../services/policies_service.dart';
+import '../services/operations_service.dart';
+import '../services/panels_service.dart';
+import '../services/metrics_service.dart';
 import '../models/directus_model.dart';
 
 /// Client principal pour interagir avec l'API Directus.
@@ -54,6 +64,16 @@ class DirectusClient {
   late final FieldsService fields;
   late final FlowsService flows;
   late final FoldersService folders;
+  late final NotificationsService notifications;
+  late final PermissionsService permissions;
+  late final PresetsService presets;
+  late final RelationsService relations;
+  late final RevisionsService revisions;
+  late final RolesService roles;
+  late final PoliciesService policies;
+  late final OperationsService operations;
+  late final PanelsService panels;
+  late final MetricsService metrics;
 
   /// Crée un nouveau client Directus
   DirectusClient(this.config) {
@@ -72,6 +92,16 @@ class DirectusClient {
     fields = FieldsService(_httpClient);
     flows = FlowsService(_httpClient);
     folders = FoldersService(_httpClient);
+    notifications = NotificationsService(_httpClient);
+    permissions = PermissionsService(_httpClient);
+    presets = PresetsService(_httpClient);
+    relations = RelationsService(_httpClient);
+    revisions = RevisionsService(_httpClient);
+    roles = RolesService(_httpClient);
+    policies = PoliciesService(_httpClient);
+    operations = OperationsService(_httpClient);
+    panels = PanelsService(_httpClient);
+    metrics = MetricsService(_httpClient);
   }
 
   /// Crée un service pour accéder aux items d'une collection spécifique
