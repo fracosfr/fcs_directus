@@ -12,7 +12,14 @@ class QueryParameters {
   /// Champs à retourner
   final List<String>? fields;
 
-  /// Tri des résultats (ex: ['name', '-created_at'])
+  /// Tri des résultats.
+  ///
+  /// Exemples :
+  /// ```dart
+  /// sort: ['name']         // Tri croissant par nom
+  /// sort: ['-created_at']  // Tri décroissant par date de création
+  /// sort: ['category', '-price'] // Multi-critères
+  /// ```
   final List<String>? sort;
 
   /// Nombre de résultats à retourner
