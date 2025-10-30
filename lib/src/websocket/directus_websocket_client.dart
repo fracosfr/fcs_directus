@@ -215,6 +215,13 @@ class DirectusWebSocketClient {
       final message = DirectusWebSocketMessage.fromJson(json);
 
       _logger.fine('Message reçu: ${message.type}');
+
+      // Répondre automatiquement aux pings avec un pong
+      if (message.type == 'ping') {
+        _logger.fine('Ping reçu, envoi du pong');
+        _send(DirectusWebSocketMessage(type: 'pong'));
+      }
+
       _messageController.add(message);
     } catch (e) {
       _logger.severe('Erreur lors du parsing du message', e);
@@ -294,9 +301,21 @@ class DirectusWebSocketClient {
     _logger.fine('Message envoyé: ${message.type}');
   }
 
-  /// Envoie un ping au serveur
+  /// Envoie un ping au serveur pour vérifier la connexion
+  ///
+  /// Le serveur enverra périodiquement des pings automatiquement,
+  /// auxquels le client répondra automatiquement avec un pong.
+  /// Cette méthode permet d'envoyer un ping manuellement si nécessaire.
   void ping() {
     _send(DirectusWebSocketMessage(type: 'ping'));
+  }
+
+  /// Envoie un pong au serveur en réponse à un ping
+  ///
+  /// Note: Les pongs sont automatiquement envoyés en réponse aux pings reçus.
+  /// Cette méthode est disponible pour un contrôle manuel si nécessaire.
+  void pong() {
+    _send(DirectusWebSocketMessage(type: 'pong'));
   }
 
   // ============================================================================
