@@ -45,6 +45,12 @@ export 'src/services/roles_service.dart';
 export 'src/services/policies_service.dart';
 export 'src/services/activity_service.dart';
 export 'src/services/assets_service.dart';
+export 'src/services/comments_service.dart';
+export 'src/services/dashboards_service.dart';
+export 'src/services/extensions_service.dart';
+export 'src/services/fields_service.dart';
+export 'src/services/flows_service.dart';
+export 'src/services/folders_service.dart';
 
 // Exceptions
 export 'src/exceptions/directus_exception.dart';
@@ -61,6 +67,13 @@ export 'src/models/directus_role.dart';
 export 'src/models/directus_policy.dart';
 export 'src/models/directus_activity.dart';
 export 'src/models/directus_revision.dart';
+export 'src/models/directus_comment.dart';
+export 'src/models/directus_dashboard.dart';
+export 'src/models/directus_panel.dart';
+export 'src/models/directus_field.dart';
+export 'src/models/directus_flow.dart';
+export 'src/models/directus_operation.dart';
+export 'src/models/directus_folder.dart';
 export 'src/models/asset_transforms.dart';
 
 // WebSocket

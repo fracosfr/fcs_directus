@@ -17,7 +17,8 @@ void main() async {
   // Authentification
   await client.auth.login(email: 'admin@example.com', password: 'password');
 
-  final users = client.users;
+  // Récupérer le service users pour utilisation ultérieure
+  print('Service users disponible: ${client.users}');
 
   print('=== DIRTY TRACKING DANS DIRECTUS MODEL ===\n');
 
