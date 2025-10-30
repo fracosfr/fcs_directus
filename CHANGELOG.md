@@ -5,6 +5,68 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.4.0] - 2025-10-30
+
+### ✨ Nouvelles fonctionnalités majeures
+
+#### API Activity (Historique des actions) ⭐ NOUVEAU
+- **Service `ActivityService`** pour consulter l'historique complet des activités Directus
+  - Accessible via `client.activity`
+  - Support de tous les types d'actions : `create`, `update`, `delete`, `login`
+  - Lecture seule (les activités sont créées automatiquement par Directus)
+
+- **Méthodes principales**
+  - `getActivities()` : Liste des activités avec filtres personnalisés
+  - `getActivity(id)` : Récupérer une activité par son ID
+  - `getRecentActivities()` : Activités récentes (24h par défaut, configurable)
+  - `getUserActivities(userId)` : Toutes les activités d'un utilisateur
+  - `getCollectionActivities(collection)` : Activités d'une collection spécifique
+  - `getItemActivities(itemId, collection)` : Historique complet d'un item
+  - `getActivitiesByAction(action)` : Filtrer par type d'action
+
+- **Modèle `DirectusActivity`**
+  - Propriétés complètes : `action`, `user`, `timestamp`, `collection`, `item`, `ip`, `userAgent`, `comment`, `revisions`
+  - Relations : `user` (DirectusUser), `revisions` (List<DirectusRevision>)
+  - Helpers booléens : `isCreate`, `isUpdate`, `isDelete`, `isLogin`, `hasComment`, `hasRevisions`
+  - Accesseurs pratiques : `actor`, `actorName`, `actorEmail`, `actionDescription`, `formattedTimestamp`, `summary`
+
+- **Modèle `DirectusRevision`**
+  - Représente les changements spécifiques dans une activité
+  - Propriétés : `activity`, `collection`, `item`, `data`, `delta`, `parent`, `version`
+  - Helpers : `hasData`, `hasDelta`, `hasParent`, `changesCount`, `changedFields`
+
+- **Méthodes helper avec filtres préconfigurés**
+  - Filtrage automatique par utilisateur, collection, item ou action
+  - Paramètre `additionalQuery` pour combiner avec des filtres personnalisés
+  - Tri par défaut sur `-timestamp` (plus récent en premier)
+  - Support complet de Deep pour charger les relations (utilisateur, révisions)
+
+- **Exemples d'utilisation**
+  - Fichier d'exemple complet : `example/activity_example.dart` (12 scénarios)
+  - Documentation complète dans README.md avec exemples de code
+  - Support des filtres avancés (AND/OR, plages de dates, etc.)
+  - Utilisation avec Deep pour enrichir les données
+
+- **Cas d'usage**
+  - Audit trail complet (qui a fait quoi, quand)
+  - Surveillance des connexions (IP, user agent, timestamp)
+  - Historique des modifications d'un item
+  - Statistiques d'activité par type/utilisateur/collection
+  - Détection d'activité suspecte ou anormale
+  - Rapports d'activité personnalisés
+
+### 📦 Exports
+
+- Ajout de `ActivityService` dans les exports
+- Ajout de `DirectusActivity` dans les exports de modèles
+- Ajout de `DirectusRevision` dans les exports de modèles
+
+### 📖 Documentation
+
+- Section complète "Gestion des activités" dans README.md
+- Exemple détaillé avec 12 scénarios dans `example/activity_example.dart`
+- Documentation inline complète dans tous les fichiers
+
 ## [0.3.0] - 2024-01-20
 
 ### ✨ Nouvelles fonctionnalités majeures

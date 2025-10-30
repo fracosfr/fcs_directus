@@ -751,6 +751,123 @@ final thumbnailUrl = client.files.getThumbnailUrl(
 );
 ```
 
+### Gestion des activités (Activity) ✨
+
+L'API Activity permet de consulter l'historique de toutes les actions effectuées dans Directus.
+
+**Types d'actions trackées:**
+- `create` - Création d'items
+- `update` - Modification d'items
+- `delete` - Suppression d'items
+- `login` - Connexions utilisateurs
+
+```dart
+// Activités récentes (dernières 24h)
+final recent = await client.activity.getRecentActivities(limit: 50);
+
+// Filtrer par type d'action
+final creates = await client.activity.getActivitiesByAction('create', limit: 20);
+final logins = await client.activity.getActivitiesByAction('login', limit: 10);
+
+// Activités d'un utilisateur spécifique
+final userActivities = await client.activity.getUserActivities(
+  'user-id-123',
+  limit: 50,
+);
+
+// Activités d'une collection
+final articlesActivity = await client.activity.getCollectionActivities(
+  'articles',
+  actionType: 'create', // optionnel
+  limit: 30,
+);
+
+// Historique d'un item spécifique
+final itemHistory = await client.activity.getItemActivities(
+  'article-123',
+  collection: 'articles',
+);
+
+// Avec des détails enrichis (utilisateur, révisions)
+final detailed = await client.activity.getActivities(
+  query: QueryParameters(
+    limit: 20,
+    sort: ['-timestamp'],
+    deep: Deep({
+      'user': DeepQuery().fields(['first_name', 'last_name', 'email']),
+      'revisions': DeepQuery().allFields(),
+    }),
+  ),
+);
+
+// Utilisation du modèle DirectusActivity
+for (var item in recent.data) {
+  final activity = DirectusActivity(item);
+  
+  print(activity.actionDescription);  // "Création dans articles (ID: 123)"
+  print(activity.actorName);          // "John Doe"
+  print(activity.formattedTimestamp); // "2025-10-30 15:30:00"
+  print(activity.isCreate);           // true si action == 'create'
+  print(activity.hasComment);         // true si un commentaire existe
+}
+
+// Filtres avancés personnalisés
+final weekActivity = await client.activity.getActivities(
+  query: QueryParameters(
+    filter: Filter.and([
+      Filter.or([
+        Filter.field('action').equals('create'),
+        Filter.field('action').equals('update'),
+      ]),
+      Filter.field('timestamp').greaterThan(
+        DateTime.now().subtract(Duration(days: 7)).toIso8601String(),
+      ),
+    ]),
+    sort: ['-timestamp'],
+  ),
+);
+```
+
+**Méthodes disponibles:**
+- `getActivities()` - Liste avec filtres personnalisés
+- `getActivity(id)` - Activité par ID
+- `getRecentActivities()` - Activités récentes (24h par défaut)
+- `getUserActivities(userId)` - Par utilisateur
+- `getCollectionActivities(collection)` - Par collection
+- `getItemActivities(itemId, collection)` - Historique d'un item
+- `getActivitiesByAction(action)` - Par type d'action
+
+**Modèle DirectusActivity:**
+```dart
+final activity = DirectusActivity(data);
+
+// Propriétés
+activity.action.value       // 'create', 'update', 'delete', 'login'
+activity.user.value         // DirectusUser (relation)
+activity.timestamp.value    // DateTime
+activity.collection.value   // Nom de la collection
+activity.item.value         // ID de l'item
+activity.ip.value           // Adresse IP
+activity.userAgent.value    // User agent
+activity.comment.value      // Commentaire utilisateur
+activity.revisions.value    // List<DirectusRevision>
+
+// Helpers
+activity.isCreate           // bool
+activity.isUpdate           // bool
+activity.isDelete           // bool
+activity.isLogin            // bool
+activity.hasComment         // bool
+activity.hasRevisions       // bool
+activity.actorName          // Nom de l'utilisateur
+activity.actorEmail         // Email de l'utilisateur
+activity.actionDescription  // Description lisible
+activity.formattedTimestamp // Timestamp formaté
+activity.summary            // Résumé complet
+```
+
+Voir [example/activity_example.dart](example/activity_example.dart) pour des exemples complets.
+
 ### Gestion des utilisateurs
 
 ```dart

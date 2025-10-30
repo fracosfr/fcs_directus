@@ -5,6 +5,8 @@ import '../services/items_service.dart';
 import '../services/collections_service.dart';
 import '../services/users_service.dart';
 import '../services/files_service.dart';
+import '../services/activity_service.dart';
+import '../services/assets_service.dart';
 import '../models/directus_model.dart';
 
 /// Client principal pour interagir avec l'API Directus.
@@ -38,6 +40,8 @@ class DirectusClient {
   late final CollectionsService collections;
   late final UsersService users;
   late final FilesService files;
+  late final ActivityService activity;
+  late final AssetsService assets;
 
   /// Crée un nouveau client Directus
   DirectusClient(this.config) {
@@ -48,6 +52,8 @@ class DirectusClient {
     collections = CollectionsService(_httpClient);
     users = UsersService(_httpClient);
     files = FilesService(_httpClient);
+    activity = ActivityService(_httpClient);
+    assets = AssetsService(_httpClient);
   }
 
   /// Crée un service pour accéder aux items d'une collection spécifique
