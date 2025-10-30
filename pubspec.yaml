@@ -1,6 +1,6 @@
 name: fcs_directus
 description: A comprehensive Dart library for interacting with Directus API, including REST and WebSocket support with builder pattern for clean model serialization.
-version: 0.2.0
+version: 1.0.0
 homepage: https://github.com/fracosfr/fcs_directus
 repository: https://github.com/fracosfr/fcs_directus
 

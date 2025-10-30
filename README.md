@@ -25,7 +25,7 @@ Ajoutez la dépendance dans votre `pubspec.yaml` :
 
 ```yaml
 dependencies:
-  fcs_directus: ^0.2.0
+  fcs_directus: ^1.0.0
 ```
 
 Puis exécutez :
