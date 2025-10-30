@@ -37,8 +37,9 @@ class DirectusRelation extends DirectusModel {
   late final oneCollectionField = stringValue('one_collection_field');
 
   /// Collections autorisées pour le côté "one"
-  late final oneAllowedCollections =
-      listValue<String>('one_allowed_collections');
+  late final oneAllowedCollections = listValue<String>(
+    'one_allowed_collections',
+  );
 
   /// Champ sur la table de jonction qui contient le champ "many" de la relation liée
   late final junctionField = stringValue('junction_field');

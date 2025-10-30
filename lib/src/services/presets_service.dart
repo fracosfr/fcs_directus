@@ -29,9 +29,7 @@ class PresetsService {
   }
 
   /// Récupère la liste de tous les presets
-  Future<DirectusResponse<dynamic>> getPresets({
-    QueryParameters? query,
-  }) async {
+  Future<DirectusResponse<dynamic>> getPresets({QueryParameters? query}) async {
     return await _itemsService.readMany(query: query);
   }
 
@@ -44,9 +42,7 @@ class PresetsService {
   }
 
   /// Crée un nouveau preset
-  Future<Map<String, dynamic>> createPreset(
-    Map<String, dynamic> data,
-  ) async {
+  Future<Map<String, dynamic>> createPreset(Map<String, dynamic> data) async {
     return await _itemsService.createOne(data);
   }
 

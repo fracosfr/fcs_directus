@@ -68,7 +68,8 @@ class DirectusNotification extends DirectusModel {
       getDirectusModelOrNull<DirectusUser>('recipient');
 
   /// Obtient l'utilisateur expéditeur
-  DirectusUser? get senderUser => getDirectusModelOrNull<DirectusUser>('sender');
+  DirectusUser? get senderUser =>
+      getDirectusModelOrNull<DirectusUser>('sender');
 
   /// Obtient le nom du destinataire
   String? get recipientName => recipientUser?.fullName;

@@ -45,10 +45,7 @@ class RelationsService {
   }
 
   /// Met à jour une relation existante
-  Future<dynamic> updateRelation(
-    int id,
-    Map<String, dynamic> data,
-  ) async {
+  Future<dynamic> updateRelation(int id, Map<String, dynamic> data) async {
     return await _httpClient.patch('/relations/$id', data: data);
   }
 

@@ -33,9 +33,7 @@ class PanelsService {
   }
 
   /// Récupère la liste de tous les panneaux
-  Future<DirectusResponse<dynamic>> getPanels({
-    QueryParameters? query,
-  }) async {
+  Future<DirectusResponse<dynamic>> getPanels({QueryParameters? query}) async {
     return await _itemsService.readMany(query: query);
   }
 
@@ -48,9 +46,7 @@ class PanelsService {
   }
 
   /// Crée un nouveau panneau
-  Future<Map<String, dynamic>> createPanel(
-    Map<String, dynamic> data,
-  ) async {
+  Future<Map<String, dynamic>> createPanel(Map<String, dynamic> data) async {
     return await _itemsService.createOne(data);
   }
 

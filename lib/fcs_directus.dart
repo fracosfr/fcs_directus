@@ -59,6 +59,13 @@ export 'src/services/revisions_service.dart';
 export 'src/services/operations_service.dart';
 export 'src/services/panels_service.dart';
 export 'src/services/metrics_service.dart';
+export 'src/services/schema_service.dart';
+export 'src/services/server_service.dart';
+export 'src/services/settings_service.dart';
+export 'src/services/shares_service.dart';
+export 'src/services/translations_service.dart';
+export 'src/services/utilities_service.dart';
+export 'src/services/versions_service.dart';
 
 // Exceptions
 export 'src/exceptions/directus_exception.dart';

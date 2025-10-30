@@ -150,10 +150,7 @@ class PermissionsService {
   }
 
   /// Récupère les permissions de l'utilisateur actuel pour un item spécifique
-  Future<dynamic> getItemPermissions(
-    String collection,
-    String itemId,
-  ) async {
+  Future<dynamic> getItemPermissions(String collection, String itemId) async {
     return await _httpClient.get('/permissions/me/$collection/$itemId');
   }
 }

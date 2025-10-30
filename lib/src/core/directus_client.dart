@@ -23,6 +23,13 @@ import '../services/policies_service.dart';
 import '../services/operations_service.dart';
 import '../services/panels_service.dart';
 import '../services/metrics_service.dart';
+import '../services/schema_service.dart';
+import '../services/server_service.dart';
+import '../services/settings_service.dart';
+import '../services/shares_service.dart';
+import '../services/translations_service.dart';
+import '../services/utilities_service.dart';
+import '../services/versions_service.dart';
 import '../models/directus_model.dart';
 
 /// Client principal pour interagir avec l'API Directus.
@@ -74,6 +81,13 @@ class DirectusClient {
   late final OperationsService operations;
   late final PanelsService panels;
   late final MetricsService metrics;
+  late final SchemaService schema;
+  late final ServerService server;
+  late final SettingsService settings;
+  late final SharesService shares;
+  late final TranslationsService translations;
+  late final UtilitiesService utilities;
+  late final VersionsService versions;
 
   /// Crée un nouveau client Directus
   DirectusClient(this.config) {
@@ -102,6 +116,13 @@ class DirectusClient {
     operations = OperationsService(_httpClient);
     panels = PanelsService(_httpClient);
     metrics = MetricsService(_httpClient);
+    schema = SchemaService(_httpClient);
+    server = ServerService(_httpClient);
+    settings = SettingsService(_httpClient);
+    shares = SharesService(_httpClient);
+    translations = TranslationsService(_httpClient);
+    utilities = UtilitiesService(_httpClient);
+    versions = VersionsService(_httpClient);
   }
 
   /// Crée un service pour accéder aux items d'une collection spécifique
