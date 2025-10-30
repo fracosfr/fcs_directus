@@ -8,43 +8,20 @@ fcs_directus supporte trois modes d'authentification correspondant aux modes de 
 
 | Mode | Description | Usage |
 |------|-------------|-------|
-| **JSON** | Tokens retournés dans la réponse JSON | Applications mobiles, SPAs |
+| **JSON** (défaut) | Tokens retournés dans la réponse JSON | Applications mobiles, SPAs |
 | **Cookie** | Refresh token dans cookie httpOnly, access token en JSON | Applications web sécurisées |
 | **Session** | Les deux tokens dans cookies httpOnly | Applications web avec sessions |
-| **Static Token** | Token permanent généré dans Directus | Services backend, scripts |
+
+⚠️ **Note** : Le mode par défaut est `json`. Le mode est spécifié **lors du login**, pas dans la configuration du client.
 
 ## 📋 Configuration
 
-### Mode JSON (défaut)
+La configuration du client ne nécessite pas de spécifier le mode d'authentification :
 
 ```dart
 final directus = DirectusClient(
   DirectusConfig(
     baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.json, // Mode par défaut
-  ),
-);
-```
-
-### Mode Cookie
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.cookie,
-  ),
-);
-```
-
-### Mode Static Token
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.staticToken,
-    staticToken: 'your-static-admin-token',
   ),
 );
 ```
@@ -98,33 +75,34 @@ try {
 
 ### Login avec mode spécifique
 
+Par défaut, le mode `json` est utilisé (tokens dans la réponse JSON). Vous pouvez spécifier un autre mode :
+
 ```dart
-// Mode cookie: refresh token dans httpOnly cookie
+// Mode JSON (défaut) : tokens dans la réponse JSON
+await directus.auth.login(
+  email: 'admin@example.com',
+  password: 'your-password',
+  mode: AuthMode.json, // Optionnel, c'est la valeur par défaut
+);
+
+// Mode cookie : refresh token dans httpOnly cookie
 await directus.auth.login(
   email: 'admin@example.com',
   password: 'your-password',
   mode: AuthMode.cookie,
 );
+
+// Mode session : les deux tokens dans des cookies httpOnly
+await directus.auth.login(
+  email: 'admin@example.com',
+  password: 'your-password',
+  mode: AuthMode.session,
+);
 ```
 
 ## 🎫 Login avec token statique
 
-### Méthode 1 : Configuration initiale
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.staticToken,
-    staticToken: 'your-static-token',
-  ),
-);
-
-// Pas besoin de login, le token est déjà configuré
-final items = await directus.items('articles').readMany();
-```
-
-### Méthode 2 : Login programmatique
+Vous pouvez utiliser un token statique généré depuis Directus (pour les scripts, services backend, etc.) :
 
 ```dart
 final directus = DirectusClient(
@@ -136,7 +114,7 @@ final directus = DirectusClient(
 // Login avec token statique
 await directus.auth.loginWithToken('your-static-token');
 
-// Utiliser les services
+// Utiliser les services normalement
 final items = await directus.items('articles').readMany();
 ```
 

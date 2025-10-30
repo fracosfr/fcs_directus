@@ -342,10 +342,12 @@ Voir [08-services.md](08-services.md) pour la liste complète.
 ```dart
 final config = DirectusConfig(
   baseUrl: 'https://api.example.com',
-  authMode: AuthMode.cookie,
   timeout: Duration(seconds: 30),
   headers: {'X-Custom': 'value'},
+  enableLogging: true,
 );
+
+final directus = DirectusClient(config);
 ```
 
 ### DirectusHttpClient

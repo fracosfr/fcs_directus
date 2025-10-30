@@ -41,7 +41,7 @@ import 'package:fcs_directus/fcs_directus.dart';
 final directus = DirectusClient(
   DirectusConfig(
     baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.cookie, // cookie (défaut), json, ou staticToken
+    // Autres modes disponibles: cookie, session (spécifiés lors du login)
   ),
 );
 ```
@@ -52,14 +52,8 @@ final directus = DirectusClient(
 final config = DirectusConfig(
   baseUrl: 'https://api.example.com',
   
-  // Mode d'authentification
-  authMode: AuthMode.cookie, // cookie, json, staticToken
-  
   // Timeout des requêtes (optionnel)
   timeout: Duration(seconds: 30),
-  
-  // Token statique (si authMode = staticToken)
-  staticToken: 'your-static-token',
   
   // Headers personnalisés (optionnel)
   headers: {
@@ -90,18 +84,20 @@ try {
 
 ### Token statique
 
-Pour utiliser un token statique (sans login) :
+Pour utiliser un token statique (sans login avec email/password) :
 
 ```dart
 final directus = DirectusClient(
   DirectusConfig(
     baseUrl: 'https://your-directus-instance.com',
-    authMode: AuthMode.staticToken,
-    staticToken: 'your-static-admin-token',
   ),
 );
 
-// Pas besoin de login, toutes les requêtes utilisent le token statique
+// Login avec un token statique généré dans Directus
+await directus.auth.loginWithToken('your-static-admin-token');
+
+// Toutes les requêtes utilisent maintenant ce token
+final items = await directus.items('articles').readMany();
 ```
 
 ### Vérifier l'authentification
