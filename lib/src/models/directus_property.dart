@@ -406,6 +406,114 @@ class ObjectProperty extends DirectusProperty<Map<String, dynamic>?> {
   Map<String, dynamic> get valueOrEmpty => value ?? {};
 }
 
+/// Property wrapper pour valeur JSON dynamique (dynamic)
+///
+/// Permet de stocker n'importe quel type de valeur JSON :
+/// - Primitives (String, int, double, bool)
+/// - Map<String, dynamic>
+/// - List<dynamic>
+/// - null
+///
+/// Exemple:
+/// ```dart
+/// class Settings extends DirectusModel {
+///   late final config = jsonValue('config');
+///   late final metadata = jsonValue('metadata');
+///
+///   // Utilisation:
+///   settings.config.set({'theme': 'dark', 'lang': 'fr'});
+///   settings.metadata.set(['tag1', 'tag2', 'tag3']);
+///
+///   final theme = (settings.config.value as Map)['theme'];
+///   final tags = settings.metadata.value as List;
+/// }
+/// ```
+class JsonProperty extends DirectusProperty<dynamic> {
+  JsonProperty(super.model, super.name);
+
+  @override
+  dynamic get value => _model.getJson(name);
+
+  @override
+  void set(dynamic value) => _model.setJson(name, value);
+
+  /// Version non-nullable avec une valeur par défaut
+  dynamic valueOr(dynamic defaultValue) => value ?? defaultValue;
+
+  /// Cast en Map
+  Map<String, dynamic>? asMap() {
+    final val = value;
+    if (val == null) return null;
+    if (val is Map<String, dynamic>) return val;
+    if (val is Map) return Map<String, dynamic>.from(val);
+    return null;
+  }
+
+  /// Cast en Map non-nullable
+  Map<String, dynamic> asMapOrEmpty() => asMap() ?? {};
+
+  /// Cast en List
+  List<dynamic>? asList() {
+    final val = value;
+    if (val == null) return null;
+    if (val is List) return val;
+    return null;
+  }
+
+  /// Cast en List non-nullable
+  List<dynamic> asListOrEmpty() => asList() ?? [];
+
+  /// Cast en String
+  String? asString() {
+    final val = value;
+    if (val == null) return null;
+    return val.toString();
+  }
+
+  /// Cast en int
+  int? asInt() {
+    final val = value;
+    if (val == null) return null;
+    if (val is int) return val;
+    if (val is num) return val.toInt();
+    if (val is String) return int.tryParse(val);
+    return null;
+  }
+
+  /// Cast en double
+  double? asDouble() {
+    final val = value;
+    if (val == null) return null;
+    if (val is double) return val;
+    if (val is num) return val.toDouble();
+    if (val is String) return double.tryParse(val);
+    return null;
+  }
+
+  /// Cast en bool
+  bool? asBool() {
+    final val = value;
+    if (val == null) return null;
+    if (val is bool) return val;
+    if (val is int) return val != 0;
+    if (val is String) {
+      final lower = val.toLowerCase();
+      if (lower == 'true' || lower == '1') return true;
+      if (lower == 'false' || lower == '0') return false;
+    }
+    return null;
+  }
+
+  /// Vérifie le type de la valeur
+  bool get isMap => value is Map;
+  bool get isList => value is List;
+  bool get isString => value is String;
+  bool get isInt => value is int;
+  bool get isDouble => value is double;
+  bool get isBool => value is bool;
+  bool get isNull => value == null;
+}
+
 /// Property wrapper pour DirectusModel nested
 class ModelProperty<T extends DirectusModel> extends DirectusProperty<T?> {
   ModelProperty(super.model, super.name);

@@ -221,6 +221,15 @@ abstract class DirectusModel {
     return Map<String, dynamic>.from(value);
   }
 
+  /// Récupère une valeur JSON dynamique
+  ///
+  /// Retourne la valeur brute telle qu'elle est stockée (dynamic).
+  /// Peut être utilisé pour des valeurs JSON de tout type :
+  /// String, int, double, bool, Map, List, null.
+  dynamic getJson(String key) {
+    return _data[key];
+  }
+
   /// Récupère un modèle DirectusModel nested
   ///
   /// Exemple:
@@ -413,6 +422,19 @@ abstract class DirectusModel {
   /// Définit un objet nested
   void setObject(String key, Map<String, dynamic> value) {
     _data[key] = value;
+    _dirtyFields.add(key);
+  }
+
+  /// Définit une valeur JSON dynamique
+  ///
+  /// Accepte n'importe quel type de valeur JSON :
+  /// String, int, double, bool, Map, List, null.
+  void setJson(String key, dynamic value) {
+    if (value == null) {
+      _data.remove(key);
+    } else {
+      _data[key] = value;
+    }
     _dirtyFields.add(key);
   }
 
@@ -692,6 +714,26 @@ abstract class DirectusModel {
   /// Crée un property wrapper pour Map
   ObjectProperty objectValue(String key) {
     return ObjectProperty(this, key);
+  }
+
+  /// Crée un property wrapper pour valeur JSON dynamique
+  ///
+  /// Exemple:
+  /// ```dart
+  /// class Settings extends DirectusModel {
+  ///   late final config = jsonValue('config');
+  ///   late final metadata = jsonValue('metadata');
+  ///
+  ///   // Utilisation:
+  ///   settings.config.set({'theme': 'dark', 'lang': 'fr'});
+  ///   settings.metadata.set(['tag1', 'tag2', 'tag3']);
+  ///
+  ///   final theme = settings.config.asMap()?['theme'];
+  ///   final tags = settings.metadata.asList();
+  /// }
+  /// ```
+  JsonProperty jsonValue(String key) {
+    return JsonProperty(this, key);
   }
 
   /// Crée un property wrapper pour DirectusModel nested
