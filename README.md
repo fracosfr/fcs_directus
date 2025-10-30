@@ -629,10 +629,13 @@ try {
   final article = await client.items('articles').readOne('999');
 } on DirectusNotFoundException catch (e) {
   print('Article non trouvé: ${e.message}');
-} on DirectusUnauthorizedException catch (e) {
-  print('Non autorisé: ${e.message}');
+} on DirectusAuthException catch (e) {
+  print('Erreur d\'authentification: ${e.message}');
 } on DirectusValidationException catch (e) {
-  print('Validation échouée: ${e.errors}');
+  print('Validation échouée');
+  if (e.fieldErrors != null) {
+    print('Erreurs par champ: ${e.fieldErrors}');
+  }
 } on DirectusException catch (e) {
   print('Erreur Directus: ${e.message}');
   print('Code: ${e.errorCode}');
@@ -679,7 +682,6 @@ Des exemples complets sont disponibles dans le dossier `/example` :
 - `example_basic.dart` - CRUD basique
 - `example_filters.dart` - Filtres avancés
 - `example_relations.dart` - Deep queries
-- `example_websocket.dart` - Temps réel
 - `example_custom_model.dart` - Modèles personnalisés
 
 ## 🤝 Contribution

@@ -40,7 +40,7 @@ class QueryParameters {
   /// Agrégations à effectuer (objet Aggregate ou Map pour compatibilité)
   final dynamic aggregate;
 
-  /// Regroupement des résultats (objet GroupBy, List<String> ou Map pour compatibilité)
+  /// Regroupement des résultats (objet GroupBy, `List<String>` ou Map pour compatibilité)
   final dynamic groupBy;
 
   QueryParameters({

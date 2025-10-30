@@ -14,6 +14,7 @@
 /// // In groupBy
 /// groupBy: GroupBy.fields([Func.month('created_at')])
 /// ```
+library;
 
 /// Helper class for Directus functions
 ///

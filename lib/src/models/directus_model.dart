@@ -699,7 +699,7 @@ abstract class DirectusModel {
     return ModelProperty<T>(this, key);
   }
 
-  /// Crée un property wrapper pour List<DirectusModel>
+  /// Crée un property wrapper pour `List<DirectusModel>`
   ModelListProperty<T> modelListValue<T extends DirectusModel>(String key) {
     return ModelListProperty<T>(this, key);
   }

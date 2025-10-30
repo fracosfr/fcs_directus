@@ -15,6 +15,7 @@
 /// // Obtenir l'URL de l'asset transformé
 /// final url = client.assets.getAssetUrl('file-id', transforms: [transform]);
 /// ```
+library;
 
 /// Mode de fit pour le redimensionnement d'images
 enum AssetFit {

@@ -295,7 +295,7 @@ class EmptyFilter extends Filter {
   Map<String, dynamic> toJson() => {};
 }
 
-/// Extension pour ajouter .toFilter() sur Map<String, dynamic>
+/// Extension pour ajouter .toFilter() sur `Map<String, dynamic>`
 extension MapToFilter on Map<String, dynamic> {
   /// Convertit un Map en Filter (pour compatibilité ascendante)
   RawFilter toFilter() => RawFilter(this);

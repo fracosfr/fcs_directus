@@ -15,6 +15,7 @@
 ///   ),
 /// );
 /// ```
+library;
 
 /// Aggregate operations for Directus queries
 ///

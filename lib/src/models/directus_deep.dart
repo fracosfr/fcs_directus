@@ -13,6 +13,7 @@
 ///   }),
 /// );
 /// ```
+library;
 
 /// Abstract base class for deep query configuration
 abstract class Deep {

@@ -15,6 +15,7 @@
 ///   print(article.title.name);      // "title"
 /// }
 /// ```
+library;
 
 import 'directus_model.dart';
 
@@ -439,7 +440,7 @@ class ModelProperty<T extends DirectusModel> extends DirectusProperty<T?> {
   }
 }
 
-/// Property wrapper pour List<DirectusModel>
+/// Property wrapper pour `List<DirectusModel>`
 class ModelListProperty<T extends DirectusModel>
     extends DirectusProperty<List<T>> {
   ModelListProperty(super.model, super.name);
