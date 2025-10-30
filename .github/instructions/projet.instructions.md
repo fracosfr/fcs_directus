@@ -20,3 +20,4 @@ Les classes de modèle darts seront définies par le développeur en fonction de
 - Tests unitaires pour valider le bon fonctionnement des différentes fonctionnalités.
 - Utilisation de packages Dart/Flutter populaires et bien maintenus pour les requêtes HTTP (comme `http` ou `dio`), la sérialisation JSON (comme `json_serializable`), et la gestion des WebSockets (comme `web_socket_channel`).
 - Respect des bonnes pratiques de développement Dart/Flutter.
+- Aucun code JSON manuel dans les classes métiers (cf Filter).
