@@ -14,12 +14,44 @@ enum DirectusWebSocketEvent {
   message,
 }
 
+/// Événements CRUD sur les items Directus
+enum DirectusItemEvent {
+  /// Un nouvel item a été créé
+  create,
+
+  /// Un item existant a été modifié
+  update,
+
+  /// Un item a été supprimé
+  delete;
+
+  /// Convertit une string en DirectusItemEvent
+  static DirectusItemEvent? fromString(String? value) {
+    if (value == null) return null;
+    switch (value.toLowerCase()) {
+      case 'create':
+        return DirectusItemEvent.create;
+      case 'update':
+        return DirectusItemEvent.update;
+      case 'delete':
+        return DirectusItemEvent.delete;
+      default:
+        return null;
+    }
+  }
+
+  /// Convertit l'enum en string pour l'API
+  String toApiString() {
+    return name;
+  }
+}
+
 /// Message WebSocket Directus
 class DirectusWebSocketMessage {
   final String type;
   final Map<String, dynamic>? data;
   final String? uid;
-  final String? event;
+  final DirectusItemEvent? event;
 
   DirectusWebSocketMessage({
     required this.type,
@@ -33,7 +65,7 @@ class DirectusWebSocketMessage {
       type: json['type'] as String,
       data: json['data'] as Map<String, dynamic>?,
       uid: json['uid'] as String?,
-      event: json['event'] as String?,
+      event: DirectusItemEvent.fromString(json['event'] as String?),
     );
   }
 
@@ -42,7 +74,7 @@ class DirectusWebSocketMessage {
       'type': type,
       if (data != null) 'data': data,
       if (uid != null) 'uid': uid,
-      if (event != null) 'event': event,
+      if (event != null) 'event': event!.toApiString(),
     };
   }
 }
@@ -50,6 +82,19 @@ class DirectusWebSocketMessage {
 /// Client WebSocket pour Directus.
 ///
 /// Permet de recevoir des mises à jour en temps réel depuis Directus.
+/// Supporte les événements CRUD (create, update, delete) sur toutes les collections.
+///
+/// Collections système supportées:
+/// - directus_users (Users)
+/// - directus_files (Files)
+/// - directus_folders (Folders)
+/// - directus_activity (Activity)
+/// - directus_notifications (Notifications)
+/// - directus_comments (Comments)
+/// - directus_revisions (Revisions)
+/// - directus_shares (Shares)
+/// - directus_versions (Versions)
+/// - Et toutes les collections personnalisées
 ///
 /// Exemple d'utilisation:
 /// ```dart
@@ -66,8 +111,21 @@ class DirectusWebSocketMessage {
 ///   },
 /// );
 ///
+/// // S'abonner à un événement spécifique
+/// wsClient.subscribe(
+///   collection: 'articles',
+///   event: 'create',
+///   onMessage: (message) {
+///     print('Nouvel article créé: ${message.data}');
+///   },
+/// );
+///
+/// // Utiliser les helpers pour les collections système
+/// await wsClient.subscribeToUsers(onMessage: (msg) => print(msg));
+/// await wsClient.subscribeToNotifications(onMessage: (msg) => print(msg));
+///
 /// // Se désabonner
-/// await wsClient.unsubscribe('articles');
+/// await wsClient.unsubscribe('subscription-id');
 ///
 /// // Fermer la connexion
 /// await wsClient.disconnect();
@@ -171,7 +229,7 @@ class DirectusWebSocketClient {
   /// [onMessage] Callback appelé lors de la réception d'un message
   Future<String> subscribe({
     required String collection,
-    String? event,
+    DirectusItemEvent? event,
     Map<String, dynamic>? query,
     required Function(DirectusWebSocketMessage) onMessage,
   }) async {
@@ -194,7 +252,7 @@ class DirectusWebSocketClient {
       uid: uid,
       data: {
         'collection': collection,
-        if (event != null) 'event': event,
+        if (event != null) 'event': event.toApiString(),
         if (query != null) 'query': query,
       },
     );
@@ -239,6 +297,554 @@ class DirectusWebSocketClient {
   /// Envoie un ping au serveur
   void ping() {
     _send(DirectusWebSocketMessage(type: 'ping'));
+  }
+
+  // ============================================================================
+  // Méthodes helper pour les collections système Directus
+  // ============================================================================
+
+  /// S'abonne aux mises à jour des utilisateurs (directus_users)
+  ///
+  /// [event] Type d'événement: create, update, delete ou null pour tous
+  /// [query] Filtres optionnels pour limiter les événements
+  /// [onMessage] Callback appelé lors de la réception d'un message
+  ///
+  /// Retourne l'UID de la souscription pour pouvoir se désabonner
+  Future<String> subscribeToUsers({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_users',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des fichiers (directus_files)
+  Future<String> subscribeToFiles({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_files',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des dossiers (directus_folders)
+  Future<String> subscribeToFolders({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_folders',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour de l'activité (directus_activity)
+  Future<String> subscribeToActivity({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_activity',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des notifications (directus_notifications)
+  Future<String> subscribeToNotifications({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_notifications',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des commentaires (directus_comments)
+  Future<String> subscribeToComments({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_comments',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des révisions (directus_revisions)
+  Future<String> subscribeToRevisions({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_revisions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des partages (directus_shares)
+  Future<String> subscribeToShares({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_shares',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des versions (directus_versions)
+  Future<String> subscribeToVersions({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_versions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des traductions (directus_translations)
+  Future<String> subscribeToTranslations({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_translations',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des permissions (directus_permissions)
+  Future<String> subscribeToPermissions({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_permissions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des préférences (directus_presets)
+  Future<String> subscribeToPresets({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_presets',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des rôles (directus_roles)
+  Future<String> subscribeToRoles({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_roles',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des politiques (directus_policies)
+  Future<String> subscribeToPolicies({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_policies',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des dashboards (directus_dashboards)
+  Future<String> subscribeToDashboards({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_dashboards',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des panneaux (directus_panels)
+  Future<String> subscribeToPanels({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_panels',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des flows (directus_flows)
+  Future<String> subscribeToFlows({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_flows',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux mises à jour des opérations (directus_operations)
+  Future<String> subscribeToOperations({
+    DirectusItemEvent? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_operations',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  // ============================================================================
+  // Méthodes helper pour événements spécifiques
+  // ============================================================================
+
+  /// S'abonne uniquement aux événements de création sur une collection
+  ///
+  /// [collection] Nom de la collection
+  /// [query] Filtres optionnels
+  /// [onMessage] Callback appelé lors de la réception d'un message
+  Future<String> subscribeToCreate({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: collection,
+      event: DirectusItemEvent.create,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne uniquement aux événements de mise à jour sur une collection
+  ///
+  /// [collection] Nom de la collection
+  /// [query] Filtres optionnels
+  /// [onMessage] Callback appelé lors de la réception d'un message
+  Future<String> subscribeToUpdate({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: collection,
+      event: DirectusItemEvent.update,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne uniquement aux événements de suppression sur une collection
+  ///
+  /// [collection] Nom de la collection
+  /// [query] Filtres optionnels
+  /// [onMessage] Callback appelé lors de la réception d'un message
+  Future<String> subscribeToDelete({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_notifications',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux commentaires (directus_comments)
+  Future<String> subscribeToComments({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_comments',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux révisions (directus_revisions)
+  Future<String> subscribeToRevisions({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_revisions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux partages (directus_shares)
+  Future<String> subscribeToShares({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_shares',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux versions (directus_versions)
+  Future<String> subscribeToVersions({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_versions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux traductions (directus_translations)
+  Future<String> subscribeToTranslations({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_translations',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux permissions (directus_permissions)
+  Future<String> subscribeToPermissions({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_permissions',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux préférences (directus_presets)
+  Future<String> subscribeToPresets({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_presets',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux rôles (directus_roles)
+  Future<String> subscribeToRoles({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_roles',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux politiques (directus_policies)
+  Future<String> subscribeToPolicies({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_policies',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux dashboards (directus_dashboards)
+  Future<String> subscribeToDashboards({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_dashboards',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux panneaux (directus_panels)
+  Future<String> subscribeToPanels({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_panels',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux flows (directus_flows)
+  Future<String> subscribeToFlows({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_flows',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne aux opérations (directus_operations)
+  Future<String> subscribeToOperations({
+    String? event,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: 'directus_operations',
+      event: event,
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  // ============================================================================
+  // Méthodes helper pour les événements spécifiques
+  // ============================================================================
+
+  /// S'abonne uniquement aux événements de création sur une collection
+  Future<String> subscribeToCreate({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: collection,
+      event: 'create',
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne uniquement aux événements de mise à jour sur une collection
+  Future<String> subscribeToUpdate({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: collection,
+      event: 'update',
+      query: query,
+      onMessage: onMessage,
+    );
+  }
+
+  /// S'abonne uniquement aux événements de suppression sur une collection
+  Future<String> subscribeToDelete({
+    required String collection,
+    Map<String, dynamic>? query,
+    required Function(DirectusWebSocketMessage) onMessage,
+  }) async {
+    return await subscribe(
+      collection: collection,
+      event: 'delete',
+      query: query,
+      onMessage: onMessage,
+    );
   }
 
   /// Se déconnecte du serveur WebSocket

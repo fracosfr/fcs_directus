@@ -105,8 +105,14 @@ Bienvenue dans la documentation de la librairie **fcs_directus** !
 - `example/advanced_builders_example.dart`
 
 ### WebSocket et temps réel
+- **[WEBSOCKET_GUIDE.md](WEBSOCKET_GUIDE.md)** - 📚 Guide complet WebSocket
+  - 18 méthodes helper pour collections système
+  - Patterns avancés (chat, notifications, dashboards)
+  - Exemples de filtrage et gestion d'erreurs
+  - Bonnes pratiques et limitations
 - [README.md](../README.md) - Section "WebSocket"
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Section "WebSocket"
+- `example/websocket_example.dart` - Exemples pratiques
 
 ### Tests
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Section "Tests"

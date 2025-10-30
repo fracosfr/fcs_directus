@@ -4,7 +4,8 @@ import 'package:fcs_directus/fcs_directus.dart';
 ///
 /// Cet exemple montre comment:
 /// - Se connecter au WebSocket
-/// - S'abonner aux événements d'une collection
+/// - S'abonner aux événements d'une collection avec les méthodes helper
+/// - S'abonner aux notifications système
 /// - Recevoir des mises à jour en temps réel
 void main() async {
   // 1. Configuration
@@ -34,22 +35,58 @@ void main() async {
     await wsClient.connect();
     print('✅ Connecté au WebSocket');
 
-    // 4. Abonnement aux événements de la collection 'articles'
-    print('\n👂 Abonnement aux articles...');
+    // 4a. Abonnement aux notifications système (méthode helper)
+    print('\n👂 Abonnement aux notifications...');
 
-    final subscriptionId = await wsClient.subscribe(
-      collection: 'articles',
+    final notifSubscriptionId = await wsClient.subscribeToNotifications(
       onMessage: (message) {
-        print('\n📨 Message reçu:');
-        print('   Type: ${message.type}');
+        print('\n🔔 Notification reçue:');
         print('   Event: ${message.event}');
         if (message.data != null) {
-          print('   Data: ${message.data}');
+          print('   Subject: ${message.data!['subject']}');
+          print('   Message: ${message.data!['message']}');
         }
       },
     );
 
-    print('✅ Abonné avec l\'ID: $subscriptionId');
+    print('✅ Abonné aux notifications avec l\'ID: $notifSubscriptionId');
+
+    // 4b. Abonnement uniquement aux créations d'articles (méthode helper)
+    print('\n👂 Abonnement aux créations d\'articles...');
+
+    final createSubscriptionId = await wsClient.subscribeToCreate(
+      collection: 'articles',
+      query: {
+        'filter': {
+          'status': {'_eq': 'published'},
+        },
+      },
+      onMessage: (message) {
+        print('\n📨 Nouvel article publié:');
+        if (message.data != null) {
+          print('   Titre: ${message.data!['title']}');
+          print('   ID: ${message.data!['id']}');
+        }
+      },
+    );
+
+    print('✅ Abonné aux créations avec l\'ID: $createSubscriptionId');
+
+    // 4c. Abonnement aux mises à jour (méthode helper)
+    print('\n👂 Abonnement aux mises à jour d\'articles...');
+
+    final updateSubscriptionId = await wsClient.subscribeToUpdate(
+      collection: 'articles',
+      onMessage: (message) {
+        print('\n✏️  Article mis à jour:');
+        if (message.data != null) {
+          print('   ID: ${message.data!['id']}');
+          print('   Status: ${message.data!['status']}');
+        }
+      },
+    );
+
+    print('✅ Abonné aux mises à jour avec l\'ID: $updateSubscriptionId');
 
     // 5. Créer un article pour tester les notifications en temps réel
     print('\n📝 Création d\'un article de test...');
@@ -75,7 +112,9 @@ void main() async {
 
     // 8. Se désabonner
     print('\n🔕 Désinscription...');
-    await wsClient.unsubscribe(subscriptionId);
+    await wsClient.unsubscribe(notifSubscriptionId);
+    await wsClient.unsubscribe(createSubscriptionId);
+    await wsClient.unsubscribe(updateSubscriptionId);
     print('✅ Désinscrit');
 
     // 9. Nettoyer - supprimer l'article de test

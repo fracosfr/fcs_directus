@@ -700,11 +700,30 @@ final wsClient = DirectusWebSocketClient(
 
 await wsClient.connect();
 
-// Abonnement aux événements
-final subscriptionId = await wsClient.subscribe(
+// Méthode 1: Helper pour collection système (recommandé)
+final notifSubId = await wsClient.subscribeToNotifications(
+  onMessage: (message) {
+    print('🔔 Notification: ${message.data}');
+  },
+);
+
+// Méthode 2: Helper pour événement spécifique
+final createSubId = await wsClient.subscribeToCreate(
   collection: 'articles',
   onMessage: (message) {
-    print('Nouvel événement: ${message.type}');
+    print('📝 Nouvel article: ${message.data}');
+  },
+);
+
+// Méthode 3: Souscription générique (collections personnalisées)
+final subscriptionId = await wsClient.subscribe(
+  collection: 'articles',
+  event: 'update', // Optionnel: 'create', 'update', 'delete'
+  query: {         // Optionnel: filtrer côté serveur
+    'filter': {'status': {'_eq': 'published'}}
+  },
+  onMessage: (message) {
+    print('Événement: ${message.event}');
     print('Données: ${message.data}');
   },
 );
@@ -715,6 +734,12 @@ await wsClient.unsubscribe(subscriptionId);
 // Fermer la connexion
 await wsClient.disconnect();
 ```
+
+**📚 Documentation complète:** Consultez le [Guide WebSocket](docs/WEBSOCKET_GUIDE.md) pour:
+- Liste des 18 méthodes helper pour collections système
+- Patterns avancés (chat temps réel, notifications push, dashboards live)
+- Exemples de filtrage et gestion d'erreurs
+- Bonnes pratiques et limitations
 
 ### Gestion des fichiers
 
