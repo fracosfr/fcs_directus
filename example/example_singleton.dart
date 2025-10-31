@@ -97,7 +97,7 @@ Future<void> example2TypedSettings(DirectusClient directus) async {
 Future<void> example3ActiveRecordSettings(DirectusClient directus) async {
   print('=== Exemple 3 : Settings avec DirectusModel ===\n');
 
-  final settingsService = directus.items('settings');
+  final settingsService = directus.itemsOf<SettingsModel>();
 
   try {
     // Récupérer en DirectusModel

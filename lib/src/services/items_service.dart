@@ -172,80 +172,6 @@ class ItemsService<T> {
 
   ItemsService(this._httpClient, this.collection);
 
-  // Convenience methods to work with DirectusModel without requiring
-  // a specific model class. These methods return dynamic maps wrapped in
-  // DirectusModel for callers who prefer the Active Record pattern.
-
-  /// Récupère plusieurs items sous forme de modèle typé T
-  Future<DirectusResponse<T>> readManyActive({
-    T Function(Map<String, dynamic>)? factory,
-    QueryParameters? query,
-  }) async {
-    final response = await _httpClient.get(
-      '/items/$collection',
-      queryParameters: query?.toQueryParameters(),
-    );
-
-    final data = response.data['data'] as List;
-    final meta = response.data['meta'] != null
-        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
-        : null;
-
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        factory ?? _getModelFactory();
-    final items = data
-        .map((item) => resolvedFactory(item as Map<String, dynamic>))
-        .toList();
-    return DirectusResponse(data: items, meta: meta);
-  }
-
-  /// Récupère un item par son ID et le retourne en modèle typé T
-  Future<T> readOneActive(
-    String id, {
-    T Function(Map<String, dynamic>)? factory,
-    QueryParameters? query,
-  }) async {
-    final response = await _httpClient.get(
-      '/items/$collection/$id',
-      queryParameters: query?.toQueryParameters(),
-    );
-
-    final data = response.data['data'] as Map<String, dynamic>;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        factory ?? _getModelFactory();
-    return resolvedFactory(data);
-  }
-
-  /// Crée un nouvel item et retourne un modèle typé T
-  Future<T> createOneActive(
-    Map<String, dynamic> data, {
-    T Function(Map<String, dynamic>)? factory,
-  }) async {
-    final response = await _httpClient.post('/items/$collection', data: data);
-
-    final responseData = response.data['data'] as Map<String, dynamic>;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        factory ?? _getModelFactory();
-    return resolvedFactory(responseData);
-  }
-
-  /// Met à jour un item et retourne un modèle typé T
-  Future<T> updateOneActive(
-    String id,
-    Map<String, dynamic> data, {
-    T Function(Map<String, dynamic>)? factory,
-  }) async {
-    final response = await _httpClient.patch(
-      '/items/$collection/$id',
-      data: data,
-    );
-
-    final responseData = response.data['data'] as Map<String, dynamic>;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        factory ?? _getModelFactory();
-    return resolvedFactory(responseData);
-  }
-
   /// Récupère plusieurs items
   ///
   /// [query] Paramètres de requête pour filtrer et paginer
@@ -418,22 +344,6 @@ class ItemsService<T> {
     return fromJson != null ? fromJson(data) : data;
   }
 
-  /// Récupère le singleton sous forme de modèle typé T
-  Future<T> readSingletonActive({
-    T Function(Map<String, dynamic>)? factory,
-    QueryParameters? query,
-  }) async {
-    final response = await _httpClient.get(
-      '/items/$collection',
-      queryParameters: query?.toQueryParameters(),
-    );
-
-    final data = response.data['data'] as Map<String, dynamic>;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        factory ?? _getModelFactory();
-    return resolvedFactory(data);
-  }
-
   /// Met à jour le singleton de la collection
   ///
   /// Contrairement aux items normaux, un singleton n'a pas besoin d'ID
@@ -459,6 +369,103 @@ class ItemsService<T> {
     final responseData = response.data['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;
   }
+}
+
+/// Méthodes d'extension pour `ItemsService` qui fonctionnent avec `DirectusModel`.
+///
+/// Ces méthodes ne sont disponibles que lorsque le type `T` de `ItemsService<T>`
+/// est une sous-classe de `DirectusModel`.
+
+extension ItemsServiceActive<T extends DirectusModel> on ItemsService<T> {
+  // Convenience methods to work with DirectusModel without requiring
+  // a specific model class. These methods return dynamic maps wrapped in
+  // DirectusModel for callers who prefer the Active Record pattern.
+
+  /// Récupère plusieurs items sous forme de modèle typé T
+  Future<DirectusResponse<T>> readManyActive({
+    T Function(Map<String, dynamic>)? factory,
+    QueryParameters? query,
+  }) async {
+    final response = await _httpClient.get(
+      '/items/$collection',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as List;
+    final meta = response.data['meta'] != null
+        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
+        : null;
+
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    final items = data
+        .map((item) => resolvedFactory(item as Map<String, dynamic>))
+        .toList();
+    return DirectusResponse(data: items, meta: meta);
+  }
+
+  /// Récupère un item par son ID et le retourne en modèle typé T
+  Future<T> readOneActive(
+    String id, {
+    T Function(Map<String, dynamic>)? factory,
+    QueryParameters? query,
+  }) async {
+    final response = await _httpClient.get(
+      '/items/$collection/$id',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(data);
+  }
+
+  /// Crée un nouvel item et retourne un modèle typé T
+  Future<T> createOneActive(
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? factory,
+  }) async {
+    final response = await _httpClient.post('/items/$collection', data: data);
+
+    final responseData = response.data['data'] as Map<String, dynamic>;
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(responseData);
+  }
+
+  /// Met à jour un item et retourne un modèle typé T
+  Future<T> updateOneActive(
+    String id,
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? factory,
+  }) async {
+    final response = await _httpClient.patch(
+      '/items/$collection/$id',
+      data: data,
+    );
+
+    final responseData = response.data['data'] as Map<String, dynamic>;
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(responseData);
+  }
+
+  /// Récupère le singleton sous forme de modèle typé T
+  Future<T> readSingletonActive({
+    T Function(Map<String, dynamic>)? factory,
+    QueryParameters? query,
+  }) async {
+    final response = await _httpClient.get(
+      '/items/$collection',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(data);
+  }
 
   /// Met à jour le singleton et retourne un modèle typé T
   Future<T> updateSingletonActive(
@@ -475,11 +482,16 @@ class ItemsService<T> {
 
   /// Récupère le factory du modèle T si disponible
   T Function(Map<String, dynamic>) _getModelFactory() {
-    // Si T hérite de DirectusModel et expose un static factory
-    // On tente d'accéder à T.factory
-    // Dart ne permet pas d'accéder directement à un static via le type générique
-    // On peut utiliser une convention : chaque modèle doit exposer un static 'factory'
-    // et l'utilisateur doit passer le factory si ce n'est pas le cas
-    return DirectusModel.getFactory<T>();
+    final factory = DirectusModel.getFactory<T>();
+
+    if (factory == null) {
+      throw StateError(
+        'Aucune factory enregistrée pour le type $T. '
+        'Veuillez enregistrer une factory avec `DirectusModel.registerFactory<$T>((data) => ...)` '
+        'ou la fournir directement à la méthode.',
+      );
+    }
+
+    return (data) => factory(data) as T;
   }
 }
