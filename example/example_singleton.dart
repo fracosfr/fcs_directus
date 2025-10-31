@@ -101,7 +101,7 @@ Future<void> example3ActiveRecordSettings(DirectusClient directus) async {
 
   try {
     // Récupérer en DirectusModel
-    final settings = await settingsService.readSingletonActive();
+    final settings = await settingsService.readSingleton();
 
     print('Settings actuels (DirectusModel):');
     print('  Site name: ${settings.getString('site_name')}');
@@ -111,7 +111,7 @@ Future<void> example3ActiveRecordSettings(DirectusClient directus) async {
     settings.setString('site_name', 'Site Modifié via Active Record');
     settings.setBool('maintenance_mode', true);
 
-    final updated = await settingsService.updateSingletonActive(
+    final updated = await settingsService.updateSingleton(
       settings.toJsonDirty(),
     );
 

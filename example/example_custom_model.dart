@@ -134,7 +134,7 @@ void main() async {
       final discountedPrice = product.discountedPrice;
       print('  Prix soldé: ${discountedPrice.toStringAsFixed(2)}€');
       print(
-        '  Économie: ${(product.price - discountedPrice).toStringAsFixed(2)}€',
+        '  Économie: ${(product.price.value - discountedPrice).toStringAsFixed(2)}€',
       );
     }
 

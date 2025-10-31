@@ -2,6 +2,7 @@ import 'directus_config.dart';
 import 'directus_http_client.dart';
 import '../services/auth_service.dart';
 import '../services/items_service.dart';
+import '../services/item_active_service.dart';
 import '../services/collections_service.dart';
 import '../services/users_service.dart';
 import '../services/files_service.dart';
@@ -164,7 +165,7 @@ class DirectusClient {
   /// final products = client.itemsOf<Product>();
   /// final allProducts = await products.readMany();
   /// ```
-  ItemsService<T> itemsOf<T extends DirectusModel>() {
+  ItemActiveService<T> itemsOf<T extends DirectusModel>() {
     // Récupérer le itemName depuis une instance du modèle
     // Note: Dart ne permet pas d'accéder directement aux membres statiques via les types génériques
     // On doit donc créer une instance temporaire via la factory
@@ -180,7 +181,7 @@ class DirectusClient {
     final tempInstance = factory({}) as T;
     final collection = tempInstance.itemName;
 
-    return ItemsService<T>(_httpClient, collection);
+    return ItemActiveService<T>(_httpClient, collection);
   }
 
   /// Accède au client WebSocket pour les communications temps réel.
