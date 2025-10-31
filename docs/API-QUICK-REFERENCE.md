@@ -201,6 +201,84 @@ await client.items('articles').deleteMany(['id1', 'id2']);
 
 ---
 
+## 📦 Items (CRUD) - ItemActiveService (Typé)
+
+Accès : `client.itemsOf<MonModele>()`
+
+### Read (Lecture)
+
+```dart
+// Lire plusieurs items (retourne DirectusResponse<Article>)
+DirectusResponse<Article> response = await client.itemsOf<Article>().readMany(
+  query: QueryParameters(
+    fields: ['id', 'title', 'status'],
+    filter: Filter.field('status').equals('published'),
+  ),
+);
+List<Article> articles = response.data;
+
+// Lire un item (retourne Article)
+Article article = await client.itemsOf<Article>().readOne('item-id');
+```
+
+### Create (Création)
+
+```dart
+// Créer un item (retourne Article)
+final newArticleModel = Article.empty()
+  ..title.set('Mon article')
+  ..status.set('draft');
+
+Article newArticle = await client.itemsOf<Article>().createOne(newArticleModel);
+
+// Créer plusieurs items (retourne List<Article>)
+List<Article> newArticles = await client.itemsOf<Article>().createMany([
+  newArticleModel1,
+  newArticleModel2,
+]);
+```
+```
+
+### Update (Mise à jour)
+
+```dart
+// Mettre à jour un item (retourne Article)
+// D'abord, récupérer et modifier l'article
+Article articleToUpdate = await client.itemsOf<Article>().readOne('item-id');
+articleToUpdate.title.set('Nouveau titre super');
+
+// Ensuite, passer l'objet modifié à updateOne
+Article updated = await client.itemsOf<Article>().updateOne(articleToUpdate);
+
+// Mettre à jour plusieurs items (retourne List<Article>)
+List<Article> updatedArticles = await client.itemsOf<Article>().updateMany([
+  articleToUpdate1,
+  articleToUpdate2,
+]);
+```
+```
+
+### Delete (Suppression)
+
+```dart
+// Supprimer un item en utilisant le modèle
+// D'abord, récupérer l'article
+Article articleToDelete = await client.itemsOf<Article>().readOne('item-id');
+
+// Ensuite, le supprimer
+await client.itemsOf<Article>().deleteOne(articleToDelete);
+
+// Supprimer plusieurs items
+await client.itemsOf<Article>().deleteMany([
+  articleToDelete1,
+  articleToDelete2,
+]);
+```
+```
+```
+
+---
+
 ## 🔍 Filtres (Filter)
 
 ### Opérateurs de comparaison
@@ -1150,11 +1228,12 @@ class Article extends DirectusModel {
 
 ```dart
 // Lire avec le modèle
-final articles = await client.itemsOf<Article>().readManyActive();
+final articlesService = client.itemsOf<Article>();
+final articles = await articlesService.readMany();
 for (var article in articles.data) {
-  print(article.title); // Accès direct
+  print(article.title.value); // Accès direct via property wrapper
   article.title.set('New title'); // Modification
-  await article.save(client); // Sauvegarde
+  await article.save(); // Sauvegarde (nécessite que le service soit enregistré sur le modèle)
 }
 
 // Créer
@@ -1162,10 +1241,10 @@ final newArticle = Article.empty()
   ..title.set('Mon article')
   ..content.set('Contenu')
   ..status.set('draft');
-await newArticle.save(client);
+await newArticle.save();
 
 // Supprimer
-await article.delete(client);
+await article.delete();
 ```
 
 ---

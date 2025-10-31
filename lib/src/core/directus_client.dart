@@ -38,6 +38,18 @@ import '../websocket/directus_websocket_client.dart';
 ///
 /// Ce client fournit un accès à tous les services Directus disponibles.
 ///
+/// Il existe deux manières principales d'interagir avec les items d'une collection :
+///
+/// 1.  **Accès générique avec `items()`** : Renvoie un `ItemsService` qui permet
+///     d'effectuer des opérations CRUD de base et de recevoir les données sous
+///     forme de `Map<String, dynamic>` (JSON). C'est utile pour un accès simple
+///     et rapide sans avoir à créer de classes de modèle.
+///
+/// 2.  **Accès typé avec `itemsOf()`** : Renvoie un `ItemActiveService` qui
+///     travaille avec des classes de modèle héritant de `DirectusModel`.
+///     Ce service renvoie des instances de vos modèles, permettant une
+///     programmation orientée objet et une meilleure sécurité de type.
+///
 /// Exemple d'utilisation:
 /// ```dart
 /// final client = DirectusClient(
@@ -50,11 +62,13 @@ import '../websocket/directus_websocket_client.dart';
 ///   password: 'password',
 /// );
 ///
-/// // Récupérer des items avec le nom de collection
-/// final items = await client.items('articles').readMany();
+/// // Accès générique : récupérer des items sous forme de Map
+/// final itemsService = client.items('articles');
+/// final articles = await itemsService.readMany();
 ///
-/// // Ou utiliser directement un modèle DirectusModel
-/// final items = await client.itemsOf<Product>().readMany();
+/// // Accès typé : récupérer des items sous forme d'objets Product
+/// final productsService = client.itemsOf<Product>();
+/// final products = await productsService.readMany();
 ///
 /// // WebSocket temps réel
 /// await client.websocket.connect();
@@ -134,22 +148,28 @@ class DirectusClient {
     versions = VersionsService(_httpClient);
   }
 
-  /// Crée un service pour accéder aux items d'une collection spécifique
+  /// Crée un service générique (`ItemsService`) pour accéder aux items d'une collection.
   ///
-  /// [collection] Le nom de la collection
+  /// Ce service retourne les données sous forme de `Map<String, dynamic>`.
+  /// Il est idéal pour les opérations simples où la création de modèles typés n'est pas nécessaire.
+  ///
+  /// [collection] Le nom de la collection.
   ///
   /// Exemple:
   /// ```dart
-  /// final articles = client.items('articles');
-  /// final data = await articles.readMany();
+  /// final articlesService = client.items('articles');
+  /// final articles = await articlesService.readMany(); // articles est une List<dynamic>
   /// ```
   ItemsService<T> items<T>(String collection) {
     return ItemsService<T>(_httpClient, collection);
   }
 
-  /// Crée un service pour accéder aux items d'une collection en utilisant un DirectusModel
+  /// Crée un service typé (`ItemActiveService`) pour une collection en utilisant un `DirectusModel`.
   ///
-  /// Le nom de la collection est automatiquement récupéré depuis le modèle via le getter `itemName`.
+  /// Ce service retourne les données sous forme d'instances de votre modèle `T`,
+  /// ce qui permet une forte sécurité de type et une manipulation orientée objet.
+  ///
+  /// Le nom de la collection est automatiquement déduit du modèle `T` (via le getter `itemName`).
   ///
   /// Exemple:
   /// ```dart
@@ -162,8 +182,8 @@ class DirectusClient {
   /// }
   ///
   /// // Utilisation
-  /// final products = client.itemsOf<Product>();
-  /// final allProducts = await products.readMany();
+  /// final productsService = client.itemsOf<Product>();
+  /// final allProducts = await productsService.readMany(); // allProducts est une List<Product>
   /// ```
   ItemActiveService<T> itemsOf<T extends DirectusModel>() {
     // Récupérer le itemName depuis une instance du modèle

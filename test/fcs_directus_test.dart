@@ -1,5 +1,12 @@
+import 'package:fcs_directus/src/services/item_active_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fcs_directus/fcs_directus.dart';
+
+class _TestModel extends DirectusModel {
+  _TestModel(super.data);
+  @override
+  String get itemName => 'test_items';
+}
 
 void main() {
   group('DirectusConfig', () {
@@ -65,6 +72,19 @@ void main() {
     test('crée un service items typé', () {
       final articlesService = client.items<Map<String, dynamic>>('articles');
       expect(articlesService, isNotNull);
+    });
+
+    test('crée un service itemsOf typé', () {
+      // Register factory for the test model
+      DirectusModel.registerFactory<_TestModel>((data) => _TestModel(data));
+
+      final itemActiveService = client.itemsOf<_TestModel>();
+      expect(itemActiveService, isNotNull);
+      expect(itemActiveService, isA<ItemActiveService<_TestModel>>());
+      expect(itemActiveService.collection, equals('test_items'));
+
+      // Clean up
+      DirectusModel.unregisterFactory<_TestModel>();
     });
   });
 

@@ -288,48 +288,52 @@ print('${article.comments.length} commentaires');
 
 Voir [06-relationships.md](06-relationships.md) pour plus de détails.
 
-## 🎨 Services et ItemsService
+## 🎨 Services: ItemsService & ItemActiveService
 
-### ItemsService générique
+Pour interagir avec les données de vos collections, la librairie fournit deux services principaux :
 
-`ItemsService<T>` est le service principal pour gérer vos collections :
+### 1. `ItemsService` (Générique)
+
+Utilisez `directus.items('ma_collection')` pour obtenir un `ItemsService`. Il est conçu pour un accès simple et rapide, retournant les données sous forme de `Map<String, dynamic>`.
 
 ```dart
-// Service non typé (Map)
+// Service générique, retourne des Map
 final articlesService = directus.items('articles');
 final result = await articlesService.readMany();
-// result.data est List<Map<String, dynamic>>
-
-// Service typé (avec modèle)
-final articlesService = directus.items<Article>('articles');
-final result = await articlesService.readMany();
-// result.data est List<Article>
+// result.data est une List<Map<String, dynamic>>
 ```
 
-### Enregistrer des factories
+### 2. `ItemActiveService` (Typé)
 
-Pour utiliser un `ItemsService<T>` typé, enregistrez une factory :
+Utilisez `directus.itemsOf<MonModele>()` pour obtenir un `ItemActiveService`. Il est conçu pour fonctionner avec vos classes de modèle qui héritent de `DirectusModel`. Il retourne des instances de vos modèles, offrant une sécurité de type et une expérience de développement orientée objet.
 
 ```dart
-// Enregistrer la factory
-DirectusModel.registerFactory('articles', (data) => Article(data));
+// Service typé, retourne des objets Article
+final articlesService = directus.itemsOf<Article>();
+final articles = await articlesService.readMany();
+// articles.data contient des instances de la classe Article
+```
 
-// Le service peut maintenant créer des instances Article
-final service = directus.items<Article>('articles');
+Pour que `itemsOf<T>()` fonctionne, vous devez enregistrer une "factory" pour votre modèle. Cela indique à la librairie comment créer une instance de votre classe à partir des données JSON.
+
+```dart
+// Enregistrer la factory, typiquement au démarrage de l'app
+DirectusModel.registerFactory<Article>((data) => Article(data));
+
+// Le service peut maintenant créer des instances d'Article
+final service = directus.itemsOf<Article>();
 final articles = await service.readMany();
-// articles.data contient des instances Article
 ```
 
 ### Services spécialisés
 
-Pour certaines collections système, des services dédiés existent :
+Pour les collections système de Directus, des services dédiés avec des méthodes spécifiques existent :
 
 ```dart
 directus.users      // UsersService
 directus.files      // FilesService
 directus.folders    // FoldersService
 directus.roles      // RolesService
-directus.permissions // PermissionsService
 // etc.
 ```
 
@@ -499,26 +503,23 @@ Un **singleton** est une collection Directus qui ne contient qu'**un seul item u
 ### Utilisation
 
 ```dart
-// Récupérer le singleton
+// Accès générique avec ItemsService
 final settings = await directus.items('settings').readSingleton();
 print(settings['site_name']);
-print(settings['maintenance_mode']);
 
-// Mettre à jour le singleton
+// Mettre à jour avec ItemsService
 await directus.items('settings').updateSingleton({
   'site_name': 'Mon nouveau site',
-  'maintenance_mode': false,
 });
 
-// Avec DirectusModel
-final settings = await directus.items('settings').readSingletonActive();
-settings.setString('site_name', 'Nouveau nom');
-await directus.items('settings').updateSingletonActive(settings.toJsonDirty());
+// Accès typé avec ItemActiveService
+// (en supposant que SettingsModel est un DirectusModel)
+final settingsModel = await directus.itemsOf<SettingsModel>().readSingleton();
+print(settingsModel.siteName.value);
 
-// Avec modèle typé
-final settings = await directus.items<AppSettings>('settings').readSingleton(
-  fromJson: (json) => AppSettings.fromJson(json),
-);
+// Mettre à jour avec ItemActiveService
+settingsModel.siteName.set('Un autre nom');
+await directus.itemsOf<SettingsModel>().updateSingleton(settingsModel);
 ```
 
 ### Cas d'usage courants

@@ -457,7 +457,7 @@ void main() {
   DirectusModel.registerFactory('articles', (data) => Article(data));
   
   // Enregistrer le service
-  Article.registerService(directus.items<Article>('articles'));
+  Article.registerService(directus.itemsOf<Article>());
 }
 ```
 
@@ -709,8 +709,8 @@ void initModels(DirectusClient directus) {
   DirectusModel.registerFactory('products', (data) => Product(data));
   
   // Services (si vous utilisez Active Record)
-  Article.registerService(directus.items<Article>('articles'));
-  Product.registerService(directus.items<Product>('products'));
+  Article.registerService(directus.itemsOf<Article>());
+  Product.registerService(directus.itemsOf<Product>());
 }
 ```
 

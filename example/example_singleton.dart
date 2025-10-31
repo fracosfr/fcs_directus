@@ -104,20 +104,18 @@ Future<void> example3ActiveRecordSettings(DirectusClient directus) async {
     final settings = await settingsService.readSingleton();
 
     print('Settings actuels (DirectusModel):');
-    print('  Site name: ${settings.getString('site_name')}');
-    print('  Maintenance: ${settings.getBool('maintenance_mode')}');
+    print('  Site name: ${settings.siteName.value}');
+    print('  Maintenance: ${settings.maintenanceMode.value}');
 
     // Modifier et sauvegarder
-    settings.setString('site_name', 'Site Modifié via Active Record');
-    settings.setBool('maintenance_mode', true);
+    settings.siteName.set('Site Modifié via Active Record');
+    settings.maintenanceMode.set(true);
 
-    final updated = await settingsService.updateSingleton(
-      settings.toJsonDirty(),
-    );
+    final updated = await settingsService.updateSingleton(settings);
 
     print('\nSettings mis à jour:');
-    print('  Site name: ${updated.getString('site_name')}');
-    print('  Maintenance: ${updated.getBool('maintenance_mode')}');
+    print('  Site name: ${updated.siteName.value}');
+    print('  Maintenance: ${updated.maintenanceMode.value}');
   } catch (e) {
     print('Erreur: $e');
   }

@@ -8,57 +8,65 @@ fcs_directus fournit un service pour chaque endpoint de l'API Directus, permetta
 
 ## 🎯 Services principaux
 
-### ItemsService (Collections personnalisées)
+### ItemsService & ItemActiveService (Collections)
 
-Service générique pour gérer vos collections personnalisées.
+Pour interagir avec les items de vos collections, fcs_directus propose deux services :
 
-#### Collections normales
+1.  `ItemsService` : Pour un accès générique, retournant des `Map<String, dynamic>`.
+2.  `ItemActiveService` : Pour un accès typé, retournant des instances de vos classes `DirectusModel`.
+
+#### 1. Accès générique avec `ItemsService`
+
+Utilisez `directus.items('ma_collection')` pour obtenir un `ItemsService`. C'est idéal pour lire ou écrire des données sans créer de classes de modèle.
 
 ```dart
-// Service non typé
-final articles = directus.items('articles');
+// Obtenir le service pour la collection 'articles'
+final articlesService = directus.items('articles');
 
-// Service typé
-final articles = directus.items<Article>('articles');
+// Lire plusieurs items (retourne une List<Map<String, dynamic>>)
+final articles = await articlesService.readMany();
 
-// Méthodes CRUD
-await articles.readMany(query: ...);
-await articles.readOne(id: '1');
-await articles.createOne(item: {...});
-await articles.updateOne(id: '1', item: {...});
-await articles.deleteOne(id: '1');
-await articles.createMany(items: [...]);
-await articles.updateMany(ids: [...], item: {...});
-await articles.deleteMany(ids: [...]);
+// Lire un item
+final article = await articlesService.readOne('1');
+print(article['title']); // Accès comme une Map
+```
+
+#### 2. Accès typé avec `ItemActiveService`
+
+Utilisez `directus.itemsOf<MonModele>()` pour obtenir un `ItemActiveService`. Le nom de la collection est automatiquement déduit de votre modèle. Ce service travaille directement avec vos objets.
+
+```dart
+// Définir un modèle
+class Article extends DirectusModel {
+  Article(super.data);
+  @override
+  String get itemName => 'articles';
+
+  String get title => getString('title');
+  set title(String value) => setString('title', value);
+}
+
+// Obtenir le service typé
+final articlesService = directus.itemsOf<Article>();
+
+// Lire plusieurs items (retourne une List<Article>)
+final List<Article> articles = await articlesService.readMany();
+
+// Lire un item (retourne un Article)
+final Article article = await articlesService.readOne('1');
+print(article.title); // Accès via le getter
 ```
 
 #### Collections Singleton
 
-Les **singletons** sont des collections qui ne contiennent qu'un seul item unique, idéales pour les paramètres globaux et configurations.
+La logique est la même pour les singletons. `readSingleton` et `updateSingleton` sont disponibles sur les deux services.
 
 ```dart
-// Récupérer le singleton
-final settings = await directus.items('settings').readSingleton();
-print(settings['site_name']);
-print(settings['maintenance_mode']);
+// Accès générique
+final settingsMap = await directus.items('settings').readSingleton();
 
-// Mettre à jour le singleton
-await directus.items('settings').updateSingleton({
-  'site_name': 'Mon nouveau site',
-  'maintenance_mode': false,
-});
-
-// Avec DirectusModel (Active Record)
-final settings = await directus.items('settings').readSingletonActive();
-settings.setString('site_name', 'Nouveau nom');
-await directus.items('settings').updateSingletonActive(
-  settings.toJsonDirty(),
-);
-
-// Avec modèle typé
-final settings = await directus.items<AppSettings>('settings').readSingleton(
-  fromJson: (json) => AppSettings.fromJson(json),
-);
+// Accès typé
+final settingsModel = await directus.itemsOf<AppSettings>().readSingleton();
 ```
 
 **Différences singleton vs collection normale :**
@@ -532,12 +540,17 @@ await shares.info(id: 'share-id');
 
 ### 1. Utiliser les services typés
 
-```dart
-// ✅ Bon
-final articles = directus.items<Article>('articles');
+Lorsque vous avez des modèles, préférez `itemsOf<T>()` pour bénéficier de la sécurité de type.
 
-// ❌ Non typé
-final articles = directus.items('articles');
+```dart
+// ✅ Bon: service typé, retourne des objets Article
+final articlesService = directus.itemsOf<Article>();
+final List<Article> articles = await articlesService.readMany();
+
+
+// 😐 OK pour un accès rapide: service générique, retourne des Map
+final genericService = directus.items('articles');
+final articleMaps = await genericService.readMany();
 ```
 
 ### 2. Gérer les erreurs

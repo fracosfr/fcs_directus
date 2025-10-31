@@ -74,15 +74,12 @@ void main() async {
     ..featured.set(false);
 
   // Sauvegarder
-  final createdData = await client
-      .items('articles')
-      .createOne(newArticle.toJson());
-  final savedArticle = Article(createdData);
+  final savedArticle = await client.itemsOf<Article>().createOne(newArticle);
 
   print('✅ Article créé:');
   print('  ID: ${savedArticle.id}');
-  print('  Titre: ${savedArticle.title}');
-  print('  Status: ${savedArticle.status}');
+  print('  Titre: ${savedArticle.title.value}');
+  print('  Status: ${savedArticle.status.value}');
   print('');
 
   // ============================================================================
@@ -96,13 +93,24 @@ void main() async {
   savedArticle.viewCount.incrementBy(10);
 
   // Sauvegarder seulement les champs modifiés
-  final updatedData = await client
-      .items('articles')
-      .updateOne(savedArticle.id!, savedArticle.toJson());
+  final updatedArticle = await client.itemsOf<Article>().updateOne(
+    savedArticle,
+  );
 
   print('✅ Article mis à jour:');
-  print('  Titre: ${updatedData['title']}');
-  print('  Status: ${updatedData['status']}');
+  print('  Titre: ${updatedArticle.title.value}');
+  print('  Status: ${updatedArticle.status.value}');
+  print('');
+
+  // ============================================================================
+  // SUPPRIMER UN ARTICLE
+  // ============================================================================
+
+  print('\n🗑️ Suppression de l\'article...\n');
+
+  await client.itemsOf<Article>().deleteOne(updatedArticle);
+
+  print('✅ Article supprimé: ${updatedArticle.id}');
   print('');
 
   // ============================================================================
@@ -154,12 +162,10 @@ void main() async {
     ..active.set(true)
     ..discount.set(10); // 10% de remise
 
-  final createdProduct = await client
-      .items('products')
-      .createOne(newProduct.toJson());
+  final createdProduct = await client.itemsOf<Product>().createOne(newProduct);
 
-  print('✅ Produit créé: ${createdProduct['name']}');
-  print('  Prix: ${createdProduct['price']}€');
+  print('✅ Produit créé: ${createdProduct.name.value}');
+  print('  Prix: ${createdProduct.price.value}€');
   print('');
 
   // ============================================================================
