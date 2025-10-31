@@ -376,4 +376,105 @@ class ItemsService<T> {
       },
     );
   }
+
+  // ========================================================================
+  // MÉTHODES SINGLETON
+  // ========================================================================
+
+  /// Récupère le singleton de la collection
+  ///
+  /// Un singleton est une collection qui ne contient qu'un seul item unique.
+  /// Utile pour les paramètres globaux, configurations, etc.
+  ///
+  /// [query] Paramètres de requête (champs, relations, etc.)
+  /// [fromJson] Fonction pour convertir JSON en objet T (optionnel)
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Récupérer les settings globaux
+  /// final settings = await directus.items('settings').readSingleton();
+  /// ```
+  Future<dynamic> readSingleton({
+    QueryParameters? query,
+    T Function(Map<String, dynamic>)? fromJson,
+  }) async {
+    final response = await _httpClient.get(
+      '/items/$collection/singleton',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    return fromJson != null ? fromJson(data) : data;
+  }
+
+  /// Récupère le singleton sous forme de `DirectusModel`
+  ///
+  /// [query] Paramètres de requête (champs, relations, etc.)
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Récupérer les settings en DirectusModel
+  /// final settings = await directus.items('settings').readSingletonActive();
+  /// print(settings['site_name']);
+  /// ```
+  Future<DynamicModel> readSingletonActive({QueryParameters? query}) async {
+    final response = await _httpClient.get(
+      '/items/$collection/singleton',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    return DynamicModel(data, itemName: collection);
+  }
+
+  /// Met à jour le singleton de la collection
+  ///
+  /// Contrairement aux items normaux, un singleton n'a pas besoin d'ID
+  /// car il n'existe qu'un seul item dans la collection.
+  ///
+  /// [data] Données à mettre à jour
+  /// [fromJson] Fonction pour convertir JSON en objet T (optionnel)
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Mettre à jour les settings
+  /// await directus.items('settings').updateSingleton({
+  ///   'site_name': 'Mon nouveau site',
+  ///   'maintenance_mode': false,
+  /// });
+  /// ```
+  Future<dynamic> updateSingleton(
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? fromJson,
+  }) async {
+    final response = await _httpClient.patch(
+      '/items/$collection/singleton',
+      data: data,
+    );
+
+    final responseData = response.data['data'] as Map<String, dynamic>;
+    return fromJson != null ? fromJson(responseData) : responseData;
+  }
+
+  /// Met à jour le singleton et retourne un `DirectusModel`
+  ///
+  /// [data] Données à mettre à jour
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Mettre à jour et récupérer en DirectusModel
+  /// final settings = await directus.items('settings').updateSingletonActive({
+  ///   'maintenance_mode': true,
+  /// });
+  /// print('Mode maintenance: ${settings['maintenance_mode']}');
+  /// ```
+  Future<DynamicModel> updateSingletonActive(Map<String, dynamic> data) async {
+    final response = await _httpClient.patch(
+      '/items/$collection/singleton',
+      data: data,
+    );
+
+    final responseData = response.data['data'] as Map<String, dynamic>;
+    return DynamicModel(responseData, itemName: collection);
+  }
 }

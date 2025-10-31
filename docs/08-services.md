@@ -12,6 +12,8 @@ fcs_directus fournit un service pour chaque endpoint de l'API Directus, permetta
 
 Service générique pour gérer vos collections personnalisées.
 
+#### Collections normales
+
 ```dart
 // Service non typé
 final articles = directus.items('articles');
@@ -19,7 +21,7 @@ final articles = directus.items('articles');
 // Service typé
 final articles = directus.items<Article>('articles');
 
-// Méthodes disponibles
+// Méthodes CRUD
 await articles.readMany(query: ...);
 await articles.readOne(id: '1');
 await articles.createOne(item: {...});
@@ -30,7 +32,52 @@ await articles.updateMany(ids: [...], item: {...});
 await articles.deleteMany(ids: [...]);
 ```
 
-[Documentation complète →](api-reference/services/items-service.md)
+#### Collections Singleton
+
+Les **singletons** sont des collections qui ne contiennent qu'un seul item unique, idéales pour les paramètres globaux et configurations.
+
+```dart
+// Récupérer le singleton
+final settings = await directus.items('settings').readSingleton();
+print(settings['site_name']);
+print(settings['maintenance_mode']);
+
+// Mettre à jour le singleton
+await directus.items('settings').updateSingleton({
+  'site_name': 'Mon nouveau site',
+  'maintenance_mode': false,
+});
+
+// Avec DirectusModel (Active Record)
+final settings = await directus.items('settings').readSingletonActive();
+settings.setString('site_name', 'Nouveau nom');
+await directus.items('settings').updateSingletonActive(
+  settings.toJsonDirty(),
+);
+
+// Avec modèle typé
+final settings = await directus.items<AppSettings>('settings').readSingleton(
+  fromJson: (json) => AppSettings.fromJson(json),
+);
+```
+
+**Différences singleton vs collection normale :**
+
+| Opération | Collection normale | Collection singleton |
+|-----------|-------------------|---------------------|
+| Lire | `readOne(id)` / `readMany()` | `readSingleton()` |
+| Créer | `createOne(item)` | ❌ Pas de création (existe toujours) |
+| Mettre à jour | `updateOne(id, item)` | `updateSingleton(item)` |
+| Supprimer | `deleteOne(id)` | ❌ Pas de suppression |
+
+**Cas d'usage des singletons :**
+- Paramètres globaux de l'application
+- Configuration du site (nom, logo, contact)
+- Préférences utilisateur uniques
+- Traductions de l'interface
+- Données système uniques
+
+[Exemple complet →](../example/example_singleton.dart) | [Documentation complète →](api-reference/services/items-service.md)
 
 ### AuthService (Authentification)
 

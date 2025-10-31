@@ -463,6 +463,92 @@ await directus.items('articles').readMany(
 );
 ```
 
+### 6. Utiliser les singletons pour les configurations
+
+```dart
+// ✅ Collections singleton pour settings uniques
+final settings = await directus.items('settings').readSingleton();
+await directus.items('settings').updateSingleton({'maintenance': false});
+
+// ❌ Créer plusieurs items dans une collection normale
+final settings = await directus.items('settings').readOne('1');
+```
+
+## 🎯 Collections Singleton
+
+### Qu'est-ce qu'un singleton ?
+
+Un **singleton** est une collection Directus qui ne contient qu'**un seul item unique**. C'est idéal pour :
+
+- **Paramètres globaux** de l'application
+- **Configuration** du site
+- **Préférences utilisateur** uniques
+- **Traductions** de l'interface
+- **Données système** uniques
+
+### Différences avec les collections normales
+
+| Collection normale | Collection singleton |
+|-------------------|---------------------|
+| Plusieurs items avec ID | Un seul item sans ID |
+| `GET /items/articles` | `GET /items/settings/singleton` |
+| `POST` pour créer | Pas de `POST` (existe toujours) |
+| `DELETE` pour supprimer | Pas de `DELETE` |
+| `PATCH /items/articles/:id` | `PATCH /items/settings/singleton` |
+
+### Utilisation
+
+```dart
+// Récupérer le singleton
+final settings = await directus.items('settings').readSingleton();
+print(settings['site_name']);
+print(settings['maintenance_mode']);
+
+// Mettre à jour le singleton
+await directus.items('settings').updateSingleton({
+  'site_name': 'Mon nouveau site',
+  'maintenance_mode': false,
+});
+
+// Avec DirectusModel
+final settings = await directus.items('settings').readSingletonActive();
+settings.setString('site_name', 'Nouveau nom');
+await directus.items('settings').updateSingletonActive(settings.toJsonDirty());
+
+// Avec modèle typé
+final settings = await directus.items<AppSettings>('settings').readSingleton(
+  fromJson: (json) => AppSettings.fromJson(json),
+);
+```
+
+### Cas d'usage courants
+
+#### 1. Settings globaux
+```dart
+// Collection: app_settings (singleton)
+final settings = await directus.items('app_settings').readSingleton();
+final siteName = settings['site_name'];
+final contactEmail = settings['contact_email'];
+```
+
+#### 2. Configuration de l'application
+```dart
+// Collection: app_config (singleton)
+final config = await directus.items('app_config').readSingleton();
+final maxUploadSize = config['max_upload_size'];
+final allowedFileTypes = config['allowed_file_types'];
+```
+
+#### 3. Préférences utilisateur
+```dart
+// Collection: user_preferences (singleton, liée à l'utilisateur courant)
+final prefs = await directus.items('user_preferences').readSingleton();
+final theme = prefs['theme'];
+final language = prefs['language'];
+```
+
+[Voir exemple complet →](../example/example_singleton.dart)
+
 ## 🔗 Prochaines étapes
 
 - [**Authentication**](03-authentication.md) - Gestion de l'authentification

@@ -31,6 +31,7 @@ import '../services/translations_service.dart';
 import '../services/utilities_service.dart';
 import '../services/versions_service.dart';
 import '../models/directus_model.dart';
+import '../websocket/directus_websocket_client.dart';
 
 /// Client principal pour interagir avec l'API Directus.
 ///
@@ -53,10 +54,17 @@ import '../models/directus_model.dart';
 ///
 /// // Ou utiliser directement un modèle DirectusModel
 /// final items = await client.itemsOf<Product>().readMany();
+///
+/// // WebSocket temps réel
+/// await client.websocket.connect();
+/// await client.websocket.subscribe(collection: 'articles', onMessage: (msg) {
+///   print('Article modifié: ${msg.data}');
+/// });
 /// ```
 class DirectusClient {
   final DirectusConfig config;
   late final DirectusHttpClient _httpClient;
+  DirectusWebSocketClient? _websocket;
 
   // Services
   late final AuthService auth;
@@ -175,8 +183,38 @@ class DirectusClient {
     return ItemsService<T>(_httpClient, collection);
   }
 
+  /// Accède au client WebSocket pour les communications temps réel.
+  ///
+  /// Le client WebSocket est créé à la demande lors du premier accès.
+  /// Il utilisera automatiquement le token d'authentification actuel si disponible.
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Connexion
+  /// await client.websocket.connect();
+  ///
+  /// // S'abonner à une collection
+  /// await client.websocket.subscribe(
+  ///   collection: 'articles',
+  ///   onMessage: (message) {
+  ///     print('Mise à jour: ${message.data}');
+  ///   },
+  /// );
+  ///
+  /// // Se désabonner
+  /// await client.websocket.disconnect();
+  /// ```
+  DirectusWebSocketClient get websocket {
+    _websocket ??= DirectusWebSocketClient(
+      config,
+      accessToken: _httpClient.accessToken,
+    );
+    return _websocket!;
+  }
+
   /// Ferme le client et libère les ressources
-  void dispose() {
+  Future<void> dispose() async {
+    await _websocket?.dispose();
     _httpClient.close();
   }
 }

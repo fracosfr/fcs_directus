@@ -7,6 +7,7 @@
 /// - Services backend server-to-server
 /// - Intégrations avec des systèmes externes
 /// - Applications sans interface utilisateur
+library;
 
 import 'package:fcs_directus/fcs_directus.dart';
 
