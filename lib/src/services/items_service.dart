@@ -1,5 +1,6 @@
+import 'package:fcs_directus/src/models/directus_model.dart';
+
 import '../core/directus_http_client.dart';
-import '../models/directus_model.dart';
 import '../models/directus_filter.dart';
 import '../models/directus_deep.dart';
 import '../models/directus_aggregate.dart';
@@ -175,8 +176,9 @@ class ItemsService<T> {
   // a specific model class. These methods return dynamic maps wrapped in
   // DirectusModel for callers who prefer the Active Record pattern.
 
-  /// Récupère plusieurs items sous forme de `DirectusModel`
-  Future<DirectusResponse<DynamicModel>> readManyActive({
+  /// Récupère plusieurs items sous forme de modèle typé T
+  Future<DirectusResponse<T>> readManyActive({
+    T Function(Map<String, dynamic>)? factory,
     QueryParameters? query,
   }) async {
     final response = await _httpClient.get(
@@ -189,19 +191,18 @@ class ItemsService<T> {
         ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
         : null;
 
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
     final items = data
-        .map(
-          (item) =>
-              DynamicModel(item as Map<String, dynamic>, itemName: collection),
-        )
+        .map((item) => resolvedFactory(item as Map<String, dynamic>))
         .toList();
-
     return DirectusResponse(data: items, meta: meta);
   }
 
-  /// Récupère un item par son ID et le retourne en `DirectusModel`
-  Future<DynamicModel> readOneActive(
+  /// Récupère un item par son ID et le retourne en modèle typé T
+  Future<T> readOneActive(
     String id, {
+    T Function(Map<String, dynamic>)? factory,
     QueryParameters? query,
   }) async {
     final response = await _httpClient.get(
@@ -210,29 +211,39 @@ class ItemsService<T> {
     );
 
     final data = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(data, itemName: collection);
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(data);
   }
 
-  /// Crée un nouvel item et retourne un `DirectusModel`
-  Future<DynamicModel> createOneActive(Map<String, dynamic> data) async {
+  /// Crée un nouvel item et retourne un modèle typé T
+  Future<T> createOneActive(
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? factory,
+  }) async {
     final response = await _httpClient.post('/items/$collection', data: data);
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(responseData, itemName: collection);
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(responseData);
   }
 
-  /// Met à jour un item et retourne un `DirectusModel`
-  Future<DynamicModel> updateOneActive(
+  /// Met à jour un item et retourne un modèle typé T
+  Future<T> updateOneActive(
     String id,
-    Map<String, dynamic> data,
-  ) async {
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? factory,
+  }) async {
     final response = await _httpClient.patch(
       '/items/$collection/$id',
       data: data,
     );
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(responseData, itemName: collection);
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(responseData);
   }
 
   /// Récupère plusieurs items
@@ -399,7 +410,7 @@ class ItemsService<T> {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final response = await _httpClient.get(
-      '/items/$collection/singleton',
+      '/items/$collection',
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -407,24 +418,20 @@ class ItemsService<T> {
     return fromJson != null ? fromJson(data) : data;
   }
 
-  /// Récupère le singleton sous forme de `DirectusModel`
-  ///
-  /// [query] Paramètres de requête (champs, relations, etc.)
-  ///
-  /// Exemple:
-  /// ```dart
-  /// // Récupérer les settings en DirectusModel
-  /// final settings = await directus.items('settings').readSingletonActive();
-  /// print(settings['site_name']);
-  /// ```
-  Future<DynamicModel> readSingletonActive({QueryParameters? query}) async {
+  /// Récupère le singleton sous forme de modèle typé T
+  Future<T> readSingletonActive({
+    T Function(Map<String, dynamic>)? factory,
+    QueryParameters? query,
+  }) async {
     final response = await _httpClient.get(
-      '/items/$collection/singleton',
+      '/items/$collection',
       queryParameters: query?.toQueryParameters(),
     );
 
     final data = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(data, itemName: collection);
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(data);
   }
 
   /// Met à jour le singleton de la collection
@@ -447,34 +454,32 @@ class ItemsService<T> {
     Map<String, dynamic> data, {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.patch(
-      '/items/$collection/singleton',
-      data: data,
-    );
+    final response = await _httpClient.patch('/items/$collection', data: data);
 
     final responseData = response.data['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;
   }
 
-  /// Met à jour le singleton et retourne un `DirectusModel`
-  ///
-  /// [data] Données à mettre à jour
-  ///
-  /// Exemple:
-  /// ```dart
-  /// // Mettre à jour et récupérer en DirectusModel
-  /// final settings = await directus.items('settings').updateSingletonActive({
-  ///   'maintenance_mode': true,
-  /// });
-  /// print('Mode maintenance: ${settings['maintenance_mode']}');
-  /// ```
-  Future<DynamicModel> updateSingletonActive(Map<String, dynamic> data) async {
-    final response = await _httpClient.patch(
-      '/items/$collection/singleton',
-      data: data,
-    );
+  /// Met à jour le singleton et retourne un modèle typé T
+  Future<T> updateSingletonActive(
+    Map<String, dynamic> data, {
+    T Function(Map<String, dynamic>)? factory,
+  }) async {
+    final response = await _httpClient.patch('/items/$collection', data: data);
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    return DynamicModel(responseData, itemName: collection);
+    final T Function(Map<String, dynamic>) resolvedFactory =
+        factory ?? _getModelFactory();
+    return resolvedFactory(responseData);
+  }
+
+  /// Récupère le factory du modèle T si disponible
+  T Function(Map<String, dynamic>) _getModelFactory() {
+    // Si T hérite de DirectusModel et expose un static factory
+    // On tente d'accéder à T.factory
+    // Dart ne permet pas d'accéder directement à un static via le type générique
+    // On peut utiliser une convention : chaque modèle doit exposer un static 'factory'
+    // et l'utilisateur doit passer le factory si ce n'est pas le cas
+    return DirectusModel.getFactory<T>();
   }
 }
