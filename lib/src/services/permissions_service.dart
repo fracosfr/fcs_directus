@@ -1,4 +1,6 @@
 import '../core/directus_http_client.dart';
+import 'item_active_service.dart';
+import '../models/directus_model.dart';
 import '../models/directus_filter.dart';
 import 'items_service.dart';
 
@@ -22,63 +24,116 @@ import 'items_service.dart';
 class PermissionsService {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
-
   PermissionsService(this._httpClient) {
-    _itemsService = ItemsService(_httpClient, 'directus_permissions');
+    _itemsService = ItemsService<Map<String, dynamic>>(
+      _httpClient,
+      'directus_permissions',
+    );
   }
 
-  /// Récupère la liste de toutes les permissions
-  Future<DirectusResponse<dynamic>> getPermissions({
+  ItemActiveService<T> _activeService<T extends DirectusModel>() =>
+      ItemActiveService<T>(_httpClient, 'directus_permissions');
+
+  /// Récupère la liste de toutes les permissions typées
+  Future<DirectusResponse<T>> getPermissions<T extends DirectusModel>({
     QueryParameters? query,
   }) async {
-    return await _itemsService.readMany(query: query);
+    return await _activeService<T>().readMany(query: query);
   }
 
-  /// Récupère une permission par son ID
-  Future<Map<String, dynamic>> getPermission(
+  /// Récupère une permission par son ID typée
+  Future<T> getPermission<T extends DirectusModel>(
     int id, {
     QueryParameters? query,
   }) async {
-    return await _itemsService.readOne(id.toString(), query: query);
+    return await _activeService<T>().readOne(id.toString(), query: query);
   }
 
-  /// Crée une nouvelle permission
-  Future<Map<String, dynamic>> createPermission(
-    Map<String, dynamic> data,
+  /// Crée une nouvelle permission typée
+  Future<T> createPermission<T extends DirectusModel>(T permission) async {
+    final response = await _itemsService.createOne(permission.toJson());
+    final factory = DirectusModel.getFactory<T>();
+    if (factory == null) {
+      throw StateError('No factory registered for type $T.');
+    }
+    return factory(response as Map<String, dynamic>) as T;
+  }
+
+  /// Crée plusieurs permissions typées en une seule requête
+  Future<List<T>> createPermissions<T extends DirectusModel>(
+    List<T> permissions,
   ) async {
-    return await _itemsService.createOne(data);
+    final response = await _itemsService.createMany(
+      permissions.map((p) => p.toJson()).toList(),
+    );
+    final factory = DirectusModel.getFactory<T>();
+    if (factory == null) {
+      throw StateError('No factory registered for type $T.');
+    }
+    return (response)
+        .map<T>((item) => factory(item as Map<String, dynamic>) as T)
+        .toList();
   }
 
-  /// Crée plusieurs permissions en une seule requête
-  Future<List<dynamic>> createPermissions(
-    List<Map<String, dynamic>> permissions,
+  /// Met à jour une permission typée
+  Future<T> updatePermission<T extends DirectusModel>(T permission) async {
+    if (permission.id == null) {
+      throw ArgumentError(
+        'La permission doit avoir un id pour être mise à jour.',
+      );
+    }
+    final response = await _itemsService.updateOne(
+      permission.id!,
+      permission.toJsonDirty(),
+    );
+    final factory = DirectusModel.getFactory<T>();
+    if (factory == null) {
+      throw StateError('No factory registered for type $T.');
+    }
+    return factory(response as Map<String, dynamic>) as T;
+  }
+
+  /// Met à jour plusieurs permissions typées
+  Future<List<T>> updatePermissions<T extends DirectusModel>(
+    List<T> permissions,
   ) async {
-    return await _itemsService.createMany(permissions);
+    final ids = permissions.map((p) => p.id).whereType<String>().toList();
+    if (ids.length != permissions.length) {
+      throw ArgumentError(
+        'Toutes les permissions doivent avoir un id pour être mises à jour.',
+      );
+    }
+    final dirtyData = permissions.first.toJsonDirty();
+    final response = await _itemsService.updateMany(ids, dirtyData);
+    final factory = DirectusModel.getFactory<T>();
+    if (factory == null) {
+      throw StateError('No factory registered for type $T.');
+    }
+    return (response)
+        .map<T>((item) => factory(item as Map<String, dynamic>) as T)
+        .toList();
   }
 
-  /// Met à jour une permission existante
-  Future<Map<String, dynamic>> updatePermission(
-    String id,
-    Map<String, dynamic> data,
+  /// Supprime une permission typée
+  Future<void> deletePermission<T extends DirectusModel>(T permission) async {
+    if (permission.id == null) {
+      throw ArgumentError(
+        'La permission doit avoir un id pour être supprimée.',
+      );
+    }
+    await _itemsService.deleteOne(permission.id!);
+  }
+
+  /// Supprime plusieurs permissions typées
+  Future<void> deletePermissions<T extends DirectusModel>(
+    List<T> permissions,
   ) async {
-    return await _itemsService.updateOne(id, data);
-  }
-
-  /// Met à jour plusieurs permissions
-  Future<List<dynamic>> updatePermissions(
-    List<String> ids,
-    Map<String, dynamic> data,
-  ) async {
-    return await _itemsService.updateMany(ids, data);
-  }
-
-  /// Supprime une permission
-  Future<void> deletePermission(String id) async {
-    await _itemsService.deleteOne(id);
-  }
-
-  /// Supprime plusieurs permissions
-  Future<void> deletePermissions(List<String> ids) async {
+    final ids = permissions.map((p) => p.id).whereType<String>().toList();
+    if (ids.length != permissions.length) {
+      throw ArgumentError(
+        'Toutes les permissions doivent avoir un id pour être supprimées.',
+      );
+    }
     await _itemsService.deleteMany(ids);
   }
 

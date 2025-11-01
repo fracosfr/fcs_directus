@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
+import 'item_active_service.dart';
+// ...existing code...
 import '../models/directus_role.dart';
-import '../models/directus_model.dart';
+// ...existing code...
 import 'items_service.dart';
 
 /// Service pour gérer les rôles Directus.
@@ -36,67 +38,40 @@ import 'items_service.dart';
 /// ```
 class RolesService {
   final DirectusHttpClient _httpClient;
-  late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  RolesService(this._httpClient) {
-    _itemsService = ItemsService(_httpClient, 'directus_roles');
+  RolesService(this._httpClient);
+  // ...existing code...
+  /// Supprime plusieurs rôles typés
+  Future<void> deleteRoles<T extends DirectusRole>(List<T> roles) async {
+    final ids = roles.map((r) => r.id).whereType<String>().toList();
+    if (ids.length != roles.length) {
+      throw ArgumentError(
+        'Tous les rôles doivent avoir un id pour être supprimés.',
+      );
+    }
+    await _httpClient.delete('/roles', data: ids);
   }
+
+  ItemActiveService<T> _activeService<T extends DirectusRole>() =>
+      ItemActiveService<T>(_httpClient, 'directus_roles');
 
   // ========================================
   // Opérations CRUD de base
   // ========================================
 
-  /// Récupère la liste des rôles
-  ///
-  /// Supporte tous les paramètres de query (filter, sort, fields, etc.)
-  ///
-  /// Exemple :
-  /// ```dart
-  /// // Récupérer tous les rôles avec leurs politiques
-  /// final roles = await rolesService.getRoles(
-  ///   query: QueryParameters()
-  ///     ..fields = ['*', 'policies.*']
-  ///     ..sort = ['name'],
-  /// );
-  /// ```
-  Future<DirectusResponse<dynamic>> getRoles({QueryParameters? query}) async {
-    return await _itemsService.readMany(query: query);
+  /// Récupère la liste des rôles typés
+  Future<DirectusResponse<T>> getRoles<T extends DirectusRole>({
+    QueryParameters? query,
+  }) async {
+    return await _activeService<T>().readMany(query: query);
   }
 
-  /// Récupère un rôle par son ID
-  ///
-  /// Retourne un rôle typé [DirectusRole] ou une sous-classe si une factory est enregistrée.
-  ///
-  /// Exemple :
-  /// ```dart
-  /// final role = await rolesService.getRole(
-  ///   'admin-role-id',
-  ///   query: QueryParameters()
-  ///     ..fields = ['*', 'policies.*', 'users.id', 'users.email'],
-  /// );
-  /// print('Rôle: ${role.name.value}');
-  /// print('Description: ${role.description.value}');
-  /// ```
+  /// Récupère un rôle par son ID typé
   Future<T> getRole<T extends DirectusRole>(
     String id, {
     QueryParameters? query,
   }) async {
-    final data = await _itemsService.readOne(id, query: query);
-
-    // Si un type spécifique est demandé, utiliser la factory
-    if (T != DirectusRole) {
-      final factory = DirectusModel.getFactory<T>();
-      if (factory == null) {
-        throw StateError(
-          'No factory registered for type $T. '
-          'Please register a factory using DirectusModel.registerFactory<$T>(...)',
-        );
-      }
-      return factory(data) as T;
-    }
-
-    // Sinon retourner DirectusRole par défaut
-    return DirectusRole(data) as T;
+    return await _activeService<T>().readOne(id, query: query);
   }
 
   /// Crée un nouveau rôle
@@ -220,16 +195,6 @@ class RolesService {
   /// ```
   Future<void> deleteRole(String id) async {
     await _httpClient.delete('/roles/$id');
-  }
-
-  /// Supprime plusieurs rôles
-  ///
-  /// Exemple :
-  /// ```dart
-  /// await rolesService.deleteRoles(['role-1', 'role-2', 'role-3']);
-  /// ```
-  Future<void> deleteRoles(List<String> ids) async {
-    await _httpClient.delete('/roles', data: ids);
   }
 
   // ========================================

@@ -1,4 +1,6 @@
 import '../core/directus_http_client.dart';
+import 'item_active_service.dart';
+// ...existing code...
 import '../models/directus_user.dart';
 import '../models/directus_model.dart';
 import 'items_service.dart';
@@ -41,107 +43,143 @@ import 'items_service.dart';
 /// ```
 class UsersService {
   final DirectusHttpClient _httpClient;
-  late final ItemsService<Map<String, dynamic>> _itemsService;
+  // ...existing code...
+  UsersService(this._httpClient);
 
-  UsersService(this._httpClient) {
-    _itemsService = ItemsService(_httpClient, 'directus_users');
-  }
+  ItemActiveService<T> _activeService<T extends DirectusModel>() =>
+      ItemActiveService<T>(_httpClient, 'directus_users');
 
   // ========================================
   // Opérations CRUD de base
   // ========================================
 
-  /// Récupère la liste des utilisateurs
+  /// Récupère la liste des utilisateurs typés
   ///
   /// Supporte tous les paramètres de query (filter, sort, fields, etc.)
-  Future<DirectusResponse<dynamic>> getUsers({QueryParameters? query}) async {
-    return await _itemsService.readMany(query: query);
+  Future<DirectusResponse<T>> getUsers<T extends DirectusUser>({
+    QueryParameters? query,
+  }) async {
+    return await _activeService<T>().readMany(query: query);
   }
 
-  /// Récupère un utilisateur par son ID
-  Future<Map<String, dynamic>> getUser(
+  /// Récupère un utilisateur par son ID typé
+  Future<T> getUser<T extends DirectusUser>(
     String id, {
     QueryParameters? query,
   }) async {
-    return await _itemsService.readOne(id, query: query);
+    return await _activeService<T>().readOne(id, query: query);
   }
 
-  /// Crée un nouvel utilisateur
-  ///
-  /// Champs requis : email, password (si pas d'authentification externe)
-  Future<Map<String, dynamic>> createUser(
-    Map<String, dynamic> data, {
+  /// Crée un nouvel utilisateur typé
+  Future<T> createUser<T extends DirectusUser>(
+    T user, {
     QueryParameters? query,
   }) async {
     final response = await _httpClient.post(
       '/users',
-      data: data,
+      data: user.toJson(),
       queryParameters: query?.toQueryParameters(),
     );
-    return response.data['data'] as Map<String, dynamic>;
+    final factory =
+        DirectusModel.getFactory<T>() ??
+        DirectusUser.factory as T Function(Map<String, dynamic>);
+    return factory(response.data['data'] as Map<String, dynamic>) as T;
   }
 
-  /// Crée plusieurs utilisateurs en une seule requête
-  ///
-  /// Champs requis pour chaque utilisateur : email, password
-  Future<List<Map<String, dynamic>>> createUsers(
-    List<Map<String, dynamic>> users, {
+  /// Crée plusieurs utilisateurs typés en une seule requête
+  Future<List<T>> createUsers<T extends DirectusUser>(
+    List<T> users, {
     QueryParameters? query,
   }) async {
     final response = await _httpClient.post(
       '/users',
-      data: users,
+      data: users.map((u) => u.toJson()).toList(),
       queryParameters: query?.toQueryParameters(),
     );
+    final factory =
+        DirectusModel.getFactory<T>() ??
+        DirectusUser.factory as T Function(Map<String, dynamic>);
     final data = response.data['data'];
     if (data is List) {
-      return List<Map<String, dynamic>>.from(data);
+      return data
+          .map<T>((item) => factory(item as Map<String, dynamic>) as T)
+          .toList();
     }
-    return [data as Map<String, dynamic>];
+    return [factory(data as Map<String, dynamic>) as T];
   }
 
-  /// Met à jour un utilisateur
-  Future<Map<String, dynamic>> updateUser(
-    String id,
-    Map<String, dynamic> data, {
+  /// Met à jour un utilisateur typé
+  Future<T> updateUser<T extends DirectusUser>(
+    T user, {
     QueryParameters? query,
   }) async {
+    if (user.id == null) {
+      throw ArgumentError(
+        'L\'utilisateur doit avoir un id pour être mis à jour.',
+      );
+    }
     final response = await _httpClient.patch(
-      '/users/$id',
-      data: data,
+      '/users/${user.id}',
+      data: user.toJsonDirty(),
       queryParameters: query?.toQueryParameters(),
     );
-    return response.data['data'] as Map<String, dynamic>;
+    final factory =
+        DirectusModel.getFactory<T>() ??
+        DirectusUser.factory as T Function(Map<String, dynamic>);
+    return factory(response.data['data'] as Map<String, dynamic>) as T;
   }
 
-  /// Met à jour plusieurs utilisateurs
-  ///
-  /// [keys] Liste des IDs des utilisateurs à mettre à jour
-  /// [data] Données à appliquer à tous les utilisateurs
-  Future<List<Map<String, dynamic>>> updateUsers({
-    required List<String> keys,
-    required Map<String, dynamic> data,
+  /// Met à jour plusieurs utilisateurs typés
+  Future<List<T>> updateUsers<T extends DirectusUser>(
+    List<T> users, {
     QueryParameters? query,
   }) async {
+    final ids = users.map((u) => u.id).whereType<String>().toList();
+    if (ids.length != users.length) {
+      throw ArgumentError(
+        'Tous les utilisateurs doivent avoir un id pour être mis à jour.',
+      );
+    }
+    final payload = users.map((u) {
+      final dirty = u.toJsonDirty();
+      dirty['id'] = u.id;
+      return dirty;
+    }).toList();
     final response = await _httpClient.patch(
       '/users',
-      data: {'keys': keys, 'data': data},
+      data: payload,
       queryParameters: query?.toQueryParameters(),
     );
+    final factory =
+        DirectusModel.getFactory<T>() ??
+        DirectusUser.factory as T Function(Map<String, dynamic>);
     final responseData = response.data['data'];
     if (responseData is List) {
-      return List<Map<String, dynamic>>.from(responseData);
+      return responseData
+          .map<T>((item) => factory(item as Map<String, dynamic>) as T)
+          .toList();
     }
-    return [responseData as Map<String, dynamic>];
+    return [factory(responseData as Map<String, dynamic>) as T];
   }
 
-  /// Supprime un utilisateur
-  Future<void> deleteUser(String id) async {
-    await _httpClient.delete('/users/$id');
+  /// Supprime un utilisateur typé
+  Future<void> deleteUser<T extends DirectusUser>(T user) async {
+    if (user.id == null) {
+      throw ArgumentError(
+        'L\'utilisateur doit avoir un id pour être supprimé.',
+      );
+    }
+    await _httpClient.delete('/users/${user.id}');
   }
 
-  /// Supprime plusieurs utilisateurs
-  Future<void> deleteUsers(List<String> ids) async {
+  /// Supprime plusieurs utilisateurs typés
+  Future<void> deleteUsers<T extends DirectusUser>(List<T> users) async {
+    final ids = users.map((u) => u.id).whereType<String>().toList();
+    if (ids.length != users.length) {
+      throw ArgumentError(
+        'Tous les utilisateurs doivent avoir un id pour être supprimés.',
+      );
+    }
     await _httpClient.delete('/users', data: ids);
   }
 
