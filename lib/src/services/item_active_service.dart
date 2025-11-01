@@ -41,11 +41,13 @@ class ItemActiveService<T extends DirectusModel> {
   }
 
   /// Crée un nouvel item et retourne un modèle typé T
-  Future<T> createOne(T model) async {
+  Future<T?> createOne(T model) async {
     final response = await _httpClient.post(
       '/items/$collection',
       data: model.toJson(),
     );
+
+    if (response.statusCode == 204) return null;
 
     final responseData = response.data['data'] as Map<String, dynamic>;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
@@ -60,16 +62,13 @@ class ItemActiveService<T extends DirectusModel> {
     );
 
     final responseData = response.data['data'] as List;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        _getModelFactory();
+    final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return responseData
         .map((item) => resolvedFactory(item as Map<String, dynamic>))
         .toList();
   }
 
-  Future<T> updateOne(
-    T model,
-  ) async {
+  Future<T> updateOne(T model) async {
     if (model.id == null) {
       throw ArgumentError('The model must have an ID to be updated.');
     }
@@ -79,8 +78,7 @@ class ItemActiveService<T extends DirectusModel> {
     );
 
     final responseData = response.data['data'] as Map<String, dynamic>;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        _getModelFactory();
+    final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return resolvedFactory(responseData);
   }
 
@@ -105,8 +103,7 @@ class ItemActiveService<T extends DirectusModel> {
     );
 
     final responseData = response.data['data'] as List;
-    final T Function(Map<String, dynamic>) resolvedFactory =
-        _getModelFactory();
+    final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return responseData
         .map((item) => resolvedFactory(item as Map<String, dynamic>))
         .toList();

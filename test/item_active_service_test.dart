@@ -60,8 +60,8 @@ void main() {
 
       // Assert
       expect(result, isA<TestModel>());
-      expect(result.id, '1');
-      expect(result.title, 'Test');
+      expect(result?.id, '1');
+      expect(result?.title, 'Test');
       // Vérifier que la méthode post a été appelée avec les bonnes données
       verify(
         mockHttpClient.post('/items/test_items', data: model.toJson()),
@@ -113,10 +113,14 @@ void main() {
     test('readOne doit appeler GET avec le bon ID', () async {
       // Arrange
       final responsePayload = {
-        'data': {'id': '1', 'title': 'Test'}
+        'data': {'id': '1', 'title': 'Test'},
       };
       when(mockHttpClient.get(any)).thenAnswer(
-        (_) async => Response(requestOptions: RequestOptions(path: ''), data: responsePayload, statusCode: 200),
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ''),
+          data: responsePayload,
+          statusCode: 200,
+        ),
       );
 
       // Act
@@ -129,28 +133,42 @@ void main() {
       verify(mockHttpClient.get('/items/test_items/1')).called(1);
     });
 
-    test('readMany doit appeler GET et retourner une liste de modèles', () async {
-      // Arrange
-      final responsePayload = {
-        'data': [
-          {'id': '1', 'title': 'Test 1'},
-          {'id': '2', 'title': 'Test 2'},
-        ],
-        'meta': {'total_count': 2}
-      };
-      when(mockHttpClient.get(any, queryParameters: anyNamed('queryParameters'))).thenAnswer(
-        (_) async => Response(requestOptions: RequestOptions(path: ''), data: responsePayload, statusCode: 200),
-      );
+    test(
+      'readMany doit appeler GET et retourner une liste de modèles',
+      () async {
+        // Arrange
+        final responsePayload = {
+          'data': [
+            {'id': '1', 'title': 'Test 1'},
+            {'id': '2', 'title': 'Test 2'},
+          ],
+          'meta': {'total_count': 2},
+        };
+        when(
+          mockHttpClient.get(any, queryParameters: anyNamed('queryParameters')),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: ''),
+            data: responsePayload,
+            statusCode: 200,
+          ),
+        );
 
-      // Act
-      final result = await service.readMany(query: QueryParameters(limit: 2));
+        // Act
+        final result = await service.readMany(query: QueryParameters(limit: 2));
 
-      // Assert
-      expect(result.data, hasLength(2));
-      expect(result.data.first, isA<TestModel>());
-      expect(result.data.first.title, 'Test 1');
-      expect(result.meta?.totalCount, 2);
-      verify(mockHttpClient.get('/items/test_items', queryParameters: anyNamed('queryParameters'))).called(1);
-    });
+        // Assert
+        expect(result.data, hasLength(2));
+        expect(result.data.first, isA<TestModel>());
+        expect(result.data.first.title, 'Test 1');
+        expect(result.meta?.totalCount, 2);
+        verify(
+          mockHttpClient.get(
+            '/items/test_items',
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).called(1);
+      },
+    );
   });
 }

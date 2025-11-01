@@ -77,9 +77,9 @@ void main() async {
   final savedArticle = await client.itemsOf<Article>().createOne(newArticle);
 
   print('✅ Article créé:');
-  print('  ID: ${savedArticle.id}');
-  print('  Titre: ${savedArticle.title.value}');
-  print('  Status: ${savedArticle.status.value}');
+  print('  ID: ${savedArticle?.id}');
+  print('  Titre: ${savedArticle?.title.value}');
+  print('  Status: ${savedArticle?.status.value}');
   print('');
 
   // ============================================================================
@@ -88,30 +88,32 @@ void main() async {
 
   print('✏️ Mise à jour de l\'article...\n');
 
-  savedArticle.title.set('Titre modifié');
-  savedArticle.status.set('published');
-  savedArticle.viewCount.incrementBy(10);
+  savedArticle?.title.set('Titre modifié');
+  savedArticle?.status.set('published');
+  savedArticle?.viewCount.incrementBy(10);
 
-  // Sauvegarder seulement les champs modifiés
-  final updatedArticle = await client.itemsOf<Article>().updateOne(
-    savedArticle,
-  );
+  if (savedArticle != null) {
+    // Sauvegarder seulement les champs modifiés
+    final updatedArticle = await client.itemsOf<Article>().updateOne(
+      savedArticle,
+    );
 
-  print('✅ Article mis à jour:');
-  print('  Titre: ${updatedArticle.title.value}');
-  print('  Status: ${updatedArticle.status.value}');
-  print('');
+    print('✅ Article mis à jour:');
+    print('  Titre: ${updatedArticle.title.value}');
+    print('  Status: ${updatedArticle.status.value}');
+    print('');
 
-  // ============================================================================
-  // SUPPRIMER UN ARTICLE
-  // ============================================================================
+    // ============================================================================
+    // SUPPRIMER UN ARTICLE
+    // ============================================================================
 
-  print('\n🗑️ Suppression de l\'article...\n');
+    print('\n🗑️ Suppression de l\'article...\n');
 
-  await client.itemsOf<Article>().deleteOne(updatedArticle);
+    await client.itemsOf<Article>().deleteOne(updatedArticle);
 
-  print('✅ Article supprimé: ${updatedArticle.id}');
-  print('');
+    print('✅ Article supprimé: ${updatedArticle.id}');
+    print('');
+  }
 
   // ============================================================================
   // UTILISER LES PRODUITS AVEC PROPERTY WRAPPERS
@@ -164,8 +166,8 @@ void main() async {
 
   final createdProduct = await client.itemsOf<Product>().createOne(newProduct);
 
-  print('✅ Produit créé: ${createdProduct.name.value}');
-  print('  Prix: ${createdProduct.price.value}€');
+  print('✅ Produit créé: ${createdProduct?.name.value}');
+  print('  Prix: ${createdProduct?.price.value}€');
   print('');
 
   // ============================================================================

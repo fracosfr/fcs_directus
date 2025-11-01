@@ -71,7 +71,7 @@ class UsersService {
   }
 
   /// Crée un nouvel utilisateur typé
-  Future<T> createUser<T extends DirectusUser>(
+  Future<T?> createUser<T extends DirectusUser>(
     T user, {
     QueryParameters? query,
   }) async {
@@ -80,6 +80,8 @@ class UsersService {
       data: user.toJson(),
       queryParameters: query?.toQueryParameters(),
     );
+    if (response.statusCode == 204) return null;
+
     final factory =
         DirectusModel.getFactory<T>() ??
         DirectusUser.factory as T Function(Map<String, dynamic>);
