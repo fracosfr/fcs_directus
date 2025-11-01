@@ -87,7 +87,7 @@ void main() {
       final result = await service.updateOne(model);
 
       // Assert
-      expect(result.title, 'Updated');
+      expect(result?.title, 'Updated');
       // Vérifier que la méthode patch a été appelée avec l'ID correct et les données "dirty"
       verify(
         mockHttpClient.patch('/items/test_items/1', data: model.toJsonDirty()),

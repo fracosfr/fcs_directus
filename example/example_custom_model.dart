@@ -99,8 +99,8 @@ void main() async {
     );
 
     print('✅ Article mis à jour:');
-    print('  Titre: ${updatedArticle.title.value}');
-    print('  Status: ${updatedArticle.status.value}');
+    print('  Titre: ${updatedArticle?.title.value}');
+    print('  Status: ${updatedArticle?.status.value}');
     print('');
 
     // ============================================================================
@@ -109,9 +109,11 @@ void main() async {
 
     print('\n🗑️ Suppression de l\'article...\n');
 
-    await client.itemsOf<Article>().deleteOne(updatedArticle);
+    if (updatedArticle != null) {
+      await client.itemsOf<Article>().deleteOne(updatedArticle);
+    }
 
-    print('✅ Article supprimé: ${updatedArticle.id}');
+    print('✅ Article supprimé: ${updatedArticle?.id}');
     print('');
   }
 

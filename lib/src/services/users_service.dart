@@ -71,7 +71,7 @@ class UsersService {
   }
 
   /// Crée un nouvel utilisateur typé
-  Future<T?> createUser<T extends DirectusUser>(
+  Future<T> createUser<T extends DirectusUser>(
     T user, {
     QueryParameters? query,
   }) async {
@@ -80,12 +80,11 @@ class UsersService {
       data: user.toJson(),
       queryParameters: query?.toQueryParameters(),
     );
-    if (response.statusCode == 204) return null;
 
     final factory =
         DirectusModel.getFactory<T>() ??
         DirectusUser.factory as T Function(Map<String, dynamic>);
-    return factory(response.data['data'] as Map<String, dynamic>) as T;
+    return factory((response.data?['data'] ?? {}) as Map<String, dynamic>) as T;
   }
 
   /// Crée plusieurs utilisateurs typés en une seule requête
@@ -101,7 +100,7 @@ class UsersService {
     final factory =
         DirectusModel.getFactory<T>() ??
         DirectusUser.factory as T Function(Map<String, dynamic>);
-    final data = response.data['data'];
+    final data = (response.data?['data']) ?? [];
     if (data is List) {
       return data
           .map<T>((item) => factory(item as Map<String, dynamic>) as T)
@@ -128,7 +127,7 @@ class UsersService {
     final factory =
         DirectusModel.getFactory<T>() ??
         DirectusUser.factory as T Function(Map<String, dynamic>);
-    return factory(response.data['data'] as Map<String, dynamic>) as T;
+    return factory(response.data?['data'] ?? {} as Map<String, dynamic>) as T;
   }
 
   /// Met à jour plusieurs utilisateurs typés
@@ -155,7 +154,7 @@ class UsersService {
     final factory =
         DirectusModel.getFactory<T>() ??
         DirectusUser.factory as T Function(Map<String, dynamic>);
-    final responseData = response.data['data'];
+    final responseData = response.data?['data'] ?? [];
     if (responseData is List) {
       return responseData
           .map<T>((item) => factory(item as Map<String, dynamic>) as T)
@@ -215,11 +214,17 @@ class UsersService {
   /// final me = await users.me<MyUser>();
   /// print(me.department);
   /// ```
-  Future<T> me<T extends DirectusUser>({QueryParameters? query}) async {
+  Future<T?> me<T extends DirectusUser>({QueryParameters? query}) async {
     final response = await _httpClient.get(
       '/users/me',
       queryParameters: query?.toQueryParameters(),
     );
+
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
     final data = response.data['data'] as Map<String, dynamic>;
 
     // Si un type spécifique est demandé, utiliser la factory
@@ -241,7 +246,7 @@ class UsersService {
   /// Met à jour l'utilisateur connecté
   ///
   /// Retourne l'utilisateur mis à jour en tant que [DirectusUser] ou sous-classe.
-  Future<T> updateMe<T extends DirectusUser>(
+  Future<T?> updateMe<T extends DirectusUser>(
     Map<String, dynamic> data, {
     QueryParameters? query,
   }) async {
@@ -250,6 +255,12 @@ class UsersService {
       data: data,
       queryParameters: query?.toQueryParameters(),
     );
+
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
     final responseData = response.data['data'] as Map<String, dynamic>;
 
     // Si un type spécifique est demandé, utiliser la factory

@@ -47,9 +47,12 @@ class ItemActiveService<T extends DirectusModel> {
       data: model.toJson(),
     );
 
-    if (response.statusCode == 204) return null;
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return null;
+    }
 
-    final responseData = response.data['data'] as Map<String, dynamic>;
+    final responseData = response.data!['data'] as Map<String, dynamic>;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return resolvedFactory(responseData);
   }
@@ -61,14 +64,14 @@ class ItemActiveService<T extends DirectusModel> {
       data: models.map((m) => m.toJson()).toList(),
     );
 
-    final responseData = response.data['data'] as List;
+    final responseData = (response.data?['data'] ?? []) as List;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return responseData
         .map((item) => resolvedFactory(item as Map<String, dynamic>))
         .toList();
   }
 
-  Future<T> updateOne(T model) async {
+  Future<T?> updateOne(T model) async {
     if (model.id == null) {
       throw ArgumentError('The model must have an ID to be updated.');
     }
@@ -77,7 +80,12 @@ class ItemActiveService<T extends DirectusModel> {
       data: model.toJsonDirty(),
     );
 
-    final responseData = response.data['data'] as Map<String, dynamic>;
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return null;
+    }
+
+    final responseData = response.data!['data'] as Map<String, dynamic>;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return resolvedFactory(responseData);
   }
@@ -102,7 +110,7 @@ class ItemActiveService<T extends DirectusModel> {
       data: payload,
     );
 
-    final responseData = response.data['data'] as List;
+    final responseData = (response.data?['data'] ?? {}) as List;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
     return responseData
         .map((item) => resolvedFactory(item as Map<String, dynamic>))

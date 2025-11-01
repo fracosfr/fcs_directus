@@ -182,8 +182,8 @@ void main() async {
     final currentUser = await client.users.me();
 
     print('✅ Utilisateur connecté:');
-    print('   Email: ${currentUser.email}');
-    print('   Nom: ${currentUser.firstName} ${currentUser.lastName}');
+    print('   Email: ${currentUser?.email}');
+    print('   Nom: ${currentUser?.firstName} ${currentUser?.lastName}');
   } on DirectusException catch (e) {
     print('❌ Erreur: ${e.message}');
   }

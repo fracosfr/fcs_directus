@@ -210,7 +210,7 @@ class ItemsService<T> {
       queryParameters: query?.toQueryParameters(),
     );
 
-    final data = response.data['data'] as Map<String, dynamic>;
+    final data = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(data) : data;
   }
 
@@ -224,7 +224,12 @@ class ItemsService<T> {
   }) async {
     final response = await _httpClient.post('/items/$collection', data: data);
 
-    final responseData = response.data['data'] as Map<String, dynamic>;
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return null;
+    }
+
+    final responseData = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;
   }
 
@@ -238,7 +243,7 @@ class ItemsService<T> {
   }) async {
     final response = await _httpClient.post('/items/$collection', data: items);
 
-    final data = response.data['data'] as List;
+    final data = response.data!['data'] as List;
     return fromJson != null
         ? data.map((item) => fromJson(item as Map<String, dynamic>)).toList()
         : data;
@@ -259,7 +264,12 @@ class ItemsService<T> {
       data: data,
     );
 
-    final responseData = response.data['data'] as Map<String, dynamic>;
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return null;
+    }
+
+    final responseData = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;
   }
 
@@ -283,7 +293,7 @@ class ItemsService<T> {
       },
     );
 
-    final responseData = response.data['data'] as List;
+    final responseData = response.data!['data'] as List;
     return fromJson != null
         ? responseData
               .map((item) => fromJson(item as Map<String, dynamic>))
@@ -338,7 +348,7 @@ class ItemsService<T> {
       queryParameters: query?.toQueryParameters(),
     );
 
-    final data = response.data['data'] as Map<String, dynamic>;
+    final data = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(data) : data;
   }
 
@@ -364,7 +374,7 @@ class ItemsService<T> {
   }) async {
     final response = await _httpClient.patch('/items/$collection', data: data);
 
-    final responseData = response.data['data'] as Map<String, dynamic>;
+    final responseData = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;
   }
 }

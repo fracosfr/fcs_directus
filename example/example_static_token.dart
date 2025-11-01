@@ -86,14 +86,14 @@ Future<void> exampleStaticTokenWithValidation() async {
     final user = await directus.users.me();
 
     print('✅ Token valide !');
-    print('Utilisateur : ${user.firstName} ${user.lastName}');
-    print('Email : ${user.email}');
-    print('Rôle ID : ${user.role}\n');
+    print('Utilisateur : ${user?.firstName} ${user?.lastName}');
+    print('Email : ${user?.email}');
+    print('Rôle ID : ${user?.role}\n');
 
     // Vérifier les informations de l'utilisateur
     print('Informations utilisateur :');
-    print('  Statut : ${user.status}');
-    print('  Langue : ${user.language}');
+    print('  Statut : ${user?.status}');
+    print('  Langue : ${user?.language}');
   } on DirectusAuthException catch (e) {
     print('❌ Token invalide: ${e.message}');
     print('Vérifiez que :');

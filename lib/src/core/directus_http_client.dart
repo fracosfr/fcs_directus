@@ -121,12 +121,21 @@ class DirectusHttpClient {
     Options? options,
   }) async {
     try {
-      return await _dio.post<T>(
+      final result = await _dio.post<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
       );
+      if (result.statusCode == 204) {
+        // Créer une réponse vide si le statut est 204
+        return Response<T>(
+          requestOptions: result.requestOptions,
+          statusCode: 204,
+          data: null,
+        );
+      }
+      return result;
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -140,12 +149,21 @@ class DirectusHttpClient {
     Options? options,
   }) async {
     try {
-      return await _dio.patch<T>(
+      final result = await _dio.patch<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
       );
+      if (result.statusCode == 204) {
+        // Créer une réponse vide si le statut est 204
+        return Response<T>(
+          requestOptions: result.requestOptions,
+          statusCode: 204,
+          data: null,
+        );
+      }
+      return result;
     } on DioException catch (e) {
       throw _handleError(e);
     }
@@ -159,12 +177,21 @@ class DirectusHttpClient {
     Options? options,
   }) async {
     try {
-      return await _dio.delete<T>(
+      final result = await _dio.delete<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
       );
+      if (result.statusCode == 204) {
+        // Créer une réponse vide si le statut est 204
+        return Response<T>(
+          requestOptions: result.requestOptions,
+          statusCode: 204,
+          data: null,
+        );
+      }
+      return result;
     } on DioException catch (e) {
       throw _handleError(e);
     }
