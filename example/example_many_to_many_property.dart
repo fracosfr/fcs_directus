@@ -82,27 +82,15 @@ void example2_UsingM2MProperty() {
     'tags': [
       {
         'articles_id': 'article-123',
-        'tags_id': {
-          'id': 'tag-1',
-          'name': 'Flutter',
-          'color': 'blue',
-        },
+        'tags_id': {'id': 'tag-1', 'name': 'Flutter', 'color': 'blue'},
       },
       {
         'articles_id': 'article-123',
-        'tags_id': {
-          'id': 'tag-2',
-          'name': 'Dart',
-          'color': 'green',
-        },
+        'tags_id': {'id': 'tag-2', 'name': 'Dart', 'color': 'green'},
       },
       {
         'articles_id': 'article-123',
-        'tags_id': {
-          'id': 'tag-3',
-          'name': 'Mobile',
-          'color': 'orange',
-        },
+        'tags_id': {'id': 'tag-3', 'name': 'Mobile', 'color': 'orange'},
       },
     ],
   };
@@ -134,10 +122,7 @@ void example3_SettingM2MRelations() {
 
   DirectusModel.registerFactory<Tag>((data) => Tag(data));
 
-  final article = Article({
-    'id': 'article-456',
-    'title': 'Nouveau tutoriel',
-  });
+  final article = Article({'id': 'article-456', 'title': 'Nouveau tutoriel'});
 
   print('1. Définir par IDs (le plus simple):');
   article.tags.setByIds(['tag-1', 'tag-2', 'tag-3']);
@@ -243,8 +228,8 @@ class Article extends DirectusModel {
 
   // Property M2M pour accéder directement aux tags
   late final tags = modelListValueM2M<Tag>(
-    'tags',     // Nom du champ de relation
-    'tags_id',  // Nom du champ dans la table de jonction
+    'tags', // Nom du champ de relation
+    'tags_id', // Nom du champ dans la table de jonction
   );
 }
 
