@@ -86,6 +86,11 @@ class DirectusRole extends DirectusModel {
   /// Nombre d'utilisateurs assignés
   int get usersCount => users.length;
 
+  late final policiesItem = modelListValueM2M<DirectusPolicy>(
+    'policies',
+    "policy",
+  );
+
   /// Définit le rôle parent
   void setParent(String? parentId) {
     if (parentId == null) {

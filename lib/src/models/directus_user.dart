@@ -154,6 +154,11 @@ class DirectusUser extends DirectusModel {
     appearance.set(mode);
   }
 
+  late final policiesItem = modelListValueM2M<DirectusPolicy>(
+    'policies',
+    "policy",
+  );
+
   /// Récupère toutes les politiques de l'utilisateur
   ///
   /// Cette méthode retourne les politiques assignées directement à l'utilisateur
@@ -180,11 +185,11 @@ class DirectusUser extends DirectusModel {
   /// ```
   List<DirectusPolicy> getAllPolicies() {
     // Récupérer les politiques directes de l'utilisateur
-    final userPolicies = policies.value;
+    final userPolicies = policiesItem.value;
 
     // Récupérer les politiques du rôle
     final userRole = role.value;
-    final rolePolicies = userRole?.policies.value ?? [];
+    final rolePolicies = userRole?.policiesItem.value ?? [];
 
     // Combiner les deux listes
     final allPolicies = <DirectusPolicy>[...userPolicies];

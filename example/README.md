@@ -9,7 +9,9 @@ Ce dossier contient des exemples pratiques pour comprendre et utiliser la librai
 | Fichier | Description | Difficulté |
 |---------|-------------|------------|
 | [`example_basic.dart`](./example_basic.dart) | Utilisation basique : CRUD simple | ⭐ Débutant |
+| [`example_loading_relations.dart`](./example_loading_relations.dart) | Chargement des relations (role, policies) | ⭐ Débutant |
 | [`example_custom_model.dart`](./example_custom_model.dart) | Créer des modèles personnalisés | ⭐⭐ Intermédiaire |
+| [`example_many_to_many_property.dart`](./example_many_to_many_property.dart) | Property wrapper pour relations Many-to-Many | ⭐⭐ Intermédiaire |
 | [`example_filters.dart`](./example_filters.dart) | Filtres et requêtes avancées | ⭐⭐ Intermédiaire |
 | [`example_relations.dart`](./example_relations.dart) | Gérer les relations entre collections | ⭐⭐⭐ Avancé |
 

@@ -595,5 +595,140 @@ class ModelListProperty<T extends DirectusModel>
   bool get isNotEmpty => value.isNotEmpty;
 }
 
+/// Property wrapper pour `List<DirectusModel>` dans une relation Many-to-Many
+///
+/// Extrait automatiquement les modèles du champ spécifié dans la table de jonction.
+///
+/// Exemple avec les policies d'un utilisateur :
+/// ```dart
+/// class DirectusUser extends DirectusModel {
+///   // La table de jonction contient: {user: '...', directus_policies_id: {...}}
+///   // On veut récupérer directement les DirectusPolicy
+///   late final policies = modelListValueM2M<DirectusPolicy>(
+///     'policies',
+///     'directus_policies_id'
+///   );
+///
+///   // Utilisation:
+///   final policyList = user.policies.value;  // List<DirectusPolicy>
+///   final firstPolicy = user.policies.first; // DirectusPolicy
+/// }
+/// ```
+class ModelListPropertyM2M<T extends DirectusModel>
+    extends DirectusProperty<List<T>> {
+  /// Clé du champ dans la table de jonction qui contient le modèle cible
+  final String subKey;
+
+  ModelListPropertyM2M(super.model, super.name, this.subKey);
+
+  @override
+  List<T> get value {
+    // Récupère la liste des items de la table de jonction
+    final junctionItems = _model.getList<dynamic>(name);
+
+    // Extrait les modèles du champ subKey
+    return junctionItems
+        .map((item) {
+          if (item == null) return null;
+
+          Map<String, dynamic> junctionData;
+          if (item is Map<String, dynamic>) {
+            junctionData = item;
+          } else if (item is Map) {
+            junctionData = Map<String, dynamic>.from(item);
+          } else {
+            return null;
+          }
+
+          // Récupère la valeur du champ subKey
+          final subValue = junctionData[subKey];
+          if (subValue == null) return null;
+
+          Map<String, dynamic> modelData;
+          if (subValue is Map<String, dynamic>) {
+            modelData = subValue;
+          } else if (subValue is Map) {
+            modelData = Map<String, dynamic>.from(subValue);
+          } else if (subValue is String) {
+            // Si c'est juste un ID, on ne peut pas créer le modèle complet
+            // On retourne null (relation non chargée)
+            return null;
+          } else {
+            return null;
+          }
+
+          // Créer l'instance du modèle
+          return DirectusModel.createInstance<T>(modelData);
+        })
+        .whereType<T>()
+        .toList();
+  }
+
+  @override
+  void set(List<T> value) {
+    // Pour setter, on crée la structure de table de jonction complète
+    final junctionItems = value.map((model) {
+      return {subKey: model.toJson()};
+    }).toList();
+    _model.setList<Map<String, dynamic>>(name, junctionItems);
+  }
+
+  /// Définit la relation par liste d'IDs (Many-to-Many)
+  ///
+  /// Crée automatiquement la structure de table de jonction avec les IDs.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// user.policies.setByIds(['policy-1', 'policy-2']);
+  /// // Génère: [
+  /// //   {directus_policies_id: 'policy-1'},
+  /// //   {directus_policies_id: 'policy-2'}
+  /// // ]
+  /// ```
+  void setByIds(List<String> ids) {
+    final junctionItems = ids.map((id) {
+      return {subKey: id};
+    }).toList();
+    _model.setList<Map<String, dynamic>>(name, junctionItems);
+  }
+
+  /// Ajoute un modèle
+  void add(T item) {
+    final list = value.toList();
+    list.add(item);
+    set(list);
+  }
+
+  /// Supprime un modèle
+  void removeItem(T item) {
+    final list = value.toList();
+    list.remove(item);
+    set(list);
+  }
+
+  /// Vide la liste
+  void clear() => set([]);
+
+  /// Taille de la liste
+  int get length => value.length;
+
+  /// Liste vide?
+  bool get isEmpty => value.isEmpty;
+
+  bool get isNotEmpty => value.isNotEmpty;
+
+  /// Premier élément (lève une exception si vide)
+  T get first => value.first;
+
+  /// Dernier élément (lève une exception si vide)
+  T get last => value.last;
+
+  /// Premier élément nullable
+  T? get firstOrNull => value.isEmpty ? null : value.first;
+
+  /// Dernier élément nullable
+  T? get lastOrNull => value.isEmpty ? null : value.last;
+}
+
 /// Import requis pour DirectusModel
 // Import déplacé en haut du fichier

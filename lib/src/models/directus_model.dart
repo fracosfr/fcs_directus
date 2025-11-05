@@ -646,8 +646,10 @@ abstract class DirectusModel {
     return _factories[T];
   }
 
-  /// Crée une instance du type T depuis des données
-  T _createInstance<T extends DirectusModel>(Map<String, dynamic> data) {
+  /// Crée une instance du type T depuis des données (méthode publique)
+  ///
+  /// Utilisée par les property wrappers pour créer des instances de modèles.
+  static T createInstance<T extends DirectusModel>(Map<String, dynamic> data) {
     final factory = _factories[T];
     if (factory == null) {
       throw StateError(
@@ -656,6 +658,11 @@ abstract class DirectusModel {
       );
     }
     return factory(data) as T;
+  }
+
+  /// Crée une instance du type T depuis des données (méthode interne)
+  T _createInstance<T extends DirectusModel>(Map<String, dynamic> data) {
+    return DirectusModel.createInstance<T>(data);
   }
 
   static DateTime? _parseDate(dynamic value) {
@@ -744,6 +751,53 @@ abstract class DirectusModel {
   /// Crée un property wrapper pour `List<DirectusModel>`
   ModelListProperty<T> modelListValue<T extends DirectusModel>(String key) {
     return ModelListProperty<T>(this, key);
+  }
+
+  /// Crée un property wrapper pour `List<DirectusModel>` dans une relation Many-to-Many
+  ///
+  /// Extrait automatiquement les modèles du champ spécifié dans la table de jonction.
+  ///
+  /// Exemple avec les policies d'un utilisateur :
+  /// ```dart
+  /// class DirectusUser extends DirectusModel {
+  ///   DirectusUser(super.data);
+  ///
+  ///   @override
+  ///   String get itemName => 'directus_users';
+  ///
+  ///   // La table de jonction directus_users_policies contient:
+  ///   // {directus_users_id: '...', directus_policies_id: {...}}
+  ///   //
+  ///   // On veut récupérer directement les DirectusPolicy sans manipuler la table de jonction
+  ///   late final policies = modelListValueM2M<DirectusPolicy>(
+  ///     'policies',                  // Nom du champ de la relation M2M
+  ///     'directus_policies_id'       // Nom du champ dans la table de jonction
+  ///   );
+  ///
+  ///   // Utilisation:
+  ///   List<DirectusPolicy> policyList = user.policies.value;
+  ///   DirectusPolicy firstPolicy = user.policies.first;
+  ///
+  ///   // Modification:
+  ///   user.policies.setByIds(['policy-1', 'policy-2']);
+  /// }
+  /// ```
+  ///
+  /// **IMPORTANT:** Pour que cette méthode fonctionne, les relations doivent être
+  /// chargées explicitement avec le paramètre `fields`:
+  /// ```dart
+  /// final user = await client.users.getUser(
+  ///   userId,
+  ///   query: QueryParameters(
+  ///     fields: ['*', 'policies.directus_policies_id.*']
+  ///   )
+  /// );
+  /// ```
+  ModelListPropertyM2M<T> modelListValueM2M<T extends DirectusModel>(
+    String key,
+    String subKey,
+  ) {
+    return ModelListPropertyM2M<T>(this, key, subKey);
   }
 
   @override

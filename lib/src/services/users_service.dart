@@ -55,6 +55,20 @@ class UsersService {
 
   /// Récupère la liste des utilisateurs typés
   ///
+  /// Par défaut, les relations (`role`, `policies`) ne sont **pas** chargées.
+  /// Seuls les IDs des relations sont retournés.
+  ///
+  /// Pour charger les relations complètes, utilisez le paramètre `fields` :
+  /// ```dart
+  /// // Sans relations (IDs uniquement) - Par défaut
+  /// final users = await client.users.getUsers();
+  ///
+  /// // Avec relations complètes
+  /// final users = await client.users.getUsers(
+  ///   query: QueryParameters()..fields = ['*', 'role.*', 'policies.*'],
+  /// );
+  /// ```
+  ///
   /// Supporte tous les paramètres de query (filter, sort, fields, etc.)
   Future<DirectusResponse<T>> getUsers<T extends DirectusUser>({
     QueryParameters? query,
@@ -63,6 +77,21 @@ class UsersService {
   }
 
   /// Récupère un utilisateur par son ID typé
+  ///
+  /// Par défaut, les relations (`role`, `policies`) ne sont **pas** chargées.
+  /// Seuls les IDs des relations sont retournés.
+  ///
+  /// Pour charger les relations complètes, utilisez le paramètre `fields` :
+  /// ```dart
+  /// // Sans relations (IDs uniquement) - Par défaut
+  /// final user = await client.users.getUser('user-id');
+  ///
+  /// // Avec relations complètes
+  /// final user = await client.users.getUser(
+  ///   'user-id',
+  ///   query: QueryParameters()..fields = ['*', 'role.*', 'policies.*'],
+  /// );
+  /// ```
   Future<T> getUser<T extends DirectusUser>(
     String id, {
     QueryParameters? query,
@@ -213,13 +242,23 @@ class UsersService {
 
   /// Récupère l'utilisateur actuellement connecté
   ///
+  /// Par défaut, les relations (`role`, `policies`) ne sont **pas** chargées.
+  /// Pour utiliser `getAllPolicies()`, vous devez charger ces relations.
+  ///
   /// Retourne un [DirectusUser] ou une sous-classe si une factory est enregistrée.
   ///
   /// Exemple avec DirectusUser par défaut :
   /// ```dart
+  /// // Sans relations (IDs uniquement)
   /// final me = await users.me();
   /// print(me.email);
   /// print(me.fullName);
+  ///
+  /// // Avec relations complètes pour getAllPolicies()
+  /// final me = await users.me(
+  ///   query: QueryParameters()..fields = ['*', 'role.policies.*', 'policies.*'],
+  /// );
+  /// final allPolicies = me.getAllPolicies();
   /// ```
   ///
   /// Exemple avec classe personnalisée :
