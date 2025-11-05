@@ -795,20 +795,34 @@ final response = await directus.auth.login(
 );
 
 final prefs = await SharedPreferences.getInstance();
-await prefs.setString('access_token', response.accessToken);
+// ⚠️ IMPORTANT : Sauvegarder le REFRESH token, pas l'access token
+// L'access token expire rapidement (15-30 min)
+// Le refresh token dure plus longtemps (7 jours+)
 if (response.refreshToken != null) {
   await prefs.setString('refresh_token', response.refreshToken!);
 }
 
 // Restaurer au démarrage de l'app
 final prefs = await SharedPreferences.getInstance();
-final accessToken = prefs.getString('access_token');
 final refreshToken = prefs.getString('refresh_token');
 
-if (accessToken != null) {
-  await directus.auth.loginWithToken(accessToken);
-  // Optionnel: stocker aussi le refresh token dans le client
+if (refreshToken != null) {
+  // ✅ CORRECT : Utiliser restoreSession() pour restaurer avec un refresh token
+  final auth = await directus.auth.restoreSession(refreshToken);
+  print('Session restaurée, expire dans ${auth.expiresIn}s');
 }
+```
+
+**Différence importante** :
+- `loginWithToken(token)` → Pour les **tokens statiques** uniquement (access tokens permanents)
+- `restoreSession(refreshToken)` → Pour restaurer une session avec un **refresh token**
+
+```dart
+// ❌ INCORRECT : Utiliser loginWithToken avec un refresh token
+await directus.auth.loginWithToken(response.refreshToken); // Ne fonctionne PAS
+
+// ✅ CORRECT : Utiliser restoreSession pour restaurer une session
+await directus.auth.restoreSession(response.refreshToken);
 ```
 
 ### Supprimer les tokens

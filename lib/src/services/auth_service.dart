@@ -144,6 +144,39 @@ class AuthService {
     _httpClient.setTokens(accessToken: token);
   }
 
+  /// Restaure une session avec un refresh token
+  ///
+  /// Cette méthode est utile pour restaurer une session après un redémarrage
+  /// de l'application. Elle utilise le refresh token pour obtenir un nouveau
+  /// access token.
+  ///
+  /// [refreshToken] Token de rafraîchissement sauvegardé
+  /// [mode] Mode d'authentification (json, cookie, ou session). Par défaut: json
+  ///
+  /// Retourne une [AuthResponse] avec le nouvel access token
+  ///
+  /// ```dart
+  /// // Sauvegarder les tokens après login
+  /// final authResponse = await client.auth.login(
+  ///   email: 'user@example.com',
+  ///   password: 'password',
+  /// );
+  /// await storage.save('refresh_token', authResponse.refreshToken);
+  ///
+  /// // Restaurer la session plus tard
+  /// final savedRefreshToken = await storage.load('refresh_token');
+  /// final newAuth = await client.auth.restoreSession(savedRefreshToken);
+  /// print('Session restaurée, nouveau token expire dans ${newAuth.expiresIn}s');
+  /// ```
+  ///
+  /// Voir aussi : [refresh] pour rafraîchir une session existante
+  Future<AuthResponse> restoreSession(
+    String refreshToken, {
+    AuthMode mode = AuthMode.json,
+  }) async {
+    return await refresh(refreshToken: refreshToken, mode: mode);
+  }
+
   /// Rafraîchit le token d'accès
   ///
   /// [refreshToken] Token de rafraîchissement (optionnel, utilise celui stocké si non fourni)
