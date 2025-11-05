@@ -9,7 +9,8 @@ Une librairie Dart/Flutter complète pour interagir avec l'API Directus. Fournit
 
 - 🚀 **API complète** : Support de tous les endpoints Directus (30+ services)
 - 🔐 **Authentification** : Login/logout, refresh tokens, OAuth
-- 📦 **CRUD typé** : Opérations Create, Read, Update, Delete avec type-safety
+- � **Refresh automatique** : Gestion automatique de l'expiration des tokens avec callback de notification
+- �📦 **CRUD typé** : Opérations Create, Read, Update, Delete avec type-safety
 - 🔍 **Filtres type-safe** : Builder intuitif sans manipuler JSON
 - 🔗 **Relations** : Deep queries pour charger les relations imbriquées
 - 📊 **Agrégations** : Count, sum, avg, min, max avec groupBy
@@ -71,9 +72,51 @@ try {
 // Déconnexion
 await client.auth.logout();
 
-// Rafraîchir le token
+// Rafraîchir le token manuellement
 await client.auth.refresh();
 ```
+
+### ⚡ Refresh automatique avec persistance
+
+Le client gère automatiquement l'expiration des tokens et peut vous notifier pour persister les nouveaux tokens :
+
+```dart
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = FlutterSecureStorage();
+
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://your-directus-instance.com',
+    // Callback appelé automatiquement lors d'un refresh
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      await storage.write(key: 'access_token', value: accessToken);
+      if (refreshToken != null) {
+        await storage.write(key: 'refresh_token', value: refreshToken);
+      }
+    },
+  ),
+);
+
+// Login initial
+final auth = await client.auth.login(
+  email: 'user@example.com',
+  password: 'password',
+);
+await storage.write(key: 'refresh_token', value: auth.refreshToken!);
+
+// Utiliser normalement - le refresh est automatique !
+await client.items('articles').readMany(); // Si token expiré, refresh automatique
+
+// Au redémarrage de l'app
+final savedToken = await storage.read(key: 'refresh_token');
+if (savedToken != null) {
+  await client.auth.restoreSession(savedToken);
+  // Nouveaux tokens automatiquement sauvegardés via callback
+}
+```
+
+> 💡 Voir [`example/example_token_refresh_callback.dart`](example/example_token_refresh_callback.dart) pour un exemple complet avec workflow de persistance
 
 ### Opérations CRUD basiques
 

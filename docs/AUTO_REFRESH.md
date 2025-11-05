@@ -356,6 +356,116 @@ try {
 }
 ```
 
+## Notification lors du Refresh
+
+### Callback onTokenRefreshed
+
+Vous pouvez être notifié automatiquement lorsque les tokens sont rafraîchis :
+
+```dart
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    // Callback appelé après chaque refresh automatique
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      print('🔔 Tokens rafraîchis !');
+      // Sauvegarder les nouveaux tokens
+      await storage.saveAccessToken(accessToken);
+      if (refreshToken != null) {
+        await storage.saveRefreshToken(refreshToken);
+      }
+    },
+  ),
+);
+```
+
+### Utilisation avec storage persistant
+
+#### Avec SharedPreferences
+
+```dart
+import 'package:shared_preferences/shared_preferences.dart';
+
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', accessToken);
+      if (refreshToken != null) {
+        await prefs.setString('refresh_token', refreshToken);
+      }
+    },
+  ),
+);
+```
+
+#### Avec FlutterSecureStorage (recommandé)
+
+```dart
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = FlutterSecureStorage();
+
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      await storage.write(key: 'access_token', value: accessToken);
+      if (refreshToken != null) {
+        await storage.write(key: 'refresh_token', value: refreshToken);
+      }
+    },
+  ),
+);
+```
+
+### Workflow complet avec persistance
+
+```dart
+// 1. Login initial
+final auth = await client.auth.login(
+  email: 'user@example.com',
+  password: 'password',
+);
+
+// Sauvegarder manuellement les tokens initiaux
+await storage.write(key: 'access_token', value: auth.accessToken);
+await storage.write(key: 'refresh_token', value: auth.refreshToken!);
+
+// 2. Utiliser normalement
+await client.items('articles').readMany();
+
+// 3. Si le token expire pendant l'utilisation
+// → Refresh automatique
+// → onTokenRefreshed appelé automatiquement
+// → Nouveaux tokens sauvegardés automatiquement
+
+// 4. Au redémarrage de l'app
+final savedRefreshToken = await storage.read(key: 'refresh_token');
+if (savedRefreshToken != null) {
+  await client.auth.restoreSession(savedRefreshToken);
+  // Les nouveaux tokens sont automatiquement sauvegardés via le callback
+}
+```
+
+### Gestion d'erreur dans le callback
+
+**Important :** Les erreurs dans le callback ne bloquent pas le refresh :
+
+```dart
+onTokenRefreshed: (accessToken, refreshToken) async {
+  try {
+    await storage.saveTokens(accessToken, refreshToken);
+  } catch (e) {
+    // L'erreur est loggée mais ne bloque pas le refresh
+    print('Erreur lors de la sauvegarde : $e');
+  }
+},
+```
+
+Le client gère automatiquement les erreurs du callback avec un `try-catch`.
+
 ## Tests
 
 Pour tester le refresh automatique :
@@ -380,21 +490,23 @@ await client.items('articles').readMany(); // ← Devrait déclencher refresh
 print('Succès !');
 ```
 
-### 2. Forcer un token invalide
+### 2. Tester le callback
 
 ```dart
-// ⚠️ Ne pas utiliser en production !
-final client = DirectusClient(config);
-await client.auth.login(email: 'user@example.com', password: 'password');
+int refreshCount = 0;
 
-// Forcer un token expiré pour tester
-client._httpClient.setTokens(
-  accessToken: 'expired_token',
-  refreshToken: client.auth.refreshToken,
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      refreshCount++;
+      print('Refresh #$refreshCount détecté !');
+    },
+  ),
 );
 
-// La prochaine requête devrait déclencher le refresh
-await client.items('articles').readMany();
+// Faire expirer le token et effectuer une requête
+// Le callback devrait être appelé
 ```
 
 ### 3. Test de charge
@@ -410,6 +522,7 @@ final futures = List.generate(
 );
 
 // Si le token expire, un seul refresh pour toutes
+// Le callback est appelé une seule fois
 await Future.wait(futures);
 ```
 
@@ -423,12 +536,106 @@ await Future.wait(futures);
 | **Protection boucle** | Oui, max 1 retry par requête |
 | **Impact performances** | Aucun (uniquement sur expiration) |
 | **Logs** | Disponibles avec `enableLogging: true` |
+| **Notification** | Via callback `onTokenRefreshed` (optionnel) |
+| **Persistance** | Possible via callback + storage |
 | **Désactivation** | Non possible |
 | **Thread-safe** | Oui |
+| **Gestion d'erreur callback** | Erreurs loggées, ne bloquent pas le refresh |
+
+## Bonnes pratiques
+
+### 1. Toujours utiliser onTokenRefreshed
+
+```dart
+✅ BON
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    onTokenRefreshed: (accessToken, refreshToken) async {
+      await storage.saveTokens(accessToken, refreshToken);
+    },
+  ),
+);
+
+❌ MAUVAIS (pas de persistance)
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://directus.example.com',
+    // Pas de callback = tokens non sauvegardés
+  ),
+);
+```
+
+### 2. Utiliser un storage sécurisé
+
+```dart
+✅ BON
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+final storage = FlutterSecureStorage();
+
+❌ MAUVAIS
+// SharedPreferences sans chiffrement pour tokens sensibles
+```
+
+### 3. Sauvegarder uniquement le refresh token
+
+```dart
+✅ BON (refresh token persisté)
+await storage.write(key: 'refresh_token', value: refreshToken);
+// Au redémarrage :
+final token = await storage.read(key: 'refresh_token');
+await client.auth.restoreSession(token);
+
+❌ MAUVAIS (access token expire vite)
+await storage.write(key: 'access_token', value: accessToken);
+// Au redémarrage : probablement expiré
+```
+
+### 4. Gérer les erreurs du callback
+
+```dart
+✅ BON
+onTokenRefreshed: (accessToken, refreshToken) async {
+  try {
+    await storage.saveTokens(accessToken, refreshToken);
+  } catch (e) {
+    logger.error('Erreur sauvegarde tokens', e);
+  }
+},
+
+❌ MAUVAIS (pas de gestion d'erreur)
+onTokenRefreshed: (accessToken, refreshToken) async {
+  await storage.saveTokens(accessToken, refreshToken); // Peut throw
+},
+```
+
+### 5. Tester le workflow complet
+
+```dart
+// Test complet :
+// 1. Login → Sauvegarde tokens
+await client.auth.login(email: 'user@example.com', password: 'pass');
+await storage.saveRefreshToken(auth.refreshToken!);
+
+// 2. Utilisation → Refresh automatique si nécessaire
+await client.items('articles').readMany();
+
+// 3. Fermeture app
+await client.dispose();
+
+// 4. Redémarrage → Restauration
+final token = await storage.loadRefreshToken();
+await client.auth.restoreSession(token);
+
+// 5. Continuer normalement
+await client.items('articles').readMany(); // ✅ Fonctionne
+```
 
 ---
 
 **Voir aussi :**
 - [Documentation authentification complète](./AUTHENTICATION_AND_REQUESTS.md)
-- [Exemple complet](../example/example_auto_refresh.dart)
+- [Exemple de base](../example/example_auto_refresh.dart)
+- [Exemple avec callback et persistance](../example/example_token_refresh_callback.dart)
+- [Types de tokens](../example/example_token_types.dart)
 - [Gestion des erreurs](./11-error-handling.md)

@@ -15,17 +15,41 @@ class DirectusConfig {
   /// Active ou désactive les logs
   final bool enableLogging;
 
+  /// Callback appelé lorsque les tokens sont rafraîchis automatiquement
+  ///
+  /// Ce callback reçoit le nouvel access token et le nouveau refresh token (si présent).
+  /// Il est appelé après chaque refresh automatique réussi, permettant de sauvegarder
+  /// les nouveaux tokens dans un stockage persistant.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// DirectusConfig(
+  ///   baseUrl: 'https://directus.example.com',
+  ///   onTokenRefreshed: (accessToken, refreshToken) async {
+  ///     // Sauvegarder les nouveaux tokens
+  ///     await storage.save('access_token', accessToken);
+  ///     if (refreshToken != null) {
+  ///       await storage.save('refresh_token', refreshToken);
+  ///     }
+  ///   },
+  /// )
+  /// ```
+  final Future<void> Function(String accessToken, String? refreshToken)?
+  onTokenRefreshed;
+
   /// Crée une nouvelle configuration Directus.
   ///
   /// [baseUrl] est l'URL de base de votre instance Directus (ex: 'https://directus.example.com')
   /// [timeout] définit le timeout des requêtes (défaut: 30 secondes)
   /// [headers] permet d'ajouter des headers personnalisés
   /// [enableLogging] active les logs de debug (défaut: false)
+  /// [onTokenRefreshed] callback pour notifier du refresh automatique des tokens
   DirectusConfig({
     required this.baseUrl,
     this.timeout = const Duration(seconds: 30),
     this.headers,
     this.enableLogging = false,
+    this.onTokenRefreshed,
   }) {
     // Validation de l'URL
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
@@ -39,12 +63,15 @@ class DirectusConfig {
     Duration? timeout,
     Map<String, String>? headers,
     bool? enableLogging,
+    Future<void> Function(String accessToken, String? refreshToken)?
+    onTokenRefreshed,
   }) {
     return DirectusConfig(
       baseUrl: baseUrl ?? this.baseUrl,
       timeout: timeout ?? this.timeout,
       headers: headers ?? this.headers,
       enableLogging: enableLogging ?? this.enableLogging,
+      onTokenRefreshed: onTokenRefreshed ?? this.onTokenRefreshed,
     );
   }
 

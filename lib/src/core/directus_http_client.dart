@@ -222,6 +222,17 @@ class DirectusHttpClient {
     }
 
     _logger.info('Access token refreshed successfully');
+
+    // Notifier l'application via le callback
+    if (_config.onTokenRefreshed != null) {
+      try {
+        await _config.onTokenRefreshed!(_accessToken!, _refreshToken);
+        _logger.info('Token refresh notification sent to application');
+      } catch (e) {
+        // Ne pas échouer le refresh si le callback échoue
+        _logger.warning('Error in onTokenRefreshed callback: $e');
+      }
+    }
   }
 
   /// Effectue une requête GET
