@@ -38,6 +38,7 @@ export 'src/core/directus_http_client.dart';
 // Services
 export 'src/services/auth_service.dart';
 export 'src/services/items_service.dart';
+export 'src/services/item_active_service.dart';
 export 'src/services/collections_service.dart';
 export 'src/services/users_service.dart';
 export 'src/services/files_service.dart';

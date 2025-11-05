@@ -15,6 +15,12 @@ class DirectusHttpClient {
   String? _accessToken;
   String? _refreshToken;
 
+  // Pour éviter les refresh multiples simultanés
+  Future<void>? _refreshFuture;
+
+  // Pour éviter les boucles infinies de retry
+  final Set<String> _retryingRequests = {};
+
   /// Récupère la configuration du client
   DirectusConfig get config => _config;
 
@@ -71,13 +77,60 @@ class DirectusHttpClient {
           }
           return handler.next(response);
         },
-        onError: (error, handler) {
+        onError: (error, handler) async {
           if (_config.enableLogging) {
             _logger.severe('✗ ${error.requestOptions.uri}', error);
           }
-          // Convertir l'erreur mais laisser Dio la gérer
+
+          // Convertir l'erreur Dio en exception Directus
           final directusError = _handleError(error);
-          _logger.warning('Converted to: $directusError');
+
+          // Vérifier si c'est une erreur TOKEN_EXPIRED
+          if (directusError is DirectusAuthException &&
+              directusError.errorCode == 'TOKEN_EXPIRED' &&
+              _refreshToken != null) {
+            // Créer un identifiant unique pour cette requête
+            final requestId =
+                '${error.requestOptions.method}_${error.requestOptions.path}';
+
+            // Éviter les boucles infinies : si on a déjà tenté un retry pour cette requête, échouer
+            if (_retryingRequests.contains(requestId)) {
+              _logger.warning('Retry loop detected for $requestId, aborting');
+              _retryingRequests.remove(requestId);
+              return handler.next(error);
+            }
+
+            // Marquer cette requête comme en cours de retry
+            _retryingRequests.add(requestId);
+
+            try {
+              // Tenter de rafraîchir le token
+              await _refreshAccessToken();
+
+              // Retry la requête originale avec le nouveau token
+              final opts = error.requestOptions;
+              opts.headers['Authorization'] = 'Bearer $_accessToken';
+
+              _logger.info('Retrying request after token refresh: ${opts.uri}');
+
+              final response = await _dio.fetch(opts);
+
+              // Succès : retirer le marqueur de retry
+              _retryingRequests.remove(requestId);
+
+              return handler.resolve(response);
+            } catch (refreshError) {
+              // Le refresh a échoué, propager l'erreur originale
+              _logger.severe('Token refresh failed', refreshError);
+              _retryingRequests.remove(requestId);
+              return handler.next(error);
+            }
+          }
+
+          // Pour les autres erreurs, laisser Dio les gérer normalement
+          if (_config.enableLogging) {
+            _logger.warning('Converted to: $directusError');
+          }
           return handler.next(error);
         },
       ),
@@ -95,6 +148,81 @@ class DirectusHttpClient {
 
   /// Récupère le token de rafraîchissement actuel
   String? get refreshToken => _refreshToken;
+
+  /// Rafraîchit le token d'accès de manière thread-safe
+  ///
+  /// Cette méthode est appelée automatiquement par l'intercepteur onError
+  /// lorsqu'une erreur TOKEN_EXPIRED est détectée.
+  ///
+  /// Utilise un Future partagé pour éviter les refresh multiples simultanés.
+  Future<void> _refreshAccessToken() async {
+    // Si un refresh est déjà en cours, attendre qu'il se termine
+    if (_refreshFuture != null) {
+      _logger.info('Token refresh already in progress, waiting...');
+      return _refreshFuture!;
+    }
+
+    // Démarrer un nouveau refresh
+    _refreshFuture = _performRefresh();
+
+    try {
+      await _refreshFuture!;
+    } finally {
+      // Nettoyer le Future une fois terminé
+      _refreshFuture = null;
+    }
+  }
+
+  /// Effectue réellement le refresh du token
+  Future<void> _performRefresh() async {
+    if (_refreshToken == null) {
+      throw DirectusAuthException(
+        message: 'No refresh token available',
+        errorCode: 'NO_REFRESH_TOKEN',
+      );
+    }
+
+    _logger.info('Refreshing access token...');
+
+    // Appeler l'endpoint de refresh sans passer par les intercepteurs
+    // pour éviter une boucle infinie
+    final response = await _dio.post<Map<String, dynamic>>(
+      '/auth/refresh',
+      data: {'refresh_token': _refreshToken, 'mode': 'json'},
+      options: Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+
+    if (response.data == null || !response.data!.containsKey('data')) {
+      throw DirectusAuthException(
+        message: 'Invalid refresh response',
+        errorCode: 'INVALID_REFRESH_RESPONSE',
+      );
+    }
+
+    final authData = response.data!['data'] as Map<String, dynamic>;
+    final newAccessToken = authData['access_token'] as String?;
+    final newRefreshToken = authData['refresh_token'] as String?;
+
+    if (newAccessToken == null) {
+      throw DirectusAuthException(
+        message: 'No access token in refresh response',
+        errorCode: 'INVALID_REFRESH_RESPONSE',
+      );
+    }
+
+    // Mettre à jour les tokens
+    _accessToken = newAccessToken;
+    if (newRefreshToken != null) {
+      _refreshToken = newRefreshToken;
+    }
+
+    _logger.info('Access token refreshed successfully');
+  }
 
   /// Effectue une requête GET
   Future<Response<T>> get<T>(
