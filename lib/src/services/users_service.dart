@@ -5,6 +5,25 @@ import '../models/directus_user.dart';
 import '../models/directus_model.dart';
 import 'items_service.dart';
 
+/// Représente le résultat de la génération d'un secret 2FA
+class TwoFactorSecret {
+  /// Le secret OTP à sauvegarder dans l'app d'authentification
+  final String secret;
+
+  /// URL formatée pour générer un QR code (format otpauth://)
+  final String otpauthUrl;
+
+  TwoFactorSecret({required this.secret, required this.otpauthUrl});
+
+  /// Crée une instance depuis les données JSON retournées par l'API
+  factory TwoFactorSecret.fromJson(Map<String, dynamic> json) {
+    return TwoFactorSecret(
+      secret: json['secret'] as String,
+      otpauthUrl: json['otpauth_url'] as String,
+    );
+  }
+}
+
 /// Service pour gérer les utilisateurs Directus.
 ///
 /// Permet de gérer tous les aspects des utilisateurs :
@@ -39,7 +58,9 @@ import 'items_service.dart';
 ///
 /// // Activer la 2FA
 /// final tfa = await users.generateTwoFactorSecret();
-/// await users.enableTwoFactor(secret: tfa['secret'], otp: '123456');
+/// if (tfa != null) {
+///   await users.enableTwoFactor(secret: tfa.secret, otp: '123456');
+/// }
 /// ```
 class UsersService {
   final DirectusHttpClient _httpClient;
@@ -426,42 +447,121 @@ class UsersService {
 
   /// Génère un secret 2FA pour l'utilisateur connecté
   ///
-  /// Retourne :
+  /// Retourne un objet [TwoFactorSecret] contenant :
   /// - `secret` : Le secret OTP à sauvegarder dans l'app d'authentification
-  /// - `otpauth_url` : URL formatée pour générer un QR code
+  /// - `otpauthUrl` : URL formatée pour générer un QR code
+  ///
+  /// Retourne `null` si une erreur est détectée ou si la réponse est invalide.
   ///
   /// Exemple :
   /// ```dart
   /// final tfa = await users.generateTwoFactorSecret();
-  /// print('Secret: ${tfa['secret']}');
-  /// print('QR Code URL: ${tfa['otpauth_url']}');
-  /// // Afficher le QR code à l'utilisateur
-  /// // Puis valider avec enableTwoFactor()
+  /// if (tfa != null) {
+  ///   print('Secret: ${tfa.secret}');
+  ///   print('QR Code URL: ${tfa.otpauthUrl}');
+  ///   // Afficher le QR code à l'utilisateur
+  ///   // Puis valider avec enableTwoFactor()
+  ///   await users.enableTwoFactor(secret: tfa.secret, otp: '123456');
+  /// }
   /// ```
-  Future<Map<String, dynamic>> generateTwoFactorSecret() async {
-    final response = await _httpClient.post('/users/me/tfa/generate', data: '');
-    return response.data as Map<String, dynamic>;
+  Future<TwoFactorSecret?> generateTwoFactorSecret() async {
+    try {
+      final response = await _httpClient.post(
+        '/users/me/tfa/generate',
+        data: '',
+      );
+
+      // Vérifier que la réponse contient les données attendues
+      if (response.data == null ||
+          response.data is! Map<String, dynamic> ||
+          !response.data.containsKey('secret') ||
+          !response.data.containsKey('otpauth_url')) {
+        return null;
+      }
+
+      final data = response.data as Map<String, dynamic>;
+
+      // Vérifier que les valeurs sont des chaînes non vides
+      final secret = data['secret'] as String?;
+      final otpauthUrl = data['otpauth_url'] as String?;
+
+      if (secret == null ||
+          secret.isEmpty ||
+          otpauthUrl == null ||
+          otpauthUrl.isEmpty) {
+        return null;
+      }
+
+      return TwoFactorSecret.fromJson(data);
+    } catch (e) {
+      // En cas d'erreur (réseau, authentification, etc.), retourner null
+      return null;
+    }
   }
 
   /// Active la 2FA pour l'utilisateur connecté
   ///
   /// [secret] Le secret obtenu via generateTwoFactorSecret()
   /// [otp] Code OTP généré avec le secret pour vérifier la configuration
-  Future<void> enableTwoFactor({
+  ///
+  /// Retourne `true` si l'activation a réussi (code 204), `false` sinon.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final tfa = await users.generateTwoFactorSecret();
+  /// if (tfa != null) {
+  ///   final success = await users.enableTwoFactor(
+  ///     secret: tfa.secret,
+  ///     otp: '123456'
+  ///   );
+  ///   if (success) {
+  ///     print('2FA activée avec succès !');
+  ///   } else {
+  ///     print('Échec de l\'activation 2FA');
+  ///   }
+  /// }
+  /// ```
+  Future<bool> enableTwoFactor({
     required String secret,
     required String otp,
   }) async {
-    await _httpClient.post(
-      '/users/me/tfa/enable',
-      data: {'secret': secret, 'otp': otp},
-    );
+    try {
+      await _httpClient.post(
+        '/users/me/tfa/enable',
+        data: {'secret': secret, 'otp': otp},
+      );
+      // Si on arrive ici sans exception, l'activation a réussi (code 204)
+      return true;
+    } catch (e) {
+      // En cas d'erreur (mauvais OTP, réseau, etc.), retourner false
+      return false;
+    }
   }
 
   /// Désactive la 2FA pour l'utilisateur connecté
   ///
   /// [otp] Code OTP actuel pour confirmer la désactivation
-  Future<void> disableTwoFactor(String otp) async {
-    await _httpClient.post('/users/me/tfa/disable', data: {'otp': otp});
+  ///
+  /// Retourne `true` si la désactivation a réussi (code 204), `false` sinon.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final success = await users.disableTwoFactor('123456');
+  /// if (success) {
+  ///   print('2FA désactivée avec succès !');
+  /// } else {
+  ///   print('Échec de la désactivation 2FA');
+  /// }
+  /// ```
+  Future<bool> disableTwoFactor(String otp) async {
+    try {
+      await _httpClient.post('/users/me/tfa/disable', data: {'otp': otp});
+      // Si on arrive ici sans exception, la désactivation a réussi (code 204)
+      return true;
+    } catch (e) {
+      // En cas d'erreur (mauvais OTP, réseau, etc.), retourner false
+      return false;
+    }
   }
 
   // ========================================
