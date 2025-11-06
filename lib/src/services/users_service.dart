@@ -464,11 +464,11 @@ class UsersService {
   ///   await users.enableTwoFactor(secret: tfa.secret, otp: '123456');
   /// }
   /// ```
-  Future<TwoFactorSecret?> generateTwoFactorSecret() async {
+  Future<TwoFactorSecret?> generateTwoFactorSecret(String password) async {
     try {
       final response = await _httpClient.post(
         '/users/me/tfa/generate',
-        data: '',
+        data: {"password": password},
       );
 
       // Vérifier que la réponse contient les données attendues
