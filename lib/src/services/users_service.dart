@@ -473,13 +473,13 @@ class UsersService {
 
       // Vérifier que la réponse contient les données attendues
       if (response.data == null ||
-          response.data is! Map<String, dynamic> ||
-          !response.data.containsKey('secret') ||
-          !response.data.containsKey('otpauth_url')) {
+          response.data['data'] is! Map<String, dynamic> ||
+          !response.data['data'].containsKey('secret') ||
+          !response.data['data'].containsKey('otpauth_url')) {
         return null;
       }
 
-      final data = response.data as Map<String, dynamic>;
+      final data = response.data['data'] as Map<String, dynamic>;
 
       // Vérifier que les valeurs sont des chaînes non vides
       final secret = data['secret'] as String?;
