@@ -19,6 +19,13 @@ Documentation complète de la librairie Dart/Flutter pour interagir avec l'API D
 11. [**Error Handling**](11-error-handling.md) - Gestion des erreurs
 12. [**Advanced**](12-advanced.md) - Fonctionnalités avancées
 
+### 🔧 Guides de résolution de problèmes
+
+- [**Troubleshooting Permissions**](troubleshooting-permissions.md) - Diagnostic des erreurs de permissions
+- [**Fix: 404 sur /auth/refresh**](FIX_404_REFRESH_TOKEN.md) - Résolution erreur 404 lors du refresh
+- [**Fix: Filtres imbriqués**](NESTED_FILTER_FIX.md) - Notation pointée dans les filtres
+- [**Nested Field Filters**](nested-field-filters.md) - Guide des filtres sur relations imbriquées
+
 ### Référence API
 
 - [**Services**](api-reference/services/) - Documentation détaillée de tous les services

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **CRITICAL: 404 sur /auth/refresh** : Les headers personnalisés (`DirectusConfig.headers`) sont maintenant inclus dans le Dio temporaire utilisé pour le refresh du token. Ceci résout les erreurs 404 lorsque Directus est derrière un reverse proxy ou une API Gateway nécessitant des headers spécifiques.
+  - 📚 Documentation : `docs/FIX_404_REFRESH_TOKEN.md`
+  - 🎯 Impact : Reverse proxies, API Gateways, headers de routing
+
 - **BREAKING FIX: Notation pointée dans les filtres** : `Filter.field('departement.region')` crée maintenant correctement une structure JSON imbriquée `{"departement": {"region": {...}}}` au lieu de `{"departement.region": {...}}`. Ceci corrige les erreurs de permissions avec Directus et rend la syntaxe conforme à l'API Directus.
   - ✅ Équivalence complète avec `Filter.relation().where()`
   - ✅ Support multi-niveaux : `Filter.field('a.b.c.d')`

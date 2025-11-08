@@ -212,15 +212,24 @@ class DirectusHttpClient {
       // Appeler l'endpoint de refresh SANS passer par les intercepteurs
       // pour éviter une boucle infinie
       // On crée un Dio temporaire sans intercepteurs pour cette requête
+
+      // Combiner les headers de base avec les headers personnalisés
+      final refreshHeaders = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+
+      // Ajouter les headers personnalisés de la configuration s'ils existent
+      if (_config.headers != null) {
+        refreshHeaders.addAll(_config.headers!);
+      }
+
       final tempDio = Dio(
         BaseOptions(
           baseUrl: _config.baseUrl,
           connectTimeout: _config.timeout,
           receiveTimeout: _config.timeout,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
+          headers: refreshHeaders,
         ),
       );
 
