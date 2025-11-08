@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **BREAKING FIX: Notation pointée dans les filtres** : `Filter.field('departement.region')` crée maintenant correctement une structure JSON imbriquée `{"departement": {"region": {...}}}` au lieu de `{"departement.region": {...}}`. Ceci corrige les erreurs de permissions avec Directus et rend la syntaxe conforme à l'API Directus.
+  - ✅ Équivalence complète avec `Filter.relation().where()`
+  - ✅ Support multi-niveaux : `Filter.field('a.b.c.d')`
+  - ✅ Compatible avec tous les opérateurs
+  - 📚 Documentation : `docs/NESTED_FILTER_FIX.md`
+  - 🧪 Tests : 18 tests de filtres imbriqués
+
+### Added
+
+- Script de diagnostic des permissions : `example/debug_permissions.dart`
+- Documentation complète du troubleshooting : `docs/troubleshooting-permissions.md`
+- Guide des filtres sur champs imbriqués : `docs/nested-field-filters.md` (mis à jour)
+
 ## [0.2.0] - 2025-10-30
 
 ### Added

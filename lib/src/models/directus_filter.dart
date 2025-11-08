@@ -223,9 +223,39 @@ class OperatorFilter extends Filter {
 
   @override
   Map<String, dynamic> toJson() {
+    // Si le nom du champ contient un point (notation imbriquée),
+    // on crée une structure JSON imbriquée pour les filtres sur relations
+    if (_fieldName.contains('.')) {
+      return _buildNestedFilter(_fieldName.split('.'), _operator, _value);
+    }
+
     return {
       _fieldName: {_operator: _value},
     };
+  }
+
+  /// Construit une structure JSON imbriquée pour les filtres sur relations
+  /// Exemple: 'departement.region' avec _eq -> {"departement": {"region": {"_eq": ...}}}
+  Map<String, dynamic> _buildNestedFilter(
+    List<String> parts,
+    String operator,
+    dynamic value,
+  ) {
+    if (parts.isEmpty) {
+      return {operator: value};
+    }
+
+    if (parts.length == 1) {
+      return {
+        parts[0]: {operator: value},
+      };
+    }
+
+    // Construction récursive de la structure imbriquée
+    final firstPart = parts.first;
+    final remainingParts = parts.sublist(1);
+
+    return {firstPart: _buildNestedFilter(remainingParts, operator, value)};
   }
 }
 
