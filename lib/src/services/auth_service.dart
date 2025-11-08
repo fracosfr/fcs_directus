@@ -255,6 +255,37 @@ class AuthService {
     _httpClient.setTokens();
   }
 
+  /// Définit manuellement les tokens d'authentification
+  ///
+  /// Cette méthode est utile pour restaurer une session depuis un stockage local
+  /// sans faire d'appel réseau (contrairement à [restoreSession]).
+  ///
+  /// [accessToken] Token d'accès
+  /// [refreshToken] Token de rafraîchissement (optionnel)
+  ///
+  /// ```dart
+  /// // Restaurer les tokens depuis le stockage local
+  /// final savedAccessToken = await storage.load('access_token');
+  /// final savedRefreshToken = await storage.load('refresh_token');
+  ///
+  /// client.auth.setTokens(
+  ///   accessToken: savedAccessToken,
+  ///   refreshToken: savedRefreshToken,
+  /// );
+  ///
+  /// // Ensuite, vérifier que la session est valide
+  /// try {
+  ///   await client.users.me();
+  ///   print('Session restaurée avec succès');
+  /// } catch (e) {
+  ///   print('Session invalide, reconnexion nécessaire');
+  ///   client.clearTokens();
+  /// }
+  /// ```
+  void setTokens({String? accessToken, String? refreshToken}) {
+    _httpClient.setTokens(accessToken: accessToken, refreshToken: refreshToken);
+  }
+
   /// Demande de réinitialisation de mot de passe
   ///
   /// [email] Email de l'utilisateur

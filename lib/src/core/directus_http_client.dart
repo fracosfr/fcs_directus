@@ -143,6 +143,18 @@ class DirectusHttpClient {
     _refreshToken = refreshToken;
   }
 
+  /// Efface les tokens d'authentification
+  ///
+  /// Cette méthode doit être appelée lors de la déconnexion ou
+  /// lorsque les tokens sont définitivement invalides
+  void clearTokens() {
+    _accessToken = null;
+    _refreshToken = null;
+    _refreshFuture = null;
+    _retryingRequests.clear();
+    _logger.info('Tokens cleared');
+  }
+
   /// Récupère le token d'accès actuel
   String? get accessToken => _accessToken;
 
@@ -159,17 +171,29 @@ class DirectusHttpClient {
     // Si un refresh est déjà en cours, attendre qu'il se termine
     if (_refreshFuture != null) {
       _logger.info('Token refresh already in progress, waiting...');
-      return _refreshFuture!;
+      try {
+        await _refreshFuture!;
+        // Si on arrive ici, le refresh a réussi
+        return;
+      } catch (e) {
+        // Le refresh en cours a échoué, propager l'erreur
+        _logger.warning('Waiting refresh failed: $e');
+        rethrow;
+      }
     }
 
     // Démarrer un nouveau refresh
+    _logger.fine('Starting new token refresh operation');
     _refreshFuture = _performRefresh();
 
     try {
       await _refreshFuture!;
-    } finally {
-      // Nettoyer le Future une fois terminé
+      // Succès: nettoyer le Future
       _refreshFuture = null;
+    } catch (e) {
+      // Erreur: nettoyer le Future pour permettre une nouvelle tentative plus tard
+      _refreshFuture = null;
+      rethrow;
     }
   }
 
@@ -184,54 +208,106 @@ class DirectusHttpClient {
 
     _logger.info('Refreshing access token...');
 
-    // Appeler l'endpoint de refresh sans passer par les intercepteurs
-    // pour éviter une boucle infinie
-    final response = await _dio.post<Map<String, dynamic>>(
-      '/auth/refresh',
-      data: {'refresh_token': _refreshToken, 'mode': 'json'},
-      options: Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-
-    if (response.data == null || !response.data!.containsKey('data')) {
-      throw DirectusAuthException(
-        message: 'Invalid refresh response',
-        errorCode: 'INVALID_REFRESH_RESPONSE',
+    try {
+      // Appeler l'endpoint de refresh SANS passer par les intercepteurs
+      // pour éviter une boucle infinie
+      // On crée un Dio temporaire sans intercepteurs pour cette requête
+      final tempDio = Dio(
+        BaseOptions(
+          baseUrl: _config.baseUrl,
+          connectTimeout: _config.timeout,
+          receiveTimeout: _config.timeout,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
       );
-    }
 
-    final authData = response.data!['data'] as Map<String, dynamic>;
-    final newAccessToken = authData['access_token'] as String?;
-    final newRefreshToken = authData['refresh_token'] as String?;
-
-    if (newAccessToken == null) {
-      throw DirectusAuthException(
-        message: 'No access token in refresh response',
-        errorCode: 'INVALID_REFRESH_RESPONSE',
+      final response = await tempDio.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'refresh_token': _refreshToken, 'mode': 'json'},
       );
-    }
 
-    // Mettre à jour les tokens
-    _accessToken = newAccessToken;
-    if (newRefreshToken != null) {
-      _refreshToken = newRefreshToken;
-    }
-
-    _logger.info('Access token refreshed successfully');
-
-    // Notifier l'application via le callback
-    if (_config.onTokenRefreshed != null) {
-      try {
-        await _config.onTokenRefreshed!(_accessToken!, _refreshToken);
-        _logger.info('Token refresh notification sent to application');
-      } catch (e) {
-        // Ne pas échouer le refresh si le callback échoue
-        _logger.warning('Error in onTokenRefreshed callback: $e');
+      if (response.data == null || !response.data!.containsKey('data')) {
+        throw DirectusAuthException(
+          message: 'Invalid refresh response',
+          errorCode: 'INVALID_REFRESH_RESPONSE',
+        );
       }
+
+      final authData = response.data!['data'] as Map<String, dynamic>;
+      final newAccessToken = authData['access_token'] as String?;
+      final newRefreshToken = authData['refresh_token'] as String?;
+
+      if (newAccessToken == null) {
+        throw DirectusAuthException(
+          message: 'No access token in refresh response',
+          errorCode: 'INVALID_REFRESH_RESPONSE',
+        );
+      }
+
+      // Mettre à jour les tokens
+      _accessToken = newAccessToken;
+      if (newRefreshToken != null) {
+        _refreshToken = newRefreshToken;
+      }
+
+      _logger.info('Access token refreshed successfully');
+
+      // Notifier l'application via le callback
+      if (_config.onTokenRefreshed != null) {
+        try {
+          await _config.onTokenRefreshed!(_accessToken!, _refreshToken);
+          _logger.info('Token refresh notification sent to application');
+        } catch (e) {
+          // Ne pas échouer le refresh si le callback échoue
+          _logger.warning('Error in onTokenRefreshed callback: $e');
+        }
+      }
+    } on DioException catch (e) {
+      // Convertir l'erreur Dio en DirectusException pour une meilleure gestion
+      _logger.severe(
+        'Token refresh failed - Status: ${e.response?.statusCode}, '
+        'Message: ${e.message}, '
+        'Response: ${e.response?.data}',
+      );
+
+      // Si le refresh token est invalide/expiré, on doit le supprimer
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+        _logger.warning(
+          'Refresh token is invalid or expired, clearing all tokens',
+        );
+        _accessToken = null;
+        _refreshToken = null;
+      }
+
+      // Extraire le message d'erreur de la réponse Directus si disponible
+      String errorMessage = 'Token refresh failed';
+      if (e.response?.data is Map<String, dynamic>) {
+        final data = e.response!.data as Map<String, dynamic>;
+        if (data.containsKey('errors') && data['errors'] is List) {
+          final errors = data['errors'] as List;
+          if (errors.isNotEmpty && errors.first is Map<String, dynamic>) {
+            errorMessage =
+                (errors.first as Map<String, dynamic>)['message'] as String? ??
+                errorMessage;
+          }
+        }
+      }
+
+      throw DirectusAuthException(
+        message: errorMessage,
+        errorCode: 'TOKEN_REFRESH_FAILED',
+        statusCode: e.response?.statusCode,
+      );
+    } catch (e) {
+      // Gérer les autres erreurs (réseau, timeout, etc.)
+      _logger.severe('Unexpected error during token refresh: $e');
+      throw DirectusAuthException(
+        message: 'Token refresh failed: $e',
+        errorCode: 'TOKEN_REFRESH_FAILED',
+      );
     }
   }
 

@@ -238,4 +238,30 @@ class DirectusClient {
     await _websocket?.dispose();
     _httpClient.close();
   }
+
+  /// Efface les tokens d'authentification stockés
+  ///
+  /// Cette méthode doit être appelée lors de la déconnexion ou
+  /// lorsque les tokens sont définitivement invalides (par exemple,
+  /// après une erreur de refresh token irrémédiable).
+  ///
+  /// Exemple:
+  /// ```dart
+  /// // Après une déconnexion
+  /// await client.auth.logout();
+  /// client.clearTokens();
+  ///
+  /// // Ou en cas d'erreur d'authentification persistante
+  /// try {
+  ///   await someAuthenticatedRequest();
+  /// } catch (e) {
+  ///   if (e is DirectusAuthException) {
+  ///     client.clearTokens();
+  ///     // Rediriger vers la page de login
+  ///   }
+  /// }
+  /// ```
+  void clearTokens() {
+    _httpClient.clearTokens();
+  }
 }
