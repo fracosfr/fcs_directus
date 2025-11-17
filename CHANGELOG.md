@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **EnumProperty** : Nouveau property wrapper pour la gestion des enums type-safe
+  - ✅ Conversion automatique String ↔ Enum
+  - ✅ Insensible à la casse
+  - ✅ Gestion des valeurs invalides avec fallback vers la valeur par défaut
+  - ✅ Méthodes utilitaires : `is_()`, `isOneOf()`, `allValues`, `reset()`
+  - ✅ Propriété `asString` pour obtenir la représentation String
+  - ✅ Intégration complète avec le dirty tracking
+  - 📚 Documentation : `docs/enum-property.md`
+  - 📝 Exemple : `example/example_enum_property.dart`
+  - 🧪 Tests : 21 tests unitaires
+
 ### Fixed
 
 - **CRITICAL: 404 sur /auth/refresh** : Les headers personnalisés (`DirectusConfig.headers`) sont maintenant inclus dans le Dio temporaire utilisé pour le refresh du token. Ceci résout les erreurs 404 lorsque Directus est derrière un reverse proxy ou une API Gateway nécessitant des headers spécifiques.

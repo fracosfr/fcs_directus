@@ -743,6 +743,49 @@ abstract class DirectusModel {
     return JsonProperty(this, key);
   }
 
+  /// Crée un property wrapper pour Enum
+  ///
+  /// Convertit automatiquement entre String (Directus) et Enum (Dart).
+  /// Si la valeur String ne correspond à aucune valeur de l'enum,
+  /// la valeur par défaut est utilisée.
+  ///
+  /// **IMPORTANT:** Vous devez passer **toutes les valeurs de l'enum**
+  /// via le paramètre `values` (utilisez `EnumType.values`).
+  ///
+  /// Exemple:
+  /// ```dart
+  /// enum Status { draft, published, archived }
+  ///
+  /// class Article extends DirectusModel {
+  ///   Article(super.data);
+  ///
+  ///   @override
+  ///   String get itemName => 'articles';
+  ///
+  ///   late final status = enumValue<Status>(
+  ///     'status',
+  ///     Status.draft,      // Valeur par défaut
+  ///     Status.values,     // Toutes les valeurs de l'enum
+  ///   );
+  ///
+  ///   // Utilisation:
+  ///   print(article.status.value);        // Status.published
+  ///   article.status.set(Status.draft);
+  ///   print(article.status.asString);     // "draft"
+  ///
+  ///   if (article.status.is_(Status.published)) {
+  ///     print('Article publié !');
+  ///   }
+  /// }
+  /// ```
+  EnumProperty<T> enumValue<T extends Enum>(
+    String key,
+    T defaultValue,
+    List<T> values,
+  ) {
+    return EnumProperty<T>(this, key, defaultValue, values);
+  }
+
   /// Crée un property wrapper pour DirectusModel nested
   ModelProperty<T> modelValue<T extends DirectusModel>(String key) {
     return ModelProperty<T>(this, key);

@@ -193,6 +193,54 @@ print(product.name); // 'Laptop'
 product.price.set(899.99); // Modification
 ```
 
+### Enums type-safe
+
+Utilisez des enums Dart au lieu de Strings pour plus de sécurité :
+
+```dart
+enum ArticleStatus {
+  draft,
+  review,
+  published,
+  archived,
+}
+
+class Article extends DirectusModel {
+  Article(super.data);
+  
+  @override
+  String get itemName => 'articles';
+  
+  late final title = stringValue('title');
+  
+  // Conversion automatique String ↔ Enum
+  late final status = enumValue<ArticleStatus>(
+    'status',
+    ArticleStatus.draft,    // Valeur par défaut
+    ArticleStatus.values,   // Toutes les valeurs
+  );
+  
+  // Getters dérivés
+  bool get isPublished => status.is_(ArticleStatus.published);
+  bool get canEdit => status.isOneOf([
+    ArticleStatus.draft,
+    ArticleStatus.review,
+  ]);
+}
+
+// Utilisation
+final article = Article({'status': 'published'});  // String de Directus
+print(article.status.value);        // ArticleStatus.published (Enum)
+print(article.status.asString);     // "published"
+
+article.status.set(ArticleStatus.draft);
+print(article.isPublished);         // false
+
+// Gestion automatique des valeurs invalides
+final broken = Article({'status': 'invalid'});
+print(broken.status.value);         // ArticleStatus.draft (fallback)
+```
+
 ### Registrer les factories de modèles
 
 Pour utiliser des modèles typés avec les services :

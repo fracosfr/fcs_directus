@@ -410,8 +410,8 @@ class ObjectProperty extends DirectusProperty<Map<String, dynamic>?> {
 ///
 /// Permet de stocker n'importe quel type de valeur JSON :
 /// - Primitives (String, int, double, bool)
-/// - Map<String, dynamic>
-/// - List<dynamic>
+/// - `Map<String, dynamic>`
+/// - `List<dynamic>`
 /// - null
 ///
 /// Exemple:
@@ -512,6 +512,93 @@ class JsonProperty extends DirectusProperty<dynamic> {
   bool get isDouble => value is double;
   bool get isBool => value is bool;
   bool get isNull => value == null;
+}
+
+/// Property wrapper pour Enum
+///
+/// Convertit automatiquement entre les valeurs String stockées dans Directus
+/// et les enums Dart.
+///
+/// **IMPORTANT:** Vous devez passer **toutes les valeurs de l'enum** au constructeur
+/// via le paramètre `values`.
+///
+/// Exemple:
+/// ```dart
+/// enum Status { draft, published, archived }
+///
+/// class Article extends DirectusModel {
+///   late final status = enumValue<Status>(
+///     'status',
+///     Status.draft,
+///     Status.values,  // ← Liste de toutes les valeurs
+///   );
+///
+///   // Utilisation:
+///   print(article.status.value);  // Status.published
+///   article.status.set(Status.draft);
+///   print(article.status.asString); // "draft"
+/// }
+/// ```
+class EnumProperty<T extends Enum> extends DirectusProperty<T> {
+  final T defaultValue;
+  final List<T> _enumValues;
+
+  EnumProperty(super.model, super.name, this.defaultValue, this._enumValues);
+
+  @override
+  T get value {
+    final stringValue = _model.getStringOrNull(name);
+    if (stringValue == null) return defaultValue;
+
+    // Chercher la valeur correspondante (insensible à la casse)
+    final lowerStringValue = stringValue.toLowerCase();
+    for (final enumValue in _enumValues) {
+      if (enumValue.name.toLowerCase() == lowerStringValue) {
+        return enumValue;
+      }
+    }
+
+    // Si aucune correspondance, retourner la valeur par défaut
+    return defaultValue;
+  }
+
+  @override
+  void set(T value) {
+    _model.setString(name, value.name);
+  }
+
+  /// Récupère la valeur sous forme de String
+  String get asString => value.name;
+
+  /// Définit la valeur à partir d'un String
+  ///
+  /// Si le String ne correspond à aucune valeur de l'enum,
+  /// la valeur par défaut sera utilisée.
+  void setFromString(String stringValue) {
+    final lowerStringValue = stringValue.toLowerCase();
+
+    for (final enumValue in _enumValues) {
+      if (enumValue.name.toLowerCase() == lowerStringValue) {
+        set(enumValue);
+        return;
+      }
+    }
+
+    // Si aucune correspondance, utiliser la valeur par défaut
+    set(defaultValue);
+  }
+
+  /// Vérifie si la valeur actuelle correspond à une valeur spécifique
+  bool is_(T enumValue) => value == enumValue;
+
+  /// Vérifie si la valeur actuelle est l'une des valeurs fournies
+  bool isOneOf(List<T> enumValues) => enumValues.contains(value);
+
+  /// Retourne toutes les valeurs possibles de l'enum
+  List<T> get allValues => List.unmodifiable(_enumValues);
+
+  /// Remet à la valeur par défaut
+  void reset() => set(defaultValue);
 }
 
 /// Property wrapper pour DirectusModel nested
