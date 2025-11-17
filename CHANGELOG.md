@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **onAuthError callback** : Nouveau callback dans `DirectusConfig` pour centraliser la gestion des erreurs d'authentification
+  - ✅ Notifie l'application lors de l'échec de l'auto-refresh (refresh token expiré)
+  - ✅ Notifie de toutes les erreurs `DirectusAuthException` (login échoué, compte suspendu, etc.)
+  - ✅ Permet de rediriger automatiquement vers l'écran de login
+  - ✅ Compatible avec les systèmes d'état (Bloc, Riverpod, Provider, etc.)
+  - ✅ Complète le callback `onTokenRefreshed` pour une gestion complète
+  - 📚 Documentation : `docs/auth-error-callback.md`
+  - 📝 Exemple : `example/example_auth_error_callback.dart`
+  - 🧪 Tests : 8 tests unitaires
+
 - **EnumProperty** : Nouveau property wrapper pour la gestion des enums type-safe
   - ✅ Conversion automatique String ↔ Enum
   - ✅ Insensible à la casse

@@ -22,6 +22,7 @@ Ce dossier contient des exemples pratiques pour comprendre et utiliser la librai
 | [`example_token_types.dart`](./example_token_types.dart) | Différences entre static token et refresh token | ⭐ Débutant |
 | [`example_auto_refresh.dart`](./example_auto_refresh.dart) | Refresh automatique des tokens | ⭐⭐ Intermédiaire |
 | [`example_token_refresh_callback.dart`](./example_token_refresh_callback.dart) | Notification et persistance lors du refresh | ⭐⭐⭐ Avancé |
+| [`example_auth_error_callback.dart`](./example_auth_error_callback.dart) | Gestion des erreurs d'authentification | ⭐⭐⭐ Avancé |
 
 ## 🎯 Parcours d'apprentissage recommandé
 

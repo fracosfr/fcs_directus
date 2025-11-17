@@ -88,11 +88,21 @@ final storage = FlutterSecureStorage();
 final client = DirectusClient(
   DirectusConfig(
     baseUrl: 'https://your-directus-instance.com',
-    // Callback appelé automatiquement lors d'un refresh
+    
+    // ✅ Callback appelé lors d'un refresh réussi
     onTokenRefreshed: (accessToken, refreshToken) async {
       await storage.write(key: 'access_token', value: accessToken);
       if (refreshToken != null) {
         await storage.write(key: 'refresh_token', value: refreshToken);
+      }
+    },
+    
+    // ❌ Callback appelé lors d'une erreur d'authentification
+    onAuthError: (exception) async {
+      // Gérer l'erreur (ex: redirection vers login si refresh échoue)
+      if (exception.errorCode == 'TOKEN_REFRESH_FAILED') {
+        await storage.deleteAll();
+        // await navigateToLogin();
       }
     },
   ),
@@ -116,7 +126,8 @@ if (savedToken != null) {
 }
 ```
 
-> 💡 Voir [`example/example_token_refresh_callback.dart`](example/example_token_refresh_callback.dart) pour un exemple complet avec workflow de persistance
+> 💡 Voir [`example/example_token_refresh_callback.dart`](example/example_token_refresh_callback.dart) pour un exemple complet avec workflow de persistance  
+> 💡 Voir [`example/example_auth_error_callback.dart`](example/example_auth_error_callback.dart) pour la gestion des erreurs d'authentification
 
 ### Opérations CRUD basiques
 

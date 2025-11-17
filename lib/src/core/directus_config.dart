@@ -1,3 +1,5 @@
+import '../exceptions/directus_exception.dart';
+
 /// Configuration pour le client Directus.
 ///
 /// Cette classe contient toutes les informations nécessaires pour
@@ -37,6 +39,29 @@ class DirectusConfig {
   final Future<void> Function(String accessToken, String? refreshToken)?
   onTokenRefreshed;
 
+  /// Callback appelé lorsqu'une erreur d'authentification survient
+  ///
+  /// Ce callback est appelé dans les cas suivants :
+  /// - Échec de l'auto-refresh du token (refresh token expiré/invalide)
+  /// - Erreurs d'authentification DirectusAuthException
+  ///
+  /// Il permet à l'application de réagir aux erreurs d'authentification,
+  /// par exemple en redirigeant vers l'écran de connexion.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// DirectusConfig(
+  ///   baseUrl: 'https://directus.example.com',
+  ///   onAuthError: (exception) async {
+  ///     if (exception.errorCode == 'TOKEN_EXPIRED') {
+  ///       // Le refresh a échoué, rediriger vers login
+  ///       await navigateToLogin();
+  ///     }
+  ///   },
+  /// )
+  /// ```
+  final Future<void> Function(DirectusAuthException exception)? onAuthError;
+
   /// Crée une nouvelle configuration Directus.
   ///
   /// [baseUrl] est l'URL de base de votre instance Directus (ex: 'https://directus.example.com')
@@ -44,12 +69,14 @@ class DirectusConfig {
   /// [headers] permet d'ajouter des headers personnalisés
   /// [enableLogging] active les logs de debug (défaut: false)
   /// [onTokenRefreshed] callback pour notifier du refresh automatique des tokens
+  /// [onAuthError] callback pour notifier des erreurs d'authentification
   DirectusConfig({
     required this.baseUrl,
     this.timeout = const Duration(seconds: 30),
     this.headers,
     this.enableLogging = false,
     this.onTokenRefreshed,
+    this.onAuthError,
   }) {
     // Validation de l'URL
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
@@ -65,6 +92,7 @@ class DirectusConfig {
     bool? enableLogging,
     Future<void> Function(String accessToken, String? refreshToken)?
     onTokenRefreshed,
+    Future<void> Function(DirectusAuthException exception)? onAuthError,
   }) {
     return DirectusConfig(
       baseUrl: baseUrl ?? this.baseUrl,
@@ -72,6 +100,7 @@ class DirectusConfig {
       headers: headers ?? this.headers,
       enableLogging: enableLogging ?? this.enableLogging,
       onTokenRefreshed: onTokenRefreshed ?? this.onTokenRefreshed,
+      onAuthError: onAuthError ?? this.onAuthError,
     );
   }
 

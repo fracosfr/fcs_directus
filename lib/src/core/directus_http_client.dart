@@ -293,30 +293,63 @@ class DirectusHttpClient {
 
       // Extraire le message d'erreur de la réponse Directus si disponible
       String errorMessage = 'Token refresh failed';
+      String? errorCode = 'TOKEN_REFRESH_FAILED';
+
       if (e.response?.data is Map<String, dynamic>) {
         final data = e.response!.data as Map<String, dynamic>;
         if (data.containsKey('errors') && data['errors'] is List) {
           final errors = data['errors'] as List;
           if (errors.isNotEmpty && errors.first is Map<String, dynamic>) {
-            errorMessage =
-                (errors.first as Map<String, dynamic>)['message'] as String? ??
-                errorMessage;
+            final firstError = errors.first as Map<String, dynamic>;
+            errorMessage = firstError['message'] as String? ?? errorMessage;
+
+            // Extraire le code d'erreur des extensions si disponible
+            if (firstError.containsKey('extensions')) {
+              final extensions =
+                  firstError['extensions'] as Map<String, dynamic>?;
+              errorCode = extensions?['code'] as String? ?? errorCode;
+            }
           }
         }
       }
 
-      throw DirectusAuthException(
+      final authException = DirectusAuthException(
         message: errorMessage,
-        errorCode: 'TOKEN_REFRESH_FAILED',
+        errorCode: errorCode,
         statusCode: e.response?.statusCode,
       );
+
+      // Notifier l'application via le callback onAuthError
+      if (_config.onAuthError != null) {
+        try {
+          await _config.onAuthError!(authException);
+          _logger.info('Auth error notification sent to application');
+        } catch (callbackError) {
+          // Ne pas échouer le refresh si le callback échoue
+          _logger.warning('Error in onAuthError callback: $callbackError');
+        }
+      }
+
+      throw authException;
     } catch (e) {
       // Gérer les autres erreurs (réseau, timeout, etc.)
       _logger.severe('Unexpected error during token refresh: $e');
-      throw DirectusAuthException(
+
+      final authException = DirectusAuthException(
         message: 'Token refresh failed: $e',
         errorCode: 'TOKEN_REFRESH_FAILED',
       );
+
+      // Notifier l'application
+      if (_config.onAuthError != null) {
+        try {
+          await _config.onAuthError!(authException);
+        } catch (callbackError) {
+          _logger.warning('Error in onAuthError callback: $callbackError');
+        }
+      }
+
+      throw authException;
     }
   }
 

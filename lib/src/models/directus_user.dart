@@ -22,7 +22,7 @@ import 'directus_policy.dart';
 /// DirectusClient.registerFactory(CustomUser.factory);
 /// final users = client.itemsOf<CustomUser>();
 /// ```
-class DirectusUser extends DirectusModel {
+class DirectusUser<R extends DirectusRole> extends DirectusModel {
   // Note: id, dateCreated, dateUpdated, userCreated, userUpdated sont hérités de DirectusModel
 
   /// Prénom de l'utilisateur
@@ -62,7 +62,7 @@ class DirectusUser extends DirectusModel {
   late final status = stringValue('status');
 
   /// Rôle de l'utilisateur (Many-to-One vers roles)
-  late final role = modelValue<DirectusRole>('role');
+  late final role = modelValue<R>('role');
 
   /// Token statique pour l'utilisateur
   late final token = stringValue('token');
