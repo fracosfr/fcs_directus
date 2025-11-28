@@ -66,7 +66,7 @@ class PresetsService {
     List<String> ids,
     Map<String, dynamic> data,
   ) async {
-    return await _itemsService.updateMany(ids, data);
+    return await _itemsService.updateMany(keys: ids, data: data);
   }
 
   /// Supprime un preset
@@ -76,7 +76,7 @@ class PresetsService {
 
   /// Supprime plusieurs presets
   Future<void> deletePresets(List<String> ids) async {
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   // === Méthodes helper ===

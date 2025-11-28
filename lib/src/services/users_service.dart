@@ -1,6 +1,4 @@
 import '../core/directus_http_client.dart';
-import 'item_active_service.dart';
-// ...existing code...
 import '../models/directus_user.dart';
 import '../models/directus_model.dart';
 import 'items_service.dart';
@@ -64,11 +62,8 @@ class TwoFactorSecret {
 /// ```
 class UsersService {
   final DirectusHttpClient _httpClient;
-  // ...existing code...
-  UsersService(this._httpClient);
 
-  ItemActiveService<T> _activeService<T extends DirectusModel>() =>
-      ItemActiveService<T>(_httpClient, 'directus_users');
+  UsersService(this._httpClient);
 
   // ========================================
   // Opérations CRUD de base
@@ -94,7 +89,22 @@ class UsersService {
   Future<DirectusResponse<T>> getUsers<T extends DirectusUser>({
     QueryParameters? query,
   }) async {
-    return await _activeService<T>().readMany(query: query);
+    final response = await _httpClient.get(
+      '/users',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as List;
+    final meta = response.data['meta'] != null
+        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
+        : null;
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    final items = data
+        .map<T>((item) => baseFactory(item as Map<String, dynamic>) as T)
+        .toList();
+
+    return DirectusResponse(data: items, meta: meta);
   }
 
   /// Récupère un utilisateur par son ID typé
@@ -117,7 +127,14 @@ class UsersService {
     String id, {
     QueryParameters? query,
   }) async {
-    return await _activeService<T>().readOne(id, query: query);
+    final response = await _httpClient.get(
+      '/users/$id',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    return baseFactory(data) as T;
   }
 
   /// Crée un nouvel utilisateur typé
@@ -577,5 +594,162 @@ class UsersService {
       '/users/me/track/page',
       data: {'last_page': lastPage},
     );
+  }
+
+  // ========================================
+  // Gestion des policies
+  // ========================================
+
+  /// Ajoute des policies à un utilisateur
+  ///
+  /// Utilise la structure Directus pour créer des relations M2M :
+  /// `{policies: {create: [{policy: 'policy-id-1'}, {policy: 'policy-id-2'}]}}`
+  ///
+  /// [userId] ID de l'utilisateur
+  /// [policyIds] Liste des IDs de policies à ajouter
+  ///
+  /// Exemple :
+  /// ```dart
+  /// await users.addPoliciesToUser(
+  ///   userId: 'user-123',
+  ///   policyIds: ['policy-1', 'policy-2'],
+  /// );
+  /// ```
+  Future<T?> addPoliciesToUser<T extends DirectusUser>({
+    required String userId,
+    required List<String> policyIds,
+  }) async {
+    final policiesData = policyIds.map((id) => {'policy': id}).toList();
+
+    final response = await _httpClient.patch(
+      '/users/$userId',
+      data: {
+        'policies': {'create': policiesData},
+      },
+    );
+
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    return baseFactory(response.data['data'] as Map<String, dynamic>) as T;
+  }
+
+  /// Ajoute des policies à l'utilisateur connecté
+  ///
+  /// [policyIds] Liste des IDs de policies à ajouter
+  ///
+  /// Exemple :
+  /// ```dart
+  /// await users.addPoliciesToMe(policyIds: ['policy-1', 'policy-2']);
+  /// ```
+  Future<T?> addPoliciesToMe<T extends DirectusUser>({
+    required List<String> policyIds,
+  }) async {
+    final policiesData = policyIds.map((id) => {'policy': id}).toList();
+
+    final response = await _httpClient.patch(
+      '/users/me',
+      data: {
+        'policies': {'create': policiesData},
+      },
+    );
+
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    return baseFactory(response.data['data'] as Map<String, dynamic>) as T;
+  }
+
+  /// Remplace toutes les policies d'un utilisateur
+  ///
+  /// Attention : Cette opération remplace TOUTES les policies existantes
+  /// par celles fournies dans la liste.
+  ///
+  /// [userId] ID de l'utilisateur
+  /// [policyIds] Liste des IDs de policies (remplace les existantes)
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Remplacer toutes les policies par une nouvelle liste
+  /// await users.setUserPolicies(
+  ///   userId: 'user-123',
+  ///   policyIds: ['policy-1', 'policy-3'],
+  /// );
+  ///
+  /// // Supprimer toutes les policies
+  /// await users.setUserPolicies(
+  ///   userId: 'user-123',
+  ///   policyIds: [],
+  /// );
+  /// ```
+  Future<T?> setUserPolicies<T extends DirectusUser>({
+    required String userId,
+    required List<String> policyIds,
+  }) async {
+    final policiesData = policyIds.map((id) => {'policy': id}).toList();
+
+    final response = await _httpClient.patch(
+      '/users/$userId',
+      data: {'policies': policiesData},
+    );
+
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    return baseFactory(response.data['data'] as Map<String, dynamic>) as T;
+  }
+
+  /// Supprime des policies d'un utilisateur
+  ///
+  /// [userId] ID de l'utilisateur
+  /// [junctionIds] Liste des IDs des entrées de jonction (directus_users_policies)
+  ///               à supprimer (pas les IDs des policies elles-mêmes)
+  ///
+  /// Note: Pour obtenir les IDs de jonction, vous devez d'abord récupérer
+  /// l'utilisateur avec les policies chargées.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Récupérer l'utilisateur avec ses policies
+  /// final user = await users.getUser(
+  ///   'user-123',
+  ///   query: QueryParameters(fields: ['*', 'policies.*']),
+  /// );
+  ///
+  /// // Récupérer les IDs de jonction à supprimer
+  /// final junctionIds = user.policies
+  ///     .where((p) => p['policy'] == 'policy-to-remove')
+  ///     .map((p) => p['id'] as String)
+  ///     .toList();
+  ///
+  /// // Supprimer les policies
+  /// await users.removePoliciesFromUser(
+  ///   userId: 'user-123',
+  ///   junctionIds: junctionIds,
+  /// );
+  /// ```
+  Future<T?> removePoliciesFromUser<T extends DirectusUser>({
+    required String userId,
+    required List<String> junctionIds,
+  }) async {
+    final response = await _httpClient.patch(
+      '/users/$userId',
+      data: {
+        'policies': {'delete': junctionIds},
+      },
+    );
+
+    if (response.data == null || !response.data.containsKey('data')) {
+      return null;
+    }
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusUser.factory;
+    return baseFactory(response.data['data'] as Map<String, dynamic>) as T;
   }
 }

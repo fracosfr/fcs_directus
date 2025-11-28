@@ -122,7 +122,7 @@ class FlowsService {
     List<String> ids,
     Map<String, dynamic> data,
   ) async {
-    return await _itemsService.updateMany(ids, data);
+    return await _itemsService.updateMany(keys: ids, data: data);
   }
 
   /// Supprime un flow
@@ -136,7 +136,7 @@ class FlowsService {
   ///
   /// [ids] Liste des IDs des flows à supprimer
   Future<void> deleteFlows(List<String> ids) async {
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   /// Déclenche un flow avec un webhook GET

@@ -1,6 +1,7 @@
 import 'package:fcs_directus/src/models/directus_model.dart';
 
 import '../core/directus_http_client.dart';
+import '../models/directus_filter.dart';
 import 'items_service.dart';
 
 class ItemActiveService<T extends DirectusModel> {
@@ -90,8 +91,84 @@ class ItemActiveService<T extends DirectusModel> {
     return resolvedFactory(responseData);
   }
 
-  /// Met à jour plusieurs items et les retourne en modèles typés T
-  Future<List<T>> updateMany(List<T> models) async {
+  /// Met à jour plusieurs items avec les mêmes données et les retourne en modèles typés T
+  ///
+  /// [keys] Liste des identifiants des items à mettre à jour (optionnel)
+  /// [data] Données à appliquer à tous les items
+  /// [filter] Filtre pour sélectionner les items à mettre à jour (optionnel)
+  /// [query] Query object au format Directus pour sélectionner les items (optionnel)
+  ///
+  /// Si ni [keys] ni [filter] ni [query] n'est fourni, tous les items de la collection
+  /// seront mis à jour.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Mettre à jour par liste d'IDs
+  /// final updated = await articles.updateMany(
+  ///   keys: ['id1', 'id2', 'id3'],
+  ///   data: {'status': 'published'},
+  /// );
+  ///
+  /// // Mettre à jour avec un filtre
+  /// final updated = await articles.updateMany(
+  ///   filter: Filter.equals('category', 'news'),
+  ///   data: {'featured': true},
+  /// );
+  ///
+  /// // Mettre à jour tous les items
+  /// final updated = await articles.updateMany(data: {'archived': false});
+  /// ```
+  Future<List<T>> updateMany({
+    List<String>? keys,
+    required Map<String, dynamic> data,
+    dynamic filter,
+    Map<String, dynamic>? query,
+  }) async {
+    // Construire le body de la requête
+    final Map<String, dynamic> body = {'data': data};
+
+    // Ajouter keys si fourni
+    if (keys != null && keys.isNotEmpty) {
+      body['keys'] = keys;
+    }
+
+    // Ajouter query si fourni (contient filter, search, etc.)
+    if (query != null) {
+      body['query'] = query;
+    } else if (filter != null) {
+      // Convertir le filtre si c'est un objet Filter
+      final filterJson = filter is Filter ? filter.toJson() : filter;
+      body['query'] = {'filter': filterJson};
+    }
+
+    final response = await _httpClient.patch('/items/$collection', data: body);
+
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return [];
+    }
+
+    final responseData = response.data!['data'] as List;
+    final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
+    return responseData
+        .map((item) => resolvedFactory(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Met à jour plusieurs modèles individuellement avec leurs propres données dirty
+  ///
+  /// Chaque modèle est mis à jour avec ses propres champs modifiés.
+  /// Note: Cette méthode fait une requête par modèle.
+  ///
+  /// [models] Liste des modèles à mettre à jour
+  ///
+  /// Exemple :
+  /// ```dart
+  /// article1.title.set('Nouveau titre 1');
+  /// article2.status.set('published');
+  /// final updated = await articles.updateManyIndividual([article1, article2]);
+  /// ```
+  Future<List<T?>> updateManyIndividual(List<T> models) async {
     if (models.any((m) => m.id == null)) {
       throw ArgumentError('All models must have an ID to be updated.');
     }
@@ -99,22 +176,12 @@ class ItemActiveService<T extends DirectusModel> {
       return [];
     }
 
-    final payload = models.map((m) {
-      final dirty = m.toJsonDirty();
-      dirty['id'] = m.id;
-      return dirty;
-    }).toList();
-
-    final response = await _httpClient.patch(
-      '/items/$collection',
-      data: payload,
-    );
-
-    final responseData = (response.data?['data'] ?? {}) as List;
-    final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();
-    return responseData
-        .map((item) => resolvedFactory(item as Map<String, dynamic>))
-        .toList();
+    final results = <T?>[];
+    for (final model in models) {
+      final result = await updateOne(model);
+      results.add(result);
+    }
+    return results;
   }
 
   /// Supprime un item en utilisant son modèle
@@ -126,7 +193,12 @@ class ItemActiveService<T extends DirectusModel> {
   }
 
   /// Supprime plusieurs items en utilisant leurs modèles
-  Future<void> deleteMany(List<T> models) async {
+  ///
+  /// Exemple :
+  /// ```dart
+  /// await articles.deleteManyModels([article1, article2]);
+  /// ```
+  Future<void> deleteManyModels(List<T> models) async {
     final ids = models.map((m) => m.id).whereType<String>().toList();
     if (ids.length != models.length) {
       throw ArgumentError('All models must have an ID to be deleted.');
@@ -135,13 +207,60 @@ class ItemActiveService<T extends DirectusModel> {
       return;
     }
 
+    await _httpClient.delete('/items/$collection', data: ids);
+  }
+
+  /// Supprime plusieurs items
+  ///
+  /// [keys] Liste des identifiants des items à supprimer (optionnel)
+  /// [filter] Filtre pour sélectionner les items à supprimer (optionnel)
+  /// [query] Query object au format Directus pour sélectionner les items (optionnel)
+  ///
+  /// Si ni [keys] ni [filter] ni [query] n'est fourni, tous les items de la collection
+  /// seront supprimés.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Supprimer par liste d'IDs
+  /// await articles.deleteMany(keys: ['id1', 'id2', 'id3']);
+  ///
+  /// // Supprimer avec un filtre
+  /// await articles.deleteMany(filter: Filter.equals('status', 'archived'));
+  ///
+  /// // Supprimer tous les items de la collection
+  /// await articles.deleteMany();
+  /// ```
+  Future<void> deleteMany({
+    List<String>? keys,
+    dynamic filter,
+    Map<String, dynamic>? query,
+  }) async {
+    // Si keys est fourni directement (format simple)
+    if (keys != null && keys.isNotEmpty && filter == null && query == null) {
+      await _httpClient.delete('/items/$collection', data: keys);
+      return;
+    }
+
+    // Construire le body de la requête au format objet
+    final Map<String, dynamic> body = {};
+
+    // Ajouter keys si fourni
+    if (keys != null && keys.isNotEmpty) {
+      body['keys'] = keys;
+    }
+
+    // Ajouter query si fourni (contient filter, search, etc.)
+    if (query != null) {
+      body['query'] = query;
+    } else if (filter != null) {
+      // Convertir le filtre si c'est un objet Filter
+      final filterJson = filter is Filter ? filter.toJson() : filter;
+      body['query'] = {'filter': filterJson};
+    }
+
     await _httpClient.delete(
       '/items/$collection',
-      queryParameters: {
-        'filter': {
-          'id': {'_in': ids},
-        },
-      },
+      data: body.isEmpty ? null : body,
     );
   }
 

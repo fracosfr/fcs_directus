@@ -273,25 +273,64 @@ class ItemsService<T> {
     return fromJson != null ? fromJson(responseData) : responseData;
   }
 
-  /// Met à jour plusieurs items
+  /// Met à jour plusieurs items avec les mêmes données
   ///
-  /// [ids] Liste des identifiants des items à mettre à jour
-  /// [data] Données à mettre à jour
+  /// [keys] Liste des identifiants des items à mettre à jour (optionnel)
+  /// [data] Données à appliquer à tous les items
+  /// [filter] Filtre pour sélectionner les items à mettre à jour (optionnel)
+  /// [query] Query object au format Directus pour sélectionner les items (optionnel)
   /// [fromJson] Fonction pour convertir JSON en objet T (optionnel)
-  Future<List<dynamic>> updateMany(
-    List<String> ids,
-    Map<String, dynamic> data, {
+  ///
+  /// Si ni [keys] ni [filter] ni [query] n'est fourni, tous les items de la collection
+  /// seront mis à jour.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Mettre à jour par liste d'IDs
+  /// await items.updateMany(
+  ///   keys: ['id1', 'id2', 'id3'],
+  ///   data: {'status': 'published'},
+  /// );
+  ///
+  /// // Mettre à jour avec un filtre
+  /// await items.updateMany(
+  ///   filter: Filter.equals('category', 'news'),
+  ///   data: {'featured': true},
+  /// );
+  ///
+  /// // Mettre à jour tous les items de la collection
+  /// await items.updateMany(data: {'archived': false});
+  /// ```
+  Future<List<dynamic>> updateMany({
+    List<String>? keys,
+    required Map<String, dynamic> data,
+    dynamic filter,
+    Map<String, dynamic>? query,
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.patch(
-      '/items/$collection',
-      data: data,
-      queryParameters: {
-        'filter': {
-          'id': {'_in': ids},
-        },
-      },
-    );
+    // Construire le body de la requête
+    final Map<String, dynamic> body = {'data': data};
+
+    // Ajouter keys si fourni
+    if (keys != null && keys.isNotEmpty) {
+      body['keys'] = keys;
+    }
+
+    // Ajouter query si fourni (contient filter, search, etc.)
+    if (query != null) {
+      body['query'] = query;
+    } else if (filter != null) {
+      // Convertir le filtre si c'est un objet Filter
+      final filterJson = filter is Filter ? filter.toJson() : filter;
+      body['query'] = {'filter': filterJson};
+    }
+
+    final response = await _httpClient.patch('/items/$collection', data: body);
+
+    // Directus peut retourner 204 No Content sans body
+    if (response.data == null || !response.data!.containsKey('data')) {
+      return [];
+    }
 
     final responseData = response.data!['data'] as List;
     return fromJson != null
@@ -310,15 +349,55 @@ class ItemsService<T> {
 
   /// Supprime plusieurs items
   ///
-  /// [ids] Liste des identifiants des items à supprimer
-  Future<void> deleteMany(List<String> ids) async {
+  /// [keys] Liste des identifiants des items à supprimer (optionnel)
+  /// [filter] Filtre pour sélectionner les items à supprimer (optionnel)
+  /// [query] Query object au format Directus pour sélectionner les items (optionnel)
+  ///
+  /// Si ni [keys] ni [filter] ni [query] n'est fourni, tous les items de la collection
+  /// seront supprimés.
+  ///
+  /// Exemple :
+  /// ```dart
+  /// // Supprimer par liste d'IDs
+  /// await items.deleteMany(keys: ['id1', 'id2', 'id3']);
+  ///
+  /// // Supprimer avec un filtre
+  /// await items.deleteMany(filter: Filter.equals('status', 'archived'));
+  ///
+  /// // Supprimer tous les items de la collection
+  /// await items.deleteMany();
+  /// ```
+  Future<void> deleteMany({
+    List<String>? keys,
+    dynamic filter,
+    Map<String, dynamic>? query,
+  }) async {
+    // Si keys est fourni directement (format simple)
+    if (keys != null && keys.isNotEmpty && filter == null && query == null) {
+      await _httpClient.delete('/items/$collection', data: keys);
+      return;
+    }
+
+    // Construire le body de la requête au format objet
+    final Map<String, dynamic> body = {};
+
+    // Ajouter keys si fourni
+    if (keys != null && keys.isNotEmpty) {
+      body['keys'] = keys;
+    }
+
+    // Ajouter query si fourni (contient filter, search, etc.)
+    if (query != null) {
+      body['query'] = query;
+    } else if (filter != null) {
+      // Convertir le filtre si c'est un objet Filter
+      final filterJson = filter is Filter ? filter.toJson() : filter;
+      body['query'] = {'filter': filterJson};
+    }
+
     await _httpClient.delete(
       '/items/$collection',
-      queryParameters: {
-        'filter': {
-          'id': {'_in': ids},
-        },
-      },
+      data: body.isEmpty ? null : body,
     );
   }
 

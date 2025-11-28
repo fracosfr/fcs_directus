@@ -16,16 +16,35 @@ await directus.items('articles').createMany(items: [
   {'title': 'Article 3', 'status': 'draft'},
 ]);
 
-// Mettre à jour plusieurs items
+// Mettre à jour plusieurs items par IDs
 await directus.items('articles').updateMany(
-  ids: ['id1', 'id2', 'id3'],
-  item: {'status': 'published'},
+  keys: ['id1', 'id2', 'id3'],
+  data: {'status': 'published'},
 );
 
-// Supprimer plusieurs items
-await directus.items('articles').deleteMany(
-  ids: ['id1', 'id2', 'id3'],
+// Mettre à jour plusieurs items par filtre
+await directus.items('articles').updateMany(
+  filter: Filter.equals('category', 'news'),
+  data: {'featured': true},
 );
+
+// Mettre à jour tous les items de la collection
+await directus.items('articles').updateMany(
+  data: {'archived': false},
+);
+
+// Supprimer plusieurs items par IDs
+await directus.items('articles').deleteMany(
+  keys: ['id1', 'id2', 'id3'],
+);
+
+// Supprimer plusieurs items par filtre
+await directus.items('articles').deleteMany(
+  filter: Filter.equals('status', 'archived'),
+);
+
+// Supprimer tous les items de la collection
+await directus.items('articles').deleteMany();
 ```
 
 ### Limiter les champs retournés

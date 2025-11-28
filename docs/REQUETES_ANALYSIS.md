@@ -925,13 +925,23 @@ await articles.updateOne(article);
 ### 2. Batch Operations
 
 ```dart
-// Au lieu de:
+// Au lieu de mettre à jour un par un :
 for (final article in articlesList) {
   await articles.updateOne(article);  // N requêtes HTTP
 }
 
-// Faire:
-await articles.updateMany(articlesList);  // 1 seule requête HTTP
+// Utiliser updateMany avec les IDs :
+final ids = articlesList.map((a) => a.id!).toList();
+await articles.updateMany(
+  keys: ids,
+  data: {'status': 'published'},
+);  // 1 seule requête HTTP
+
+// Ou avec un filtre :
+await articles.updateMany(
+  filter: Filter.equals('category', 'news'),
+  data: {'featured': true},
+);
 ```
 
 ### 3. Sélection de champs

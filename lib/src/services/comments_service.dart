@@ -124,7 +124,7 @@ class CommentsService {
     List<String> ids,
     Map<String, dynamic> data,
   ) async {
-    return await _itemsService.updateMany(ids, data);
+    return await _itemsService.updateMany(keys: ids, data: data);
   }
 
   /// Supprime un commentaire
@@ -138,7 +138,7 @@ class CommentsService {
   ///
   /// [ids] Liste des IDs des commentaires à supprimer
   Future<void> deleteComments(List<String> ids) async {
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   /// Récupère les commentaires pour un item spécifique

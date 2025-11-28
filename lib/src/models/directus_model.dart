@@ -94,6 +94,8 @@ abstract class DirectusModel {
     _dirtyFields.add('date_updated');
   }
 
+  DateTime? get lastUpdate => dateUpdated ?? dateCreated;
+
   /// Utilisateur créateur
   String? get userCreated => _data['user_created']?.toString();
   set userCreated(String? value) {

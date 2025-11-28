@@ -77,7 +77,7 @@ class SharesService {
 
   /// Supprime plusieurs partages
   Future<void> deleteShares(List<String> ids) async {
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   // === Méthodes helper ===

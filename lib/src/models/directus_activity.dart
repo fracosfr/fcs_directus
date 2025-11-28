@@ -33,13 +33,13 @@ import 'directus_revision.dart';
 ///   ),
 /// );
 /// ```
-class DirectusActivity extends DirectusModel {
+class DirectusActivity<U extends DirectusUser> extends DirectusModel {
   /// Action qui a été effectuée
   /// Valeurs possibles : create, update, delete, login
   late final action = stringValue('action');
 
   /// Utilisateur qui a effectué cette action (Many-to-One vers users)
-  late final user = modelValue<DirectusUser>('user');
+  late final user = modelValue<U>('user');
 
   /// Date et heure de l'action
   late final timestamp = dateTimeValue('timestamp');

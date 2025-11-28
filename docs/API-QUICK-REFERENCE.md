@@ -182,10 +182,21 @@ Map<String, dynamic> updated = await client.items('articles').updateOne(
   query: QueryParameters(fields: ['*']),
 );
 
-// Mettre à jour plusieurs items
+// Mettre à jour plusieurs items par IDs
 List<dynamic> updated = await client.items('articles').updateMany(
-  ['id1', 'id2'],
-  {'status': 'published'},
+  keys: ['id1', 'id2'],
+  data: {'status': 'published'},
+);
+
+// Mettre à jour avec un filtre
+List<dynamic> updated2 = await client.items('articles').updateMany(
+  filter: Filter.equals('category', 'news'),
+  data: {'featured': true},
+);
+
+// Mettre à jour tous les items de la collection
+List<dynamic> updated3 = await client.items('articles').updateMany(
+  data: {'archived': false},
 );
 ```
 
@@ -195,8 +206,16 @@ List<dynamic> updated = await client.items('articles').updateMany(
 // Supprimer un item
 await client.items('articles').deleteOne('item-id');
 
-// Supprimer plusieurs items
-await client.items('articles').deleteMany(['id1', 'id2']);
+// Supprimer plusieurs items par IDs
+await client.items('articles').deleteMany(keys: ['id1', 'id2']);
+
+// Supprimer avec un filtre
+await client.items('articles').deleteMany(
+  filter: Filter.equals('status', 'archived'),
+);
+
+// Supprimer tous les items de la collection
+await client.items('articles').deleteMany();
 ```
 
 ---
@@ -250,12 +269,17 @@ articleToUpdate.title.set('Nouveau titre super');
 // Ensuite, passer l'objet modifié à updateOne
 Article updated = await client.itemsOf<Article>().updateOne(articleToUpdate);
 
-// Mettre à jour plusieurs items (retourne List<Article>)
-List<Article> updatedArticles = await client.itemsOf<Article>().updateMany([
-  articleToUpdate1,
-  articleToUpdate2,
-]);
-```
+// Mettre à jour plusieurs items par IDs (retourne List<Article>)
+List<Article> updatedArticles = await client.itemsOf<Article>().updateMany(
+  keys: ['id1', 'id2'],
+  data: {'status': 'published'},
+);
+
+// Mettre à jour avec un filtre
+List<Article> updatedByFilter = await client.itemsOf<Article>().updateMany(
+  filter: Filter.equals('category', 'news'),
+  data: {'featured': true},
+);
 ```
 
 ### Delete (Suppression)
@@ -268,13 +292,19 @@ Article articleToDelete = await client.itemsOf<Article>().readOne('item-id');
 // Ensuite, le supprimer
 await client.itemsOf<Article>().deleteOne(articleToDelete);
 
-// Supprimer plusieurs items
-await client.itemsOf<Article>().deleteMany([
+// Supprimer plusieurs items via modèles
+await client.itemsOf<Article>().deleteManyModels([
   articleToDelete1,
   articleToDelete2,
 ]);
-```
-```
+
+// Supprimer plusieurs items par IDs
+await client.itemsOf<Article>().deleteMany(keys: ['id1', 'id2']);
+
+// Supprimer avec un filtre
+await client.itemsOf<Article>().deleteMany(
+  filter: Filter.equals('status', 'archived'),
+);
 ```
 
 ---

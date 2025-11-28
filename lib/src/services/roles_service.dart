@@ -1,8 +1,6 @@
 import '../core/directus_http_client.dart';
-import 'item_active_service.dart';
-// ...existing code...
+import '../models/directus_model.dart';
 import '../models/directus_role.dart';
-// ...existing code...
 import 'items_service.dart';
 
 /// Service pour gérer les rôles Directus.
@@ -40,38 +38,60 @@ class RolesService {
   final DirectusHttpClient _httpClient;
 
   RolesService(this._httpClient);
-  // ...existing code...
-  /// Supprime plusieurs rôles typés
-  Future<void> deleteRoles<T extends DirectusRole>(List<T> roles) async {
-    final ids = roles.map((r) => r.id).whereType<String>().toList();
-    if (ids.length != roles.length) {
-      throw ArgumentError(
-        'Tous les rôles doivent avoir un id pour être supprimés.',
-      );
-    }
-    await _httpClient.delete('/roles', data: ids);
-  }
-
-  ItemActiveService<T> _activeService<T extends DirectusRole>() =>
-      ItemActiveService<T>(_httpClient, 'directus_roles');
 
   // ========================================
   // Opérations CRUD de base
   // ========================================
 
   /// Récupère la liste des rôles typés
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final response = await client.roles.getRoles();
+  /// for (final role in response.data) {
+  ///   print(role.name.value);
+  /// }
+  /// ```
   Future<DirectusResponse<T>> getRoles<T extends DirectusRole>({
     QueryParameters? query,
   }) async {
-    return await _activeService<T>().readMany(query: query);
+    final response = await _httpClient.get(
+      '/roles',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as List;
+    final meta = response.data['meta'] != null
+        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
+        : null;
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusRole.factory;
+    final items = data
+        .map<T>((item) => baseFactory(item as Map<String, dynamic>) as T)
+        .toList();
+
+    return DirectusResponse(data: items, meta: meta);
   }
 
   /// Récupère un rôle par son ID typé
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final role = await client.roles.getRole('role-id');
+  /// print(role.name.value);
+  /// ```
   Future<T> getRole<T extends DirectusRole>(
     String id, {
     QueryParameters? query,
   }) async {
-    return await _activeService<T>().readOne(id, query: query);
+    final response = await _httpClient.get(
+      '/roles/$id',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as Map<String, dynamic>;
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusRole.factory;
+    return baseFactory(data) as T;
   }
 
   /// Crée un nouveau rôle
@@ -197,6 +217,32 @@ class RolesService {
     await _httpClient.delete('/roles/$id');
   }
 
+  /// Supprime plusieurs rôles
+  ///
+  /// Exemple :
+  /// ```dart
+  /// await rolesService.deleteRoles(['role-1', 'role-2']);
+  /// ```
+  Future<void> deleteRoles(List<String> ids) async {
+    await _httpClient.delete('/roles', data: ids);
+  }
+
+  /// Supprime plusieurs rôles typés
+  ///
+  /// Exemple :
+  /// ```dart
+  /// await rolesService.deleteRolesTyped(rolesToDelete);
+  /// ```
+  Future<void> deleteRolesTyped<T extends DirectusRole>(List<T> roles) async {
+    final ids = roles.map((r) => r.id).whereType<String>().toList();
+    if (ids.length != roles.length) {
+      throw ArgumentError(
+        'Tous les rôles doivent avoir un id pour être supprimés.',
+      );
+    }
+    await _httpClient.delete('/roles', data: ids);
+  }
+
   // ========================================
   // Méthodes utilitaires
   // ========================================
@@ -228,10 +274,7 @@ class RolesService {
     );
 
     final response = await getRoles(query: newQuery);
-    final data = response.data;
-    return data
-        .map((item) => DirectusRole(item as Map<String, dynamic>))
-        .toList();
+    return response.data.cast<DirectusRole>();
   }
 
   /// Récupère le rôle parent d'un rôle

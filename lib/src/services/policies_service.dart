@@ -36,33 +36,48 @@ import 'items_service.dart';
 /// ```
 class PoliciesService {
   final DirectusHttpClient _httpClient;
-  late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  PoliciesService(this._httpClient) {
-    _itemsService = ItemsService(_httpClient, 'directus_policies');
-  }
+  PoliciesService(this._httpClient);
 
   // ========================================
   // Opérations CRUD de base
   // ========================================
 
-  /// Récupère la liste des politiques
+  /// Récupère la liste des politiques typées
   ///
   /// Supporte tous les paramètres de query (filter, sort, fields, etc.)
   ///
   /// Exemple :
   /// ```dart
   /// // Récupérer toutes les politiques avec leurs permissions
-  /// final policies = await policiesService.getPolicies(
+  /// final response = await policiesService.getPolicies(
   ///   query: QueryParameters()
   ///     ..fields = ['*', 'permissions.*']
   ///     ..sort = ['name'],
   /// );
+  /// for (final policy in response.data) {
+  ///   print(policy.name.value);
+  /// }
   /// ```
-  Future<DirectusResponse<dynamic>> getPolicies({
+  Future<DirectusResponse<T>> getPolicies<T extends DirectusPolicy>({
     QueryParameters? query,
   }) async {
-    return await _itemsService.readMany(query: query);
+    final response = await _httpClient.get(
+      '/policies',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as List;
+    final meta = response.data['meta'] != null
+        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
+        : null;
+
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusPolicy.factory;
+    final items = data
+        .map<T>((item) => baseFactory(item as Map<String, dynamic>) as T)
+        .toList();
+
+    return DirectusResponse(data: items, meta: meta);
   }
 
   /// Récupère une politique par son ID
@@ -83,22 +98,14 @@ class PoliciesService {
     String id, {
     QueryParameters? query,
   }) async {
-    final data = await _itemsService.readOne(id, query: query);
+    final response = await _httpClient.get(
+      '/policies/$id',
+      queryParameters: query?.toQueryParameters(),
+    );
 
-    // Si un type spécifique est demandé, utiliser la factory
-    if (T != DirectusPolicy) {
-      final factory = DirectusModel.getFactory<T>();
-      if (factory == null) {
-        throw StateError(
-          'No factory registered for type $T. '
-          'Please register a factory using DirectusModel.registerFactory<$T>(...)',
-        );
-      }
-      return factory(data) as T;
-    }
-
-    // Sinon retourner DirectusPolicy par défaut
-    return DirectusPolicy(data) as T;
+    final data = response.data['data'] as Map<String, dynamic>;
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusPolicy.factory;
+    return baseFactory(data) as T;
   }
 
   /// Crée une nouvelle politique
@@ -267,10 +274,7 @@ class PoliciesService {
     );
 
     final response = await getPolicies(query: newQuery);
-    final data = response.data;
-    return data
-        .map((item) => DirectusPolicy(item as Map<String, dynamic>))
-        .toList();
+    return response.data.cast<DirectusPolicy>();
   }
 
   /// Récupère toutes les politiques avec accès à l'application
@@ -299,10 +303,7 @@ class PoliciesService {
     );
 
     final response = await getPolicies(query: newQuery);
-    final data = response.data;
-    return data
-        .map((item) => DirectusPolicy(item as Map<String, dynamic>))
-        .toList();
+    return response.data.cast<DirectusPolicy>();
   }
 
   /// Récupère toutes les politiques qui requièrent la 2FA
@@ -331,9 +332,6 @@ class PoliciesService {
     );
 
     final response = await getPolicies(query: newQuery);
-    final data = response.data;
-    return data
-        .map((item) => DirectusPolicy(item as Map<String, dynamic>))
-        .toList();
+    return response.data.cast<DirectusPolicy>();
   }
 }

@@ -79,7 +79,7 @@ class VersionsService {
 
   /// Supprime plusieurs versions
   Future<void> deleteVersions(List<String> ids) async {
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   // === Méthodes helper ===

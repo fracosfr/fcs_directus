@@ -104,7 +104,7 @@ class PermissionsService {
       );
     }
     final dirtyData = permissions.first.toJsonDirty();
-    final response = await _itemsService.updateMany(ids, dirtyData);
+    final response = await _itemsService.updateMany(keys: ids, data: dirtyData);
     final factory = DirectusModel.getFactory<T>();
     if (factory == null) {
       throw StateError('No factory registered for type $T.');
@@ -134,7 +134,7 @@ class PermissionsService {
         'Toutes les permissions doivent avoir un id pour être supprimées.',
       );
     }
-    await _itemsService.deleteMany(ids);
+    await _itemsService.deleteMany(keys: ids);
   }
 
   // === Méthodes helper ===

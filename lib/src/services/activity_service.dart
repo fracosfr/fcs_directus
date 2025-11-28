@@ -2,12 +2,11 @@ import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
 import 'items_service.dart';
 
-/// Service pour gérer les activités Directus.
+/// Service pour consulter les activités Directus (lecture seule).
 ///
 /// Permet de consulter l'historique des actions effectuées dans Directus :
 /// - Lecture des activités (list, single)
 /// - Filtrage par action, utilisateur, collection, etc.
-/// - Consultation des révisions associées
 ///
 /// **Note**: Les activités sont en lecture seule. Directus les crée automatiquement
 /// lors des actions CRUD sur les items.
@@ -32,39 +31,15 @@ import 'items_service.dart';
 /// );
 ///
 /// // Activités d'un utilisateur spécifique
-/// final userActivities = await activity.getActivities(
-///   query: QueryParameters(
-///     filter: Filter.field('user').equals('user-id'),
-///     deep: Deep({
-///       'user': DeepQuery().fields(['id', 'first_name', 'last_name', 'email']),
-///     }),
-///   ),
-/// );
+/// final userActivities = await activity.getUserActivities('user-id');
 ///
-/// // Activités d'une collection spécifique
-/// final collectionActivities = await activity.getActivities(
-///   query: QueryParameters(
-///     filter: Filter.field('collection').equals('articles'),
-///   ),
-/// );
-///
-/// // Récupérer une activité par son ID avec ses révisions
-/// final single = await activity.getActivity(
-///   'activity-id',
-///   query: QueryParameters(
-///     deep: Deep({
-///       'revisions': DeepQuery().allFields(),
-///     }),
-///   ),
-/// );
+/// // Récupérer une activité par son ID
+/// final single = await activity.getActivity('activity-id');
 /// ```
 class ActivityService {
   final DirectusHttpClient _httpClient;
-  late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  ActivityService(this._httpClient) {
-    _itemsService = ItemsService(_httpClient, 'directus_activity');
-  }
+  ActivityService(this._httpClient);
 
   // ========================================
   // Opérations de lecture
@@ -72,7 +47,7 @@ class ActivityService {
 
   /// Récupère la liste des activités
   ///
-  /// Supporte tous les paramètres de query (filter, sort, fields, deep, etc.)
+  /// Supporte les paramètres de query (filter, sort, fields, limit, offset, search, meta)
   ///
   /// **Filtres utiles:**
   /// - `action`: Type d'action (create, update, delete, login)
@@ -84,7 +59,6 @@ class ActivityService {
   /// **Tris recommandés:**
   /// - `-timestamp`: Plus récent en premier
   /// - `timestamp`: Plus ancien en premier
-  /// - `-id`: Par ID décroissant
   ///
   /// Exemple:
   /// ```dart
@@ -105,29 +79,38 @@ class ActivityService {
   Future<DirectusResponse<dynamic>> getActivities({
     QueryParameters? query,
   }) async {
-    return await _itemsService.readMany(query: query);
+    final response = await _httpClient.get(
+      '/activity',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    final data = response.data['data'] as List;
+    final meta = response.data['meta'] != null
+        ? DirectusMeta.fromJson(response.data['meta'] as Map<String, dynamic>)
+        : null;
+
+    return DirectusResponse(data: data, meta: meta);
   }
 
   /// Récupère une activité par son ID
   ///
   /// Exemple:
   /// ```dart
-  /// // Avec les détails de l'utilisateur et les révisions
   /// final activity = await activity.getActivity(
   ///   'activity-id',
-  ///   query: QueryParameters(
-  ///     deep: Deep({
-  ///       'user': DeepQuery().fields(['first_name', 'last_name', 'email']),
-  ///       'revisions': DeepQuery().allFields(),
-  ///     }),
-  ///   ),
+  ///   query: QueryParameters(fields: ['*']),
   /// );
   /// ```
   Future<Map<String, dynamic>> getActivity(
     String id, {
     QueryParameters? query,
   }) async {
-    return await _itemsService.readOne(id, query: query);
+    final response = await _httpClient.get(
+      '/activity/$id',
+      queryParameters: query?.toQueryParameters(),
+    );
+
+    return response.data['data'] as Map<String, dynamic>;
   }
 
   // ========================================
@@ -147,31 +130,14 @@ class ActivityService {
     String userId, {
     int? limit,
     List<String>? sort,
-    QueryParameters? additionalQuery,
   }) async {
-    final query = QueryParameters(
-      filter: Filter.field('user').equals(userId),
-      limit: limit ?? 50,
-      sort: sort ?? ['-timestamp'],
+    return await getActivities(
+      query: QueryParameters(
+        filter: Filter.field('user').equals(userId),
+        limit: limit ?? 50,
+        sort: sort ?? ['-timestamp'],
+      ),
     );
-
-    // Fusionner avec la query additionnelle si fournie
-    if (additionalQuery != null) {
-      return await _itemsService.readMany(
-        query: QueryParameters(
-          filter: additionalQuery.filter != null
-              ? Filter.and([query.filter!, additionalQuery.filter!])
-              : query.filter,
-          limit: additionalQuery.limit ?? query.limit,
-          sort: additionalQuery.sort ?? query.sort,
-          fields: additionalQuery.fields,
-          deep: additionalQuery.deep,
-          offset: additionalQuery.offset,
-        ),
-      );
-    }
-
-    return await _itemsService.readMany(query: query);
   }
 
   /// Récupère les activités d'une collection spécifique
@@ -188,7 +154,6 @@ class ActivityService {
     String? actionType,
     int? limit,
     List<String>? sort,
-    QueryParameters? additionalQuery,
   }) async {
     final filters = <Filter>[Filter.field('collection').equals(collectionName)];
 
@@ -196,29 +161,13 @@ class ActivityService {
       filters.add(Filter.field('action').equals(actionType));
     }
 
-    final query = QueryParameters(
-      filter: filters.length > 1 ? Filter.and(filters) : filters.first,
-      limit: limit ?? 50,
-      sort: sort ?? ['-timestamp'],
+    return await getActivities(
+      query: QueryParameters(
+        filter: filters.length > 1 ? Filter.and(filters) : filters.first,
+        limit: limit ?? 50,
+        sort: sort ?? ['-timestamp'],
+      ),
     );
-
-    // Fusionner avec la query additionnelle si fournie
-    if (additionalQuery != null) {
-      return await _itemsService.readMany(
-        query: QueryParameters(
-          filter: additionalQuery.filter != null
-              ? Filter.and([query.filter!, additionalQuery.filter!])
-              : query.filter,
-          limit: additionalQuery.limit ?? query.limit,
-          sort: additionalQuery.sort ?? query.sort,
-          fields: additionalQuery.fields,
-          deep: additionalQuery.deep,
-          offset: additionalQuery.offset,
-        ),
-      );
-    }
-
-    return await _itemsService.readMany(query: query);
   }
 
   /// Récupère les activités d'un item spécifique
@@ -226,8 +175,8 @@ class ActivityService {
   /// Exemple:
   /// ```dart
   /// final itemHistory = await activity.getItemActivities(
+  ///   'article-123',
   ///   collection: 'articles',
-  ///   itemId: 'article-123',
   /// );
   /// ```
   Future<DirectusResponse<dynamic>> getItemActivities(
@@ -235,34 +184,17 @@ class ActivityService {
     required String collection,
     int? limit,
     List<String>? sort,
-    QueryParameters? additionalQuery,
   }) async {
-    final query = QueryParameters(
-      filter: Filter.and([
-        Filter.field('collection').equals(collection),
-        Filter.field('item').equals(itemId),
-      ]),
-      limit: limit ?? 50,
-      sort: sort ?? ['-timestamp'],
+    return await getActivities(
+      query: QueryParameters(
+        filter: Filter.and([
+          Filter.field('collection').equals(collection),
+          Filter.field('item').equals(itemId),
+        ]),
+        limit: limit ?? 50,
+        sort: sort ?? ['-timestamp'],
+      ),
     );
-
-    // Fusionner avec la query additionnelle si fournie
-    if (additionalQuery != null) {
-      return await _itemsService.readMany(
-        query: QueryParameters(
-          filter: additionalQuery.filter != null
-              ? Filter.and([query.filter!, additionalQuery.filter!])
-              : query.filter,
-          limit: additionalQuery.limit ?? query.limit,
-          sort: additionalQuery.sort ?? query.sort,
-          fields: additionalQuery.fields,
-          deep: additionalQuery.deep,
-          offset: additionalQuery.offset,
-        ),
-      );
-    }
-
-    return await _itemsService.readMany(query: query);
   }
 
   /// Récupère les activités par type d'action
@@ -281,31 +213,14 @@ class ActivityService {
     String action, {
     int? limit,
     List<String>? sort,
-    QueryParameters? additionalQuery,
   }) async {
-    final query = QueryParameters(
-      filter: Filter.field('action').equals(action),
-      limit: limit ?? 50,
-      sort: sort ?? ['-timestamp'],
+    return await getActivities(
+      query: QueryParameters(
+        filter: Filter.field('action').equals(action),
+        limit: limit ?? 50,
+        sort: sort ?? ['-timestamp'],
+      ),
     );
-
-    // Fusionner avec la query additionnelle si fournie
-    if (additionalQuery != null) {
-      return await _itemsService.readMany(
-        query: QueryParameters(
-          filter: additionalQuery.filter != null
-              ? Filter.and([query.filter!, additionalQuery.filter!])
-              : query.filter,
-          limit: additionalQuery.limit ?? query.limit,
-          sort: additionalQuery.sort ?? query.sort,
-          fields: additionalQuery.fields,
-          deep: additionalQuery.deep,
-          offset: additionalQuery.offset,
-        ),
-      );
-    }
-
-    return await _itemsService.readMany(query: query);
   }
 
   /// Récupère les activités récentes (dernières 24 heures par défaut)
@@ -324,34 +239,17 @@ class ActivityService {
     DateTime? since,
     int? limit,
     List<String>? sort,
-    QueryParameters? additionalQuery,
   }) async {
     final sinceDate = since ?? DateTime.now().subtract(const Duration(days: 1));
 
-    final query = QueryParameters(
-      filter: Filter.field(
-        'timestamp',
-      ).greaterThan(sinceDate.toIso8601String()),
-      limit: limit ?? 100,
-      sort: sort ?? ['-timestamp'],
+    return await getActivities(
+      query: QueryParameters(
+        filter: Filter.field(
+          'timestamp',
+        ).greaterThan(sinceDate.toIso8601String()),
+        limit: limit ?? 100,
+        sort: sort ?? ['-timestamp'],
+      ),
     );
-
-    // Fusionner avec la query additionnelle si fournie
-    if (additionalQuery != null) {
-      return await _itemsService.readMany(
-        query: QueryParameters(
-          filter: additionalQuery.filter != null
-              ? Filter.and([query.filter!, additionalQuery.filter!])
-              : query.filter,
-          limit: additionalQuery.limit ?? query.limit,
-          sort: additionalQuery.sort ?? query.sort,
-          fields: additionalQuery.fields,
-          deep: additionalQuery.deep,
-          offset: additionalQuery.offset,
-        ),
-      );
-    }
-
-    return await _itemsService.readMany(query: query);
   }
 }
