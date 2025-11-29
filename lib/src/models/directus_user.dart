@@ -1,151 +1,210 @@
-import 'package:fcs_directus/fcs_directus.dart';
+import 'directus_model.dart';
+import 'directus_role.dart';
+import 'directus_policy.dart';
 
-class DirectusUserModelColums {
-  final String firstName = "first_name";
-  final String lastName = "last_name";
-  final String email = "email";
-  final String location = "location";
-  final String title = "title";
-  final String description = "description";
-  final String tags = "tags";
-  final String avatar = "avatar";
-  final String language = "language";
-  final String theme = "theme";
-  final String tfaSecret = "tfa_secret";
-  final String status = "status";
-  final String role = "role";
-  final String lastAccess = "last_access";
-  final String lastPage = "last_page";
-  final String provider = "provider";
-  final String externalIdentifier = "external_identifier";
-  final String authData = "auth_data";
-  final String emailNotifications = "email_notifications";
-  final String password = "password";
-  final String policies = "policies";
-}
+/// Représente un utilisateur Directus avec toutes les propriétés système.
+///
+/// Cette classe peut être étendue pour ajouter des champs personnalisés :
+///
+/// ```dart
+/// class CustomUser extends DirectusUser {
+///   late final department = stringValue('department');
+///   late final phoneNumber = stringValue('phone_number');
+///   late final isVerified = boolValue('is_verified');
+///
+///   CustomUser(super.data);
+///   CustomUser.empty() : super.empty();
+///
+///   static CustomUser factory(Map<String, dynamic> data) => CustomUser(data);
+/// }
+///
+/// // Utilisation
+/// DirectusClient.registerFactory(CustomUser.factory);
+/// final users = client.itemsOf<CustomUser>();
+/// ```
+class DirectusUser<R extends DirectusRole> extends DirectusModel {
+  // Note: id, dateCreated, dateUpdated, userCreated, userUpdated sont hérités de DirectusModel
 
-class DirectusUser extends DirectusItemModel {
-  DirectusUser.creator(super.data) : super.creator();
-  DirectusUser(
-      {String? firstName,
-      String? lastName,
-      String? title,
-      required String email,
-      String? password,
-      Map<String, dynamic>? customs}) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.email = email;
-    if (password != null) this.password = password;
-    this.title = title;
+  /// Prénom de l'utilisateur
+  late final firstName = stringValue('first_name');
 
-    if (customs != null) setCustomMultiple(customs);
-  }
+  /// Nom de famille de l'utilisateur
+  late final lastName = stringValue('last_name');
 
-  Map<String, dynamic> toSafeJson() {
-    final data = toJson();
-    data.remove("role");
-    data.remove("policies");
-    return data;
-  }
+  /// Adresse email unique de l'utilisateur
+  late final email = stringValue('email');
+
+  /// Mot de passe de l'utilisateur (uniquement en écriture)
+  late final password = stringValue('password');
+
+  /// Localisation de l'utilisateur
+  late final location = stringValue('location');
+
+  /// Titre/Fonction de l'utilisateur
+  late final title = stringValue('title');
+
+  /// Description de l'utilisateur
+  late final description = stringValue('description');
+
+  /// Tags associés à l'utilisateur
+  late final tags = listValue<String>('tags');
+
+  /// Avatar de l'utilisateur (Many-to-One vers files)
+  late final avatar = stringValue('avatar');
+
+  /// Langue de l'interface Directus pour cet utilisateur
+  late final language = stringValue('language');
+
+  /// Secret 2FA pour la génération de mots de passe à usage unique
+  late final tfaSecret = stringValue('tfa_secret');
+
+  /// Statut de l'utilisateur : active, invited, draft, suspended, deleted
+  late final status = stringValue('status');
+
+  /// Rôle de l'utilisateur (Many-to-One vers roles)
+  late final role = modelValue<R>('role');
+
+  /// Token statique pour l'utilisateur
+  late final token = stringValue('token');
+
+  /// Politiques associées à cet utilisateur (Many-to-Many vers policies)
+  late final policies = modelListValue<DirectusPolicy>('policies');
+
+  /// Date et heure de la dernière utilisation de l'API
+  late final lastAccess = dateTimeValue('last_access');
+
+  /// Dernière page visitée par l'utilisateur
+  late final lastPage = stringValue('last_page');
+
+  /// Fournisseur d'authentification utilisé pour l'enregistrement
+  late final provider = stringValue('provider');
+
+  /// Identifiant de l'utilisateur dans le fournisseur tiers
+  late final externalIdentifier = stringValue('external_identifier');
+
+  /// Données d'authentification fournies par le fournisseur tiers
+  late final authData = objectValue('auth_data');
+
+  /// Si activé, l'utilisateur recevra des emails pour les notifications
+  late final emailNotifications = boolValue('email_notifications');
+
+  /// Apparence de l'interface : auto, light, dark
+  late final appearance = stringValue('appearance');
+
+  /// Thème à utiliser en mode sombre
+  late final themeDark = stringValue('theme_dark');
+
+  /// Thème à utiliser en mode clair
+  late final themeLight = stringValue('theme_light');
+
+  /// Personnalisation du thème clair
+  late final themeLightOverrides = objectValue('theme_light_overrides');
+
+  /// Personnalisation du thème sombre
+  late final themeDarkOverrides = objectValue('theme_dark_overrides');
+
+  DirectusUser(super.data);
+  DirectusUser.empty() : super.empty();
 
   @override
-  int get cascadeLevel => 2;
+  String get itemName => 'directus_users';
 
-  @override
-  bool get disableCache => true;
+  /// Factory pour l'enregistrement dans DirectusClient
+  static DirectusUser factory(Map<String, dynamic> data) => DirectusUser(data);
 
-  @override
-  String? get itemName => "directus_users";
-
-  static DirectusUserModelColums get cols => DirectusUserModelColums();
-
-  String? get firstName => getValue(cols.firstName);
-  set firstName(String? value) => setValue(cols.firstName, value);
-
-  DirectusFile? get avatarFile => getObject(cols.avatar, DirectusFile.creator);
-  set avatar(String? value) => setValue(cols.avatar, value);
-
-  String? get lastName => getValue(cols.lastName);
-  set lastName(String? value) => setValue(cols.lastName, value);
-
-  String? get email => getValue(cols.email);
-  set email(String? value) => setValue(cols.email, value);
-
-  String? get location => getValue(cols.location);
-  set location(String? value) => setValue(cols.location, value);
-
-  String? get title => getValue(cols.title);
-  set title(String? value) => setValue(cols.title, value);
-
-  String? get description => getValue(cols.description);
-  set description(String? value) => setValue(cols.description, value);
-
-  List<String>? get tags => getValue(cols.tags);
-  set tags(List<String>? value) => setValue(cols.tags, value);
-
-  //AVATAR
-
-  String? get language => getValue(cols.language);
-  set language(String? value) => setValue(cols.language, value);
-
-  DirectusTheme get theme {
-    final String value = getValue(cols.theme) ?? "auto";
-    return DirectusTheme.values.firstWhere(
-      (element) => element.name == value,
-      orElse: () => DirectusTheme.auto,
-    );
+  /// Obtient le nom complet de l'utilisateur
+  String? get fullName {
+    final first = firstName.valueOrNull;
+    final last = lastName.valueOrNull;
+    if (first == null && last == null) return null;
+    if (first == null) return last;
+    if (last == null) return first;
+    return '$first $last';
   }
 
-  set theme(DirectusTheme theme) => setValue(cols.theme, theme.name);
+  /// Vérifie si l'utilisateur est actif
+  bool get isActive => status.value == 'active';
 
-  String? get tfaSecret => getValue(cols.tfaSecret);
-  set tfaSecret(String? value) => setValue(cols.tfaSecret, value);
+  /// Vérifie si l'utilisateur est invité
+  bool get isInvited => status.value == 'invited';
 
-  DirectusUserStatus get status {
-    final String value = getValue(cols.status) ?? "draft";
-    return DirectusUserStatus.values.firstWhere(
-      (element) => element.name == value,
-      orElse: () => DirectusUserStatus.draft,
-    );
-  }
+  /// Vérifie si l'utilisateur est suspendu
+  bool get isSuspended => status.value == 'suspended';
 
-  set status(DirectusUserStatus status) => setValue(cols.status, status.name);
+  /// Vérifie si l'utilisateur est en brouillon
+  bool get isDraft => status.value == 'draft';
 
-  //ROLE AS OBJECT ?
-  DirectusUserRole get role =>
-      getObject(cols.role, (data) => DirectusUserRole.creator(data));
+  /// Vérifie si l'utilisateur a activé la 2FA
+  bool get hasTwoFactorAuth => tfaSecret.isNotEmpty;
 
-  set role(DirectusUserRole value) => setValue(cols.role, value.toMap());
+  /// Vérifie si l'utilisateur a un avatar
+  bool get hasAvatar => avatar.isNotEmpty;
 
-  List<DirectusUserAccess> get policies =>
-      getObjectList(cols.policies, DirectusUserAccess.creator);
+  /// Active l'utilisateur
+  void activate() => status.set('active');
 
-  DateTime? get lastAccess => getValue(cols.lastAccess);
-  set lastAccess(DateTime? value) => setValue(cols.lastAccess, value);
+  /// Suspend l'utilisateur
+  void suspend() => status.set('suspended');
 
-  String? get lastPage => getValue(cols.lastPage);
-
-  String? get provider => getValue(cols.provider);
-  set provider(String? value) => setValue(cols.provider, value);
-
-  String? get externalIdentifier => getValue(cols.externalIdentifier);
-  set externalIdentifier(String? value) =>
-      setValue(cols.externalIdentifier, value);
-
-  String? get authData => getValue(cols.authData);
-  set authData(String? value) => setValue(cols.authData, value);
-
-  bool get emailNotification => getValue(cols.emailNotifications) ?? false;
-  set emailNotification(bool value) => setValue(cols.emailNotifications, value);
-
-  set password(String value) => setValue(cols.password, value);
-
-  T? getCustom<T>(String key) => getValue(key);
-  void setCustom<T>(String key, T value) => setValue(key, value);
-  void setCustomMultiple(Map<String, dynamic> data) {
-    for (final key in data.keys) {
-      setValue(key, data[key]);
+  /// Change l'apparence de l'interface
+  void setAppearance(String mode) {
+    if (!['auto', 'light', 'dark'].contains(mode)) {
+      throw ArgumentError('Mode must be: auto, light, or dark');
     }
+    appearance.set(mode);
+  }
+
+  late final policiesItem = modelListValueM2M<DirectusPolicy>(
+    'policies',
+    "policy",
+  );
+
+  /// Récupère toutes les politiques de l'utilisateur
+  ///
+  /// Cette méthode retourne les politiques assignées directement à l'utilisateur
+  /// ainsi que celles héritées de son rôle, en éliminant les doublons.
+  ///
+  /// Pour que cette méthode fonctionne correctement, l'utilisateur doit être récupéré
+  /// avec les champs suivants :
+  /// - `policies.*` pour les politiques directes
+  /// - `role.policies.*` pour les politiques du rôle
+  ///
+  /// Exemple :
+  /// ```dart
+  /// final me = await users.me(
+  ///   query: QueryParameters()
+  ///     ..fields = ['*', 'policies.*', 'role.policies.*'],
+  /// );
+  ///
+  /// final allPolicies = me.getAllPolicies();
+  /// print('Total policies: ${allPolicies.length}');
+  ///
+  /// for (final policy in allPolicies) {
+  ///   print('- ${policy.name.value}: admin=${policy.isAdminPolicy}');
+  /// }
+  /// ```
+  List<DirectusPolicy> getAllPolicies() {
+    final allPolicies = <String, DirectusPolicy>{};
+
+    // Ajouter les politiques de l'utilisateur
+    for (final policy in policiesItem.value) {
+      final id = policy.id;
+      if (id != null) {
+        allPolicies[id] = policy;
+      }
+    }
+
+    // Ajouter les politiques du rôle, en évitant les doublons
+    final userRole = role.value;
+    if (userRole != null) {
+      for (final policy in userRole.policiesItem.value) {
+        final id = policy.id;
+        if (id != null) {
+          allPolicies.putIfAbsent(id, () => policy);
+        }
+      }
+    }
+
+    return allPolicies.values.toList();
   }
 }
