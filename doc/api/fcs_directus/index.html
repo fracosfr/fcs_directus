@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="fcs_directus library API docs, for the Dart programming language.">
+  <title>fcs_directus library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">fcs_directus</a></li>
+    <li class="self-crumb">fcs_directus.dart</li>
+  </ol>
+  <div class="self-name">fcs_directus</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="fcs_directus&#47;fcs_directus-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">fcs_directus</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+<section class="desc markdown">
+  <p>Librairie Dart/Flutter pour interagir avec l'API Directus.</p>
+<p>Cette librairie fournit une interface complète pour communiquer avec
+un serveur Directus via REST et WebSocket.</p>
+<h2 id="utilisation-de-base">Utilisation de base</h2>
+<pre class="language-dart"><code class="language-dart">import 'package:fcs_directus/fcs_directus.dart';
+
+// Configuration
+final config = DirectusConfig(
+  baseUrl: 'https://directus.example.com',
+);
+
+// Création du client
+final client = DirectusClient(config);
+
+// Authentification
+await client.auth.login(
+  email: 'user@example.com',
+  password: 'password',
+);
+
+// Récupération de données
+final articles = await client.items('articles').readMany();
+
+// Libération des ressources
+client.dispose();
+</code></pre>
+</section>
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="ActivityService">
+  <span class="name "><a href="../fcs_directus/ActivityService-class.html">ActivityService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les activités Directus.
+</dd>
+
+          <dt id="Aggregate">
+  <span class="name "><a href="../fcs_directus/Aggregate-class.html">Aggregate</a></span> 
+
+</dt>
+<dd>
+  Aggregate operations for Directus queries
+</dd>
+
+          <dt id="AssetPresets">
+  <span class="name "><a href="../fcs_directus/AssetPresets-class.html">AssetPresets</a></span> 
+
+</dt>
+<dd>
+  Presets de transformations communes
+</dd>
+
+          <dt id="AssetsService">
+  <span class="name "><a href="../fcs_directus/AssetsService-class.html">AssetsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les assets Directus (images transformées).
+</dd>
+
+          <dt id="AssetTransform">
+  <span class="name "><a href="../fcs_directus/AssetTransform-class.html">AssetTransform</a></span> 
+
+</dt>
+<dd>
+  Transformation d'asset Directus
+</dd>
+
+          <dt id="AuthResponse">
+  <span class="name "><a href="../fcs_directus/AuthResponse-class.html">AuthResponse</a></span> 
+
+</dt>
+<dd>
+  Modèle pour la réponse d'authentification
+</dd>
+
+          <dt id="AuthService">
+  <span class="name "><a href="../fcs_directus/AuthService-class.html">AuthService</a></span> 
+
+</dt>
+<dd>
+  Service d'authentification pour Directus.
+</dd>
+
+          <dt id="BoolProperty">
+  <span class="name "><a href="../fcs_directus/BoolProperty-class.html">BoolProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour bool
+</dd>
+
+          <dt id="CacheUtility">
+  <span class="name "><a href="../fcs_directus/CacheUtility-class.html">CacheUtility</a></span> 
+
+</dt>
+<dd>
+  Utilitaires pour la gestion du cache
+</dd>
+
+          <dt id="CollectionsService">
+  <span class="name "><a href="../fcs_directus/CollectionsService-class.html">CollectionsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les collections Directus.
+</dd>
+
+          <dt id="CommentsService">
+  <span class="name "><a href="../fcs_directus/CommentsService-class.html">CommentsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les commentaires dans Directus.
+</dd>
+
+          <dt id="DashboardsService">
+  <span class="name "><a href="../fcs_directus/DashboardsService-class.html">DashboardsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les dashboards (tableaux de bord) dans Directus.
+</dd>
+
+          <dt id="DateTimeProperty">
+  <span class="name "><a href="../fcs_directus/DateTimeProperty-class.html">DateTimeProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour DateTime
+</dd>
+
+          <dt id="Deep">
+  <span class="name "><a href="../fcs_directus/Deep-class.html">Deep</a></span> 
+
+</dt>
+<dd>
+  Abstract base class for deep query configuration
+</dd>
+
+          <dt id="DeepFields">
+  <span class="name "><a href="../fcs_directus/DeepFields-class.html">DeepFields</a></span> 
+
+</dt>
+<dd>
+  Deep query configuration using field-based approach
+</dd>
+
+          <dt id="DeepMaxDepth">
+  <span class="name "><a href="../fcs_directus/DeepMaxDepth-class.html">DeepMaxDepth</a></span> 
+
+</dt>
+<dd>
+  Deep query with maximum depth limit
+</dd>
+
+          <dt id="DeepQuery">
+  <span class="name "><a href="../fcs_directus/DeepQuery-class.html">DeepQuery</a></span> 
+
+</dt>
+<dd>
+  Configuration for a single deep relation field
+</dd>
+
+          <dt id="DirectusActivity">
+  <span class="name "><a href="../fcs_directus/DirectusActivity-class.html">DirectusActivity</a></span> 
+
+</dt>
+<dd>
+  Représente une action d'activité Directus.
+</dd>
+
+          <dt id="DirectusClient">
+  <span class="name "><a href="../fcs_directus/DirectusClient-class.html">DirectusClient</a></span> 
+
+</dt>
+<dd>
+  Client principal pour interagir avec l'API Directus.
+</dd>
+
+          <dt id="DirectusComment">
+  <span class="name "><a href="../fcs_directus/DirectusComment-class.html">DirectusComment</a></span> 
+
+</dt>
+<dd>
+  Représente un commentaire Directus.
+</dd>
+
+          <dt id="DirectusConfig">
+  <span class="name "><a href="../fcs_directus/DirectusConfig-class.html">DirectusConfig</a></span> 
+
+</dt>
+<dd>
+  Configuration pour le client Directus.
+</dd>
+
+          <dt id="DirectusDashboard">
+  <span class="name "><a href="../fcs_directus/DirectusDashboard-class.html">DirectusDashboard</a></span> 
+
+</dt>
+<dd>
+  Représente un dashboard Directus.
+</dd>
+
+          <dt id="DirectusField">
+  <span class="name "><a href="../fcs_directus/DirectusField-class.html">DirectusField</a></span> 
+
+</dt>
+<dd>
+  Représente un champ (field) Directus.
+</dd>
+
+          <dt id="DirectusFlow">
+  <span class="name "><a href="../fcs_directus/DirectusFlow-class.html">DirectusFlow</a></span> 
+
+</dt>
+<dd>
+  Représente un flow Directus.
+</dd>
+
+          <dt id="DirectusFolder">
+  <span class="name "><a href="../fcs_directus/DirectusFolder-class.html">DirectusFolder</a></span> 
+
+</dt>
+<dd>
+  Représente un dossier (folder) Directus.
+</dd>
+
+          <dt id="DirectusHttpClient">
+  <span class="name "><a href="../fcs_directus/DirectusHttpClient-class.html">DirectusHttpClient</a></span> 
+
+</dt>
+<dd>
+  Client HTTP pour communiquer avec l'API Directus.
+</dd>
+
+          <dt id="DirectusMeta">
+  <span class="name "><a href="../fcs_directus/DirectusMeta-class.html">DirectusMeta</a></span> 
+
+</dt>
+<dd>
+  Métadonnées de pagination
+</dd>
+
+          <dt id="DirectusModel">
+  <span class="name "><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span> 
+
+</dt>
+<dd>
+  Modèle Directus avec stockage JSON interne (Active Record pattern).
+</dd>
+
+          <dt id="DirectusNotification">
+  <span class="name "><a href="../fcs_directus/DirectusNotification-class.html">DirectusNotification</a></span> 
+
+</dt>
+<dd>
+  Représente une notification Directus.
+</dd>
+
+          <dt id="DirectusOperation">
+  <span class="name "><a href="../fcs_directus/DirectusOperation-class.html">DirectusOperation</a></span> 
+
+</dt>
+<dd>
+  Représente une opération Directus.
+</dd>
+
+          <dt id="DirectusPanel">
+  <span class="name "><a href="../fcs_directus/DirectusPanel-class.html">DirectusPanel</a></span> 
+
+</dt>
+<dd>
+  Représente un panel Directus pour les dashboards.
+</dd>
+
+          <dt id="DirectusPermission">
+  <span class="name "><a href="../fcs_directus/DirectusPermission-class.html">DirectusPermission</a></span> 
+
+</dt>
+<dd>
+  Représente une permission Directus.
+</dd>
+
+          <dt id="DirectusPolicy">
+  <span class="name "><a href="../fcs_directus/DirectusPolicy-class.html">DirectusPolicy</a></span> 
+
+</dt>
+<dd>
+  Représente une politique Directus avec toutes les propriétés système.
+</dd>
+
+          <dt id="DirectusPreset">
+  <span class="name "><a href="../fcs_directus/DirectusPreset-class.html">DirectusPreset</a></span> 
+
+</dt>
+<dd>
+  Représente un preset (signets et préférences) Directus.
+</dd>
+
+          <dt id="DirectusProperty">
+  <span class="name "><a href="../fcs_directus/DirectusProperty-class.html">DirectusProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Classe de base pour les property wrappers
+</dd>
+
+          <dt id="DirectusRelation">
+  <span class="name "><a href="../fcs_directus/DirectusRelation-class.html">DirectusRelation</a></span> 
+
+</dt>
+<dd>
+  Représente une relation Directus.
+</dd>
+
+          <dt id="DirectusResponse">
+  <span class="name "><a href="../fcs_directus/DirectusResponse-class.html">DirectusResponse</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Réponse paginée de Directus
+</dd>
+
+          <dt id="DirectusRevision">
+  <span class="name "><a href="../fcs_directus/DirectusRevision-class.html">DirectusRevision</a></span> 
+
+</dt>
+<dd>
+  Représente une révision Directus.
+</dd>
+
+          <dt id="DirectusRole">
+  <span class="name "><a href="../fcs_directus/DirectusRole-class.html">DirectusRole</a></span> 
+
+</dt>
+<dd>
+  Représente un rôle Directus avec toutes les propriétés système.
+</dd>
+
+          <dt id="DirectusUser">
+  <span class="name "><a href="../fcs_directus/DirectusUser-class.html">DirectusUser</a></span> 
+
+</dt>
+<dd>
+  Représente un utilisateur Directus avec toutes les propriétés système.
+</dd>
+
+          <dt id="DirectusWebSocketClient">
+  <span class="name "><a href="../fcs_directus/DirectusWebSocketClient-class.html">DirectusWebSocketClient</a></span> 
+
+</dt>
+<dd>
+  Client WebSocket pour Directus.
+</dd>
+
+          <dt id="DirectusWebSocketMessage">
+  <span class="name "><a href="../fcs_directus/DirectusWebSocketMessage-class.html">DirectusWebSocketMessage</a></span> 
+
+</dt>
+<dd>
+  Message WebSocket Directus
+</dd>
+
+          <dt id="DoubleProperty">
+  <span class="name "><a href="../fcs_directus/DoubleProperty-class.html">DoubleProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour double
+</dd>
+
+          <dt id="DynamicModel">
+  <span class="name "><a href="../fcs_directus/DynamicModel-class.html">DynamicModel</a></span> 
+
+</dt>
+<dd>
+  Implémentation concrète d'un modèle actif dynamique.
+</dd>
+
+          <dt id="DynamicVar">
+  <span class="name "><a href="../fcs_directus/DynamicVar-class.html">DynamicVar</a></span> 
+
+</dt>
+<dd>
+  Dynamic variables for use in filters and queries
+</dd>
+
+          <dt id="EmptyFilter">
+  <span class="name "><a href="../fcs_directus/EmptyFilter-class.html">EmptyFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre vide (ne filtre rien)
+</dd>
+
+          <dt id="ExtensionsService">
+  <span class="name "><a href="../fcs_directus/ExtensionsService-class.html">ExtensionsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les extensions dans Directus.
+</dd>
+
+          <dt id="FieldFilter">
+  <span class="name "><a href="../fcs_directus/FieldFilter-class.html">FieldFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre sur un champ spécifique avec des opérateurs
+</dd>
+
+          <dt id="FieldsService">
+  <span class="name "><a href="../fcs_directus/FieldsService-class.html">FieldsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les champs (fields) dans Directus.
+</dd>
+
+          <dt id="FilesService">
+  <span class="name "><a href="../fcs_directus/FilesService-class.html">FilesService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les fichiers dans Directus.
+</dd>
+
+          <dt id="Filter">
+  <span class="name "><a href="../fcs_directus/Filter-class.html">Filter</a></span> 
+
+</dt>
+<dd>
+  Système de filtres type-safe pour les requêtes Directus.
+</dd>
+
+          <dt id="FlowsService">
+  <span class="name "><a href="../fcs_directus/FlowsService-class.html">FlowsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les flows (flux) dans Directus.
+</dd>
+
+          <dt id="FocalPoint">
+  <span class="name "><a href="../fcs_directus/FocalPoint-class.html">FocalPoint</a></span> 
+
+</dt>
+<dd>
+  Position pour le recadrage focal
+</dd>
+
+          <dt id="FoldersService">
+  <span class="name "><a href="../fcs_directus/FoldersService-class.html">FoldersService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les dossiers (folders) dans Directus.
+</dd>
+
+          <dt id="Func">
+  <span class="name "><a href="../fcs_directus/Func-class.html">Func</a></span> 
+
+</dt>
+<dd>
+  Helper class for Directus functions
+</dd>
+
+          <dt id="GroupBy">
+  <span class="name "><a href="../fcs_directus/GroupBy-class.html">GroupBy</a></span> 
+
+</dt>
+<dd>
+  GroupBy configuration for aggregation queries
+</dd>
+
+          <dt id="GroupByFields">
+  <span class="name "><a href="../fcs_directus/GroupByFields-class.html">GroupByFields</a></span> 
+
+</dt>
+<dd>
+  Simple field-based grouping
+</dd>
+
+          <dt id="HashUtility">
+  <span class="name "><a href="../fcs_directus/HashUtility-class.html">HashUtility</a></span> 
+
+</dt>
+<dd>
+  Utilitaires pour la génération et vérification de hashs
+</dd>
+
+          <dt id="IntProperty">
+  <span class="name "><a href="../fcs_directus/IntProperty-class.html">IntProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour int
+</dd>
+
+          <dt id="ItemsService">
+  <span class="name "><a href="../fcs_directus/ItemsService-class.html">ItemsService</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Service pour interagir avec les items d'une collection Directus.
+</dd>
+
+          <dt id="JsonProperty">
+  <span class="name "><a href="../fcs_directus/JsonProperty-class.html">JsonProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour valeur JSON dynamique (dynamic)
+</dd>
+
+          <dt id="ListProperty">
+  <span class="name "><a href="../fcs_directus/ListProperty-class.html">ListProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Property wrapper pour List
+</dd>
+
+          <dt id="LogicalFilter">
+  <span class="name "><a href="../fcs_directus/LogicalFilter-class.html">LogicalFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre logique (AND, OR)
+</dd>
+
+          <dt id="MetricsService">
+  <span class="name "><a href="../fcs_directus/MetricsService-class.html">MetricsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les métriques dans Directus.
+</dd>
+
+          <dt id="ModelListProperty">
+  <span class="name "><a href="../fcs_directus/ModelListProperty-class.html">ModelListProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Property wrapper pour <code>List&lt;DirectusModel&gt;</code>
+</dd>
+
+          <dt id="ModelProperty">
+  <span class="name "><a href="../fcs_directus/ModelProperty-class.html">ModelProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Property wrapper pour DirectusModel nested
+</dd>
+
+          <dt id="NotificationsService">
+  <span class="name "><a href="../fcs_directus/NotificationsService-class.html">NotificationsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les notifications dans Directus.
+</dd>
+
+          <dt id="OAuthProvider">
+  <span class="name "><a href="../fcs_directus/OAuthProvider-class.html">OAuthProvider</a></span> 
+
+</dt>
+<dd>
+  Fournisseur OAuth disponible sur le serveur Directus.
+</dd>
+
+          <dt id="ObjectProperty">
+  <span class="name "><a href="../fcs_directus/ObjectProperty-class.html">ObjectProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour Map
+</dd>
+
+          <dt id="OperationsService">
+  <span class="name "><a href="../fcs_directus/OperationsService-class.html">OperationsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les opérations dans Directus.
+</dd>
+
+          <dt id="OperatorFilter">
+  <span class="name "><a href="../fcs_directus/OperatorFilter-class.html">OperatorFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre avec un opérateur appliqué
+</dd>
+
+          <dt id="PanelsService">
+  <span class="name "><a href="../fcs_directus/PanelsService-class.html">PanelsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les panneaux dans Directus.
+</dd>
+
+          <dt id="PermissionsService">
+  <span class="name "><a href="../fcs_directus/PermissionsService-class.html">PermissionsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les permissions dans Directus.
+</dd>
+
+          <dt id="PoliciesService">
+  <span class="name "><a href="../fcs_directus/PoliciesService-class.html">PoliciesService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les politiques Directus.
+</dd>
+
+          <dt id="PresetsService">
+  <span class="name "><a href="../fcs_directus/PresetsService-class.html">PresetsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les presets (signets et préférences) dans Directus.
+</dd>
+
+          <dt id="QueryParameters">
+  <span class="name "><a href="../fcs_directus/QueryParameters-class.html">QueryParameters</a></span> 
+
+</dt>
+<dd>
+  Paramètres de requête pour filtrer, trier et paginer les données
+</dd>
+
+          <dt id="RandomUtility">
+  <span class="name "><a href="../fcs_directus/RandomUtility-class.html">RandomUtility</a></span> 
+
+</dt>
+<dd>
+  Utilitaires pour la génération de valeurs aléatoires
+</dd>
+
+          <dt id="RawFilter">
+  <span class="name "><a href="../fcs_directus/RawFilter-class.html">RawFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre brut à partir d'un Map (pour compatibilité)
+</dd>
+
+          <dt id="RelationalFilter">
+  <span class="name "><a href="../fcs_directus/RelationalFilter-class.html">RelationalFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre relationnel pour O2M (_some, _none)
+</dd>
+
+          <dt id="RelationFilter">
+  <span class="name "><a href="../fcs_directus/RelationFilter-class.html">RelationFilter</a></span> 
+
+</dt>
+<dd>
+  Filtre sur une relation
+</dd>
+
+          <dt id="RelationsService">
+  <span class="name "><a href="../fcs_directus/RelationsService-class.html">RelationsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les relations dans Directus.
+</dd>
+
+          <dt id="RevisionsService">
+  <span class="name "><a href="../fcs_directus/RevisionsService-class.html">RevisionsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les révisions dans Directus.
+</dd>
+
+          <dt id="RolesService">
+  <span class="name "><a href="../fcs_directus/RolesService-class.html">RolesService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les rôles Directus.
+</dd>
+
+          <dt id="SchemaService">
+  <span class="name "><a href="../fcs_directus/SchemaService-class.html">SchemaService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer le schéma de la base de données Directus.
+</dd>
+
+          <dt id="ServerService">
+  <span class="name "><a href="../fcs_directus/ServerService-class.html">ServerService</a></span> 
+
+</dt>
+<dd>
+  Service pour récupérer les informations du serveur Directus.
+</dd>
+
+          <dt id="SettingsService">
+  <span class="name "><a href="../fcs_directus/SettingsService-class.html">SettingsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les paramètres globaux de Directus.
+</dd>
+
+          <dt id="SharesService">
+  <span class="name "><a href="../fcs_directus/SharesService-class.html">SharesService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les partages (shares) dans Directus.
+</dd>
+
+          <dt id="SortUtility">
+  <span class="name "><a href="../fcs_directus/SortUtility-class.html">SortUtility</a></span> 
+
+</dt>
+<dd>
+  Utilitaires pour le tri des items
+</dd>
+
+          <dt id="StringProperty">
+  <span class="name "><a href="../fcs_directus/StringProperty-class.html">StringProperty</a></span> 
+
+</dt>
+<dd>
+  Property wrapper pour String
+</dd>
+
+          <dt id="TranslationsService">
+  <span class="name "><a href="../fcs_directus/TranslationsService-class.html">TranslationsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les traductions dans Directus.
+</dd>
+
+          <dt id="UsersService">
+  <span class="name "><a href="../fcs_directus/UsersService-class.html">UsersService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les utilisateurs Directus.
+</dd>
+
+          <dt id="UtilitiesService">
+  <span class="name "><a href="../fcs_directus/UtilitiesService-class.html">UtilitiesService</a></span> 
+
+</dt>
+<dd>
+  Service pour les utilitaires Directus.
+</dd>
+
+          <dt id="VersionsService">
+  <span class="name "><a href="../fcs_directus/VersionsService-class.html">VersionsService</a></span> 
+
+</dt>
+<dd>
+  Service pour gérer les versions de contenu dans Directus.
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+      <dl>
+          <dt id="AssetFit">
+  <span class="name "><a href="../fcs_directus/AssetFit.html">AssetFit</a></span> 
+
+</dt>
+<dd>
+  Mode de fit pour le redimensionnement d'images
+</dd>
+
+          <dt id="AssetFormat">
+  <span class="name "><a href="../fcs_directus/AssetFormat.html">AssetFormat</a></span> 
+
+</dt>
+<dd>
+  Format de sortie de l'image
+</dd>
+
+          <dt id="AuthMode">
+  <span class="name "><a href="../fcs_directus/AuthMode.html">AuthMode</a></span> 
+
+</dt>
+<dd>
+  Mode d'authentification pour les réponses Directus.
+</dd>
+
+          <dt id="DirectusErrorCode">
+  <span class="name "><a href="../fcs_directus/DirectusErrorCode.html">DirectusErrorCode</a></span> 
+
+</dt>
+<dd>
+  Codes d'erreur Directus officiels
+Source: <a href="https://github.com/directus/directus/blob/main/packages/errors/src/codes.ts">https://github.com/directus/directus/blob/main/packages/errors/src/codes.ts</a>
+</dd>
+
+          <dt id="DirectusItemEvent">
+  <span class="name "><a href="../fcs_directus/DirectusItemEvent.html">DirectusItemEvent</a></span> 
+
+</dt>
+<dd>
+  Événements CRUD sur les items Directus
+</dd>
+
+          <dt id="DirectusWebSocketEvent">
+  <span class="name "><a href="../fcs_directus/DirectusWebSocketEvent.html">DirectusWebSocketEvent</a></span> 
+
+</dt>
+<dd>
+  Types d'événements WebSocket
+</dd>
+
+      </dl>
+    </section>
+
+
+
+    <section class="summary offset-anchor" id="extensions">
+      <h2>Extensions</h2>
+      <dl>
+          <dt id="DeepQueryExtensions">
+  <span class="name "><a href="../fcs_directus/DeepQueryExtensions.html">DeepQueryExtensions</a></span>
+  on <a href="../fcs_directus/DeepQuery-class.html">DeepQuery</a>
+  
+
+</dt>
+<dd>
+  Extension methods for more intuitive deep query building
+</dd>
+
+          <dt id="MapToFilter">
+  <span class="name "><a href="../fcs_directus/MapToFilter.html">MapToFilter</a></span>
+  on <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span>
+  
+
+</dt>
+<dd>
+  Extension pour ajouter .toFilter() sur <code>Map&lt;String, dynamic&gt;</code>
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+      <dl>
+          <dt id="DirectusAuthException">
+  <span class="name "><a href="../fcs_directus/DirectusAuthException-class.html">DirectusAuthException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs d'authentification
+Codes: INVALID_CREDENTIALS, INVALID_TOKEN, TOKEN_EXPIRED, INVALID_OTP, USER_SUSPENDED
+</dd>
+
+          <dt id="DirectusConfigException">
+  <span class="name "><a href="../fcs_directus/DirectusConfigException-class.html">DirectusConfigException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de configuration
+Codes: INVALID_IP, INVALID_PROVIDER, INVALID_PROVIDER_CONFIG
+</dd>
+
+          <dt id="DirectusDatabaseException">
+  <span class="name "><a href="../fcs_directus/DirectusDatabaseException-class.html">DirectusDatabaseException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de base de données
+Codes: INVALID_FOREIGN_KEY, RECORD_NOT_UNIQUE
+</dd>
+
+          <dt id="DirectusException">
+  <span class="name "><a href="../fcs_directus/DirectusException-class.html">DirectusException</a></span> 
+
+</dt>
+<dd>
+  Exception de base pour toutes les erreurs liées à Directus.
+</dd>
+
+          <dt id="DirectusFileException">
+  <span class="name "><a href="../fcs_directus/DirectusFileException-class.html">DirectusFileException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs liées aux fichiers
+Codes: CONTENT_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE, ILLEGAL_ASSET_TRANSFORMATION
+</dd>
+
+          <dt id="DirectusMethodNotAllowedException">
+  <span class="name "><a href="../fcs_directus/DirectusMethodNotAllowedException-class.html">DirectusMethodNotAllowedException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de méthode non autorisée
+Code: METHOD_NOT_ALLOWED
+</dd>
+
+          <dt id="DirectusNetworkException">
+  <span class="name "><a href="../fcs_directus/DirectusNetworkException-class.html">DirectusNetworkException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs réseau
+</dd>
+
+          <dt id="DirectusNotFoundException">
+  <span class="name "><a href="../fcs_directus/DirectusNotFoundException-class.html">DirectusNotFoundException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lorsqu'une ressource n'est pas trouvée
+Code: ROUTE_NOT_FOUND
+</dd>
+
+          <dt id="DirectusPermissionException">
+  <span class="name "><a href="../fcs_directus/DirectusPermissionException-class.html">DirectusPermissionException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de permission
+Code: FORBIDDEN
+</dd>
+
+          <dt id="DirectusRangeException">
+  <span class="name "><a href="../fcs_directus/DirectusRangeException-class.html">DirectusRangeException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de plage (range)
+Code: RANGE_NOT_SATISFIABLE
+</dd>
+
+          <dt id="DirectusRateLimitException">
+  <span class="name "><a href="../fcs_directus/DirectusRateLimitException-class.html">DirectusRateLimitException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de limitation de taux (rate limiting)
+Codes: REQUESTS_EXCEEDED, EMAIL_LIMIT_EXCEEDED, LIMIT_EXCEEDED
+</dd>
+
+          <dt id="DirectusServerException">
+  <span class="name "><a href="../fcs_directus/DirectusServerException-class.html">DirectusServerException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs serveur
+Codes: INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE, OUT_OF_DATE
+</dd>
+
+          <dt id="DirectusValidationException">
+  <span class="name "><a href="../fcs_directus/DirectusValidationException-class.html">DirectusValidationException</a></span> 
+
+</dt>
+<dd>
+  Exception levée lors d'erreurs de validation
+Codes: INVALID_PAYLOAD, INVALID_QUERY, UNPROCESSABLE_CONTENT, CONTAINS_NULL_VALUES,
+NOT_NULL_VIOLATION, VALUE_OUT_OF_RANGE, VALUE_TOO_LONG
+</dd>
+
+      </dl>
+    </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">fcs_directus</a></li>
+    <li class="self-crumb">fcs_directus.dart</li>
+</ol>
+
+    <h5><span class="package-name">fcs_directus</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../fcs_directus/">fcs_directus</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>fcs_directus library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    fcs_directus
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

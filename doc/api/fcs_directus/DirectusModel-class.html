@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DirectusModel class from the fcs_directus library, for the Dart programming language.">
+  <title>DirectusModel class - fcs_directus library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">fcs_directus</a></li>
+    <li><a href="../fcs_directus/">fcs_directus.dart</a></li>
+    <li class="self-crumb">DirectusModel class</li>
+  </ol>
+  <div class="self-name">DirectusModel</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="fcs_directus&#47;fcs_directus-library-sidebar.html"
+    data-below-sidebar="fcs_directus&#47;DirectusModel-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">DirectusModel</span> class 
+    <a href="https://dart.dev/language/class-modifiers#abstract" class="feature feature-abstract" title="This type can not be directly constructed.">abstract</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Modèle Directus avec stockage JSON interne (Active Record pattern).</p>
+<p>Cette approche stocke les données JSON directement dans l'objet
+et fournit des méthodes typées pour y accéder et les modifier.</p>
+<p>Exemple d'utilisation classique:</p>
+<pre class="language-dart"><code class="language-dart">class Product extends DirectusModel {
+  Product(super.data);
+
+  @override
+  String get itemName =&gt; 'products';
+
+  String get name =&gt; getString('name');
+  set name(String value) =&gt; setString('name', value);
+
+  double get price =&gt; getDouble('price');
+  set price(double value) =&gt; setDouble('price', value);
+}
+</code></pre>
+<p>Exemple avec property wrappers (simplifié):</p>
+<pre class="language-dart"><code class="language-dart">class Product extends DirectusModel {
+  Product(super.data);
+
+  @override
+  String get itemName =&gt; 'products';
+
+  late final name = stringValue('name');
+  late final price = doubleValue('price');
+
+  // Utilisation:
+  // print(product.name);        // Lecture
+  // product.name.set('Laptop'); // Écriture
+  // print(product.name.name);   // "name"
+}
+</code></pre>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+        
+
+          <dt>Implementers</dt>
+          <dd><ul class="comma-separated clazz-relationships">
+              <li><a href="../fcs_directus/DirectusActivity-class.html">DirectusActivity</a></li>
+              <li><a href="../fcs_directus/DirectusComment-class.html">DirectusComment</a></li>
+              <li><a href="../fcs_directus/DirectusDashboard-class.html">DirectusDashboard</a></li>
+              <li><a href="../fcs_directus/DirectusField-class.html">DirectusField</a></li>
+              <li><a href="../fcs_directus/DirectusFlow-class.html">DirectusFlow</a></li>
+              <li><a href="../fcs_directus/DirectusFolder-class.html">DirectusFolder</a></li>
+              <li><a href="../fcs_directus/DirectusNotification-class.html">DirectusNotification</a></li>
+              <li><a href="../fcs_directus/DirectusOperation-class.html">DirectusOperation</a></li>
+              <li><a href="../fcs_directus/DirectusPanel-class.html">DirectusPanel</a></li>
+              <li><a href="../fcs_directus/DirectusPermission-class.html">DirectusPermission</a></li>
+              <li><a href="../fcs_directus/DirectusPolicy-class.html">DirectusPolicy</a></li>
+              <li><a href="../fcs_directus/DirectusPreset-class.html">DirectusPreset</a></li>
+              <li><a href="../fcs_directus/DirectusRelation-class.html">DirectusRelation</a></li>
+              <li><a href="../fcs_directus/DirectusRevision-class.html">DirectusRevision</a></li>
+              <li><a href="../fcs_directus/DirectusRole-class.html">DirectusRole</a></li>
+              <li><a href="../fcs_directus/DirectusUser-class.html">DirectusUser</a></li>
+              <li><a href="../fcs_directus/DynamicModel-class.html">DynamicModel</a></li>
+          </ul></dd>
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="DirectusModel.new" class="callable">
+          <span class="name"><a href="../fcs_directus/DirectusModel/DirectusModel.html">DirectusModel.new</a></span><span class="signature">(<span class="parameter" id="-param-data"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">data</span></span>)</span>
+        </dt>
+        <dd>
+          Crée un modèle depuis des données JSON
+        </dd>
+        <dt id="DirectusModel.empty" class="callable">
+          <span class="name"><a href="../fcs_directus/DirectusModel/DirectusModel.empty.html">DirectusModel.empty</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Crée un modèle vide
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="dateCreated" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/dateCreated.html">dateCreated</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/DateTime-class.html">DateTime</a>?</span>
+  
+
+</dt>
+<dd>
+  Date de création
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="dateUpdated" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/dateUpdated.html">dateUpdated</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/DateTime-class.html">DateTime</a>?</span>
+  
+
+</dt>
+<dd>
+  Date de dernière modification
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="dirtyFields" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/dirtyFields.html">dirtyFields</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  Retourne la liste des champs modifiés
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="id" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/id.html">id</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  Identifiant unique
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="isDirty" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/isDirty.html">isDirty</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Vérifie si le modèle a des modifications non sauvegardées
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="itemName" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/itemName.html">itemName</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Nom de la collection Directus
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="userCreated" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/userCreated.html">userCreated</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  Utilisateur créateur
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+        <dt id="userUpdated" class="property">
+  <span class="name"><a href="../fcs_directus/DirectusModel/userUpdated.html">userUpdated</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  
+
+</dt>
+<dd>
+  Utilisateur modificateur
+  <div class="features"><span class="feature">getter/setter pair</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="boolValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/boolValue.html">boolValue</a></span><span class="signature">(<wbr><span class="parameter" id="boolValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="boolValue-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/BoolProperty-class.html">BoolProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour bool
+  
+
+</dd>
+
+        <dt id="dateTimeValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/dateTimeValue.html">dateTimeValue</a></span><span class="signature">(<wbr><span class="parameter" id="dateTimeValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/DateTimeProperty-class.html">DateTimeProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour DateTime
+  
+
+</dd>
+
+        <dt id="doubleValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/doubleValue.html">doubleValue</a></span><span class="signature">(<wbr><span class="parameter" id="doubleValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="doubleValue-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">0.0</span></span>})
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/DoubleProperty-class.html">DoubleProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour double
+  
+
+</dd>
+
+        <dt id="getBool" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getBool.html">getBool</a></span><span class="signature">(<wbr><span class="parameter" id="getBool-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="getBool-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">false</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur bool
+  
+
+</dd>
+
+        <dt id="getBoolOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getBoolOrNull.html">getBoolOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="getBoolOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur bool nullable
+  
+
+</dd>
+
+        <dt id="getDateTime" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDateTime.html">getDateTime</a></span><span class="signature">(<wbr><span class="parameter" id="getDateTime-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/DateTime-class.html">DateTime</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur DateTime
+  
+
+</dd>
+
+        <dt id="getDirectusModel" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDirectusModel.html">getDirectusModel</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getDirectusModel-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; T</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère un modèle DirectusModel nested
+  
+
+</dd>
+
+        <dt id="getDirectusModelList" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDirectusModelList.html">getDirectusModelList</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getDirectusModelList-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une liste de modèles DirectusModel
+  
+
+</dd>
+
+        <dt id="getDirectusModelListOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDirectusModelListOrNull.html">getDirectusModelListOrNull</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getDirectusModelListOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une liste de modèles DirectusModel (nullable)
+  
+
+</dd>
+
+        <dt id="getDirectusModelOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDirectusModelOrNull.html">getDirectusModelOrNull</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getDirectusModelOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; T?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère un modèle DirectusModel nested nullable
+  
+
+</dd>
+
+        <dt id="getDouble" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDouble.html">getDouble</a></span><span class="signature">(<wbr><span class="parameter" id="getDouble-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="getDouble-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">0.0</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur double
+  
+
+</dd>
+
+        <dt id="getDoubleOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getDoubleOrNull.html">getDoubleOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="getDoubleOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur double nullable
+  
+
+</dd>
+
+        <dt id="getInt" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getInt.html">getInt</a></span><span class="signature">(<wbr><span class="parameter" id="getInt-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="getInt-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">0</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur int
+  
+
+</dd>
+
+        <dt id="getIntOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getIntOrNull.html">getIntOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="getIntOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur int nullable
+  
+
+</dd>
+
+        <dt id="getJson" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getJson.html">getJson</a></span><span class="signature">(<wbr><span class="parameter" id="getJson-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur JSON dynamique
+  
+
+</dd>
+
+        <dt id="getList" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getList.html">getList</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getList-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une liste
+  
+
+</dd>
+
+        <dt id="getObject" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getObject.html">getObject</a></span><span class="signature">(<wbr><span class="parameter" id="getObject-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère un objet nested
+  
+
+</dd>
+
+        <dt id="getOriginalValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getOriginalValue.html">getOriginalValue</a></span><span class="signature">(<wbr><span class="parameter" id="getOriginalValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retourne la valeur originale d'un champ (avant modifications)
+  
+
+</dd>
+
+        <dt id="getString" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getString.html">getString</a></span><span class="signature">(<wbr><span class="parameter" id="getString-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="getString-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">&#39;&#39;</span></span>})
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur String
+  
+
+</dd>
+
+        <dt id="getStringOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getStringOrNull.html">getStringOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="getStringOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Récupère une valeur String nullable
+  
+
+</dd>
+
+        <dt id="has" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/has.html">has</a></span><span class="signature">(<wbr><span class="parameter" id="has-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Vérifie si une clé existe
+  
+
+</dd>
+
+        <dt id="intValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/intValue.html">intValue</a></span><span class="signature">(<wbr><span class="parameter" id="intValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="intValue-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">0</span></span>})
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/IntProperty-class.html">IntProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour int
+  
+
+</dd>
+
+        <dt id="isDirtyField" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/isDirtyField.html">isDirtyField</a></span><span class="signature">(<wbr><span class="parameter" id="isDirtyField-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Vérifie si un champ spécifique a été modifié
+  
+
+</dd>
+
+        <dt id="jsonValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/jsonValue.html">jsonValue</a></span><span class="signature">(<wbr><span class="parameter" id="jsonValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/JsonProperty-class.html">JsonProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour valeur JSON dynamique
+  
+
+</dd>
+
+        <dt id="listValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/listValue.html">listValue</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="listValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/ListProperty-class.html">ListProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour List
+  
+
+</dd>
+
+        <dt id="markClean" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/markClean.html">markClean</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Marque le modèle comme "propre" (pas de modifications)
+  
+
+</dd>
+
+        <dt id="modelListValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/modelListValue.html">modelListValue</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="modelListValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/ModelListProperty-class.html">ModelListProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour <code>List&lt;DirectusModel&gt;</code>
+  
+
+</dd>
+
+        <dt id="modelValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/modelValue.html">modelValue</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="modelValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/ModelProperty-class.html">ModelProperty</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour DirectusModel nested
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="objectValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/objectValue.html">objectValue</a></span><span class="signature">(<wbr><span class="parameter" id="objectValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/ObjectProperty-class.html">ObjectProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour Map
+  
+
+</dd>
+
+        <dt id="remove" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/remove.html">remove</a></span><span class="signature">(<wbr><span class="parameter" id="remove-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Supprime une clé
+  
+
+</dd>
+
+        <dt id="revert" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/revert.html">revert</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Annule toutes les modifications et restaure les données originales
+  
+
+</dd>
+
+        <dt id="setBool" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setBool.html">setBool</a></span><span class="signature">(<wbr><span class="parameter" id="setBool-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setBool-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur bool
+  
+
+</dd>
+
+        <dt id="setBoolOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setBoolOrNull.html">setBoolOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setBoolOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setBoolOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur bool nullable
+  
+
+</dd>
+
+        <dt id="setDateTime" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDateTime.html">setDateTime</a></span><span class="signature">(<wbr><span class="parameter" id="setDateTime-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDateTime-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/DateTime-class.html">DateTime</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur DateTime
+  
+
+</dd>
+
+        <dt id="setDateTimeOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDateTimeOrNull.html">setDateTimeOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setDateTimeOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDateTimeOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/DateTime-class.html">DateTime</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur DateTime nullable
+  
+
+</dd>
+
+        <dt id="setDirectusModel" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDirectusModel.html">setDirectusModel</a></span><span class="signature">(<wbr><span class="parameter" id="setDirectusModel-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDirectusModel-param-value"><span class="type-annotation"><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit un modèle DirectusModel nested
+  
+
+</dd>
+
+        <dt id="setDirectusModelList" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDirectusModelList.html">setDirectusModelList</a></span><span class="signature">(<wbr><span class="parameter" id="setDirectusModelList-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDirectusModelList-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une liste de modèles DirectusModel
+  
+
+</dd>
+
+        <dt id="setDirectusModelListOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDirectusModelListOrNull.html">setDirectusModelListOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setDirectusModelListOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDirectusModelListOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une liste de modèles DirectusModel (nullable)
+  
+
+</dd>
+
+        <dt id="setDirectusModelOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDirectusModelOrNull.html">setDirectusModelOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setDirectusModelOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDirectusModelOrNull-param-value"><span class="type-annotation"><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit un modèle DirectusModel nested nullable
+  
+
+</dd>
+
+        <dt id="setDouble" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDouble.html">setDouble</a></span><span class="signature">(<wbr><span class="parameter" id="setDouble-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDouble-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur double
+  
+
+</dd>
+
+        <dt id="setDoubleOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setDoubleOrNull.html">setDoubleOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setDoubleOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setDoubleOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/double-class.html">double</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur double nullable
+  
+
+</dd>
+
+        <dt id="setInt" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setInt.html">setInt</a></span><span class="signature">(<wbr><span class="parameter" id="setInt-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setInt-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur int
+  
+
+</dd>
+
+        <dt id="setIntOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setIntOrNull.html">setIntOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setIntOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setIntOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur int nullable
+  
+
+</dd>
+
+        <dt id="setJson" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setJson.html">setJson</a></span><span class="signature">(<wbr><span class="parameter" id="setJson-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setJson-param-value"><span class="type-annotation">dynamic</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur JSON dynamique
+  
+
+</dd>
+
+        <dt id="setList" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setList.html">setList</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="setList-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setList-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une liste
+  
+
+</dd>
+
+        <dt id="setObject" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setObject.html">setObject</a></span><span class="signature">(<wbr><span class="parameter" id="setObject-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setObject-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit un objet nested
+  
+
+</dd>
+
+        <dt id="setString" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setString.html">setString</a></span><span class="signature">(<wbr><span class="parameter" id="setString-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setString-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur String
+  
+
+</dd>
+
+        <dt id="setStringOrNull" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/setStringOrNull.html">setStringOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="setStringOrNull-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, </span><span class="parameter" id="setStringOrNull-param-value"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Définit une valeur String nullable
+  
+
+</dd>
+
+        <dt id="stringValue" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/stringValue.html">stringValue</a></span><span class="signature">(<wbr><span class="parameter" id="stringValue-param-key"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">key</span>, {</span><span class="parameter" id="stringValue-param-defaultValue"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">defaultValue</span> = <span class="default-value">&#39;&#39;</span></span>})
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/StringProperty-class.html">StringProperty</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Crée un property wrapper pour String
+  
+
+</dd>
+
+        <dt id="toJson" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/toJson.html">toJson</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retourne les données JSON complètes
+  
+
+</dd>
+
+        <dt id="toJsonDirty" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/toJsonDirty.html">toJsonDirty</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retourne uniquement les champs qui ont été modifiés
+  
+
+</dd>
+
+        <dt id="toMap" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/toMap.html">toMap</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retourne les données JSON sans les champs système
+  
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  A string representation of this object.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  The equality operator.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="clearFactories" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/clearFactories.html">clearFactories</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Supprime toutes les factories
+  
+
+</dd>
+
+        <dt id="getFactory" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/getFactory.html">getFactory</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a> Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span></span>)</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retourne la factory pour un type donné (usage interne)
+  
+
+</dd>
+
+        <dt id="registerFactory" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/registerFactory.html">registerFactory</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="registerFactory-param-factory"><span class="type-annotation"><a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span> <span class="parameter-name">factory</span>(<span class="parameter" id="param-"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span></span>)</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Enregistre une factory pour un type de modèle
+  
+
+</dd>
+
+        <dt id="unregisterFactory" class="callable">
+  <span class="name"><a href="../fcs_directus/DirectusModel/unregisterFactory.html">unregisterFactory</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="../fcs_directus/DirectusModel-class.html">DirectusModel</a></span>&gt;</span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Supprime une factory
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">fcs_directus</a></li>
+    <li><a href="../fcs_directus/">fcs_directus</a></li>
+    <li class="self-crumb">DirectusModel class</li>
+</ol>
+
+    <h5>fcs_directus library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    fcs_directus
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
