@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:fcs_directus/fcs_directus.dart';
 
 /// Exemple d'utilisation du WebSocket pour les mises à jour en temps réel

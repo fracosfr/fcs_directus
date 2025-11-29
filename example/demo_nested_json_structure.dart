@@ -189,7 +189,7 @@ void _printJsonPretty(Map<String, dynamic> json, {int indent = 3}) {
               for (final item in v2) {
                 if (item is Map) {
                   print('$spaces        {');
-                  (item as Map).forEach((k3, v3) {
+                  (item).forEach((k3, v3) {
                     print('$spaces          "$k3": $v3');
                   });
                   print('$spaces        },');

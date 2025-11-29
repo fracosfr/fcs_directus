@@ -131,7 +131,7 @@ void main() async {
 
   final client = DirectusClient(
     DirectusConfig(
-      baseUrl: 'https://api.blue.fracos.fr',
+      baseUrl: 'https://api.directus',
       headers: {
         // Vos headers personnalisés ici
         'X-Client-Version': '1.0.0',

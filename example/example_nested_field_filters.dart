@@ -203,7 +203,7 @@ Future<void> example4_RealWorldExample() async {
   print('\n=== Exemple 4: Cas d\'usage réel ===\n');
 
   final client = DirectusClient(
-    DirectusConfig(baseUrl: 'https://api.blue.fracos.fr'),
+    DirectusConfig(baseUrl: 'https://api.directus'),
   );
 
   try {

@@ -14,18 +14,18 @@ void main() async {
   print('║  Différence : Token Statique vs Refresh Token         ║');
   print('╚════════════════════════════════════════════════════════╝\n');
 
-  await example1_StaticToken();
+  await example1StaticToken();
   print('\n${'=' * 60}\n');
-  await example2_RefreshToken();
+  await example2RefreshToken();
   print('\n${'=' * 60}\n');
-  await example3_RestoreSession();
+  await example3RestoreSession();
 }
 
 /// Exemple 1 : Token statique (Access Token permanent)
 ///
 /// Les tokens statiques sont générés manuellement dans Directus
 /// et sont utilisés pour les services backend, scripts, etc.
-Future<void> example1_StaticToken() async {
+Future<void> example1StaticToken() async {
   print('📌 Exemple 1 : Token Statique (Access Token permanent)\n');
 
   final client = DirectusClient(
@@ -66,7 +66,7 @@ Future<void> example1_StaticToken() async {
 ///
 /// Les refresh tokens sont obtenus lors d'un login email/password
 /// et permettent d'obtenir de nouveaux access tokens.
-Future<void> example2_RefreshToken() async {
+Future<void> example2RefreshToken() async {
   print('📌 Exemple 2 : Refresh Token (Login email/password)\n');
 
   final client = DirectusClient(
@@ -128,7 +128,7 @@ Future<void> example2_RefreshToken() async {
 ///
 /// Cas d'usage : Sauvegarder le refresh token et restaurer la session
 /// après un redémarrage de l'application.
-Future<void> example3_RestoreSession() async {
+Future<void> example3RestoreSession() async {
   print('📌 Exemple 3 : Restaurer une session avec restoreSession()\n');
 
   final client = DirectusClient(
@@ -173,7 +173,7 @@ Future<void> example3_RestoreSession() async {
     );
     print('   Expire dans : ${restoredAuth.expiresIn} secondes');
     print(
-      '   Refresh Token : ${restoredAuth.refreshToken?.substring(0, 30) ?? "même qu\'avant"}...\n',
+      '   Refresh Token : ${restoredAuth.refreshToken?.substring(0, 30) ?? "même qu'avant"}...\n',
     );
 
     // Vérifier que la session fonctionne
