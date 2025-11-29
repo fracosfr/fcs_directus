@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 
 import 'package:fcs_directus/fcs_directus.dart';
 
@@ -237,7 +237,9 @@ void main() async {
 
   // Mettre à jour en masse avec les mêmes données
   if (ids.isNotEmpty) {
-    await client.items('articles').updateMany(ids, {'status': 'review'});
+    await client
+        .items('articles')
+        .updateMany(keys: ids, data: {'status': 'review'});
     print('✅ ${ids.length} articles mis en révision');
   }
 

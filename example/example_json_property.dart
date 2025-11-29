@@ -1,3 +1,4 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 import 'package:fcs_directus/fcs_directus.dart';
 
 /// Exemple d'utilisation du JsonProperty pour stocker des valeurs JSON dynamiques

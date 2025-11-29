@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+// ignore_for_file: unused_local_variable
 import 'package:fcs_directus/fcs_directus.dart';
 
 /// Exemple d'utilisation de `modelListValueM2M` pour les relations Many-to-Many
@@ -5,17 +7,17 @@ import 'package:fcs_directus/fcs_directus.dart';
 /// Démontre comment utiliser le property wrapper M2M pour accéder directement
 /// aux modèles cibles sans manipuler manuellement la table de jonction.
 void main() {
-  example1_DefiningM2MProperty();
-  example2_UsingM2MProperty();
-  example3_SettingM2MRelations();
-  example4_ComparingApproaches();
+  example1DefiningM2MProperty();
+  example2UsingM2MProperty();
+  example3SettingM2MRelations();
+  example4ComparingApproaches();
 }
 
 /// ============================================================================
 /// EXEMPLE 1 : Définir un property M2M dans un modèle personnalisé
 /// ============================================================================
 
-void example1_DefiningM2MProperty() {
+void example1DefiningM2MProperty() {
   print('\n=== Exemple 1 : Définir un property M2M ===\n');
 
   // Définir un modèle avec une relation M2M
@@ -68,7 +70,7 @@ class Tag extends DirectusModel {
 /// EXEMPLE 2 : Utiliser le property M2M
 /// ============================================================================
 
-void example2_UsingM2MProperty() {
+void example2UsingM2MProperty() {
   print('\n=== Exemple 2 : Utiliser le property M2M ===\n');
 
   // Enregistrer les factories
@@ -117,7 +119,7 @@ void example2_UsingM2MProperty() {
 /// EXEMPLE 3 : Définir des relations M2M
 /// ============================================================================
 
-void example3_SettingM2MRelations() {
+void example3SettingM2MRelations() {
   print('\n=== Exemple 3 : Définir des relations M2M ===\n');
 
   DirectusModel.registerFactory<Tag>((data) => Tag(data));
@@ -154,7 +156,7 @@ void example3_SettingM2MRelations() {
 /// EXEMPLE 4 : Comparaison des approches
 /// ============================================================================
 
-void example4_ComparingApproaches() {
+void example4ComparingApproaches() {
   print('\n=== Exemple 4 : Comparaison des approches ===\n');
 
   DirectusModel.registerFactory<Tag>((data) => Tag(data));

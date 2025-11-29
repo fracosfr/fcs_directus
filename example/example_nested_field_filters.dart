@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 
 import 'package:fcs_directus/fcs_directus.dart';
 
@@ -12,14 +12,14 @@ import 'package:fcs_directus/fcs_directus.dart';
 /// - Des champs de relations Many-to-One
 /// - Des champs profondément imbriqués
 void main() async {
-  await example1_SimpleNestedField();
-  await example2_DeepNestedFields();
-  await example3_CombinedFilters();
+  await example1SimpleNestedField();
+  await example2DeepNestedFields();
+  await example3CombinedFilters();
   await example4_RealWorldExample();
 }
 
 /// Exemple 1: Filtrage sur un champ de relation simple
-Future<void> example1_SimpleNestedField() async {
+Future<void> example1SimpleNestedField() async {
   print('\n=== Exemple 1: Champ de relation simple ===\n');
 
   final client = DirectusClient(
@@ -79,7 +79,7 @@ Future<void> example1_SimpleNestedField() async {
 }
 
 /// Exemple 2: Filtrage sur des champs profondément imbriqués
-Future<void> example2_DeepNestedFields() async {
+Future<void> example2DeepNestedFields() async {
   print('\n=== Exemple 2: Champs profondément imbriqués ===\n');
 
   final client = DirectusClient(
@@ -140,7 +140,7 @@ Future<void> example2_DeepNestedFields() async {
 }
 
 /// Exemple 3: Combinaison de filtres sur champs imbriqués
-Future<void> example3_CombinedFilters() async {
+Future<void> example3CombinedFilters() async {
   print('\n=== Exemple 3: Filtres combinés ===\n');
 
   final client = DirectusClient(

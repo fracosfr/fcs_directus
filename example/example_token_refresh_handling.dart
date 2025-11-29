@@ -9,13 +9,13 @@ import 'package:fcs_directus/fcs_directus.dart';
 /// 2. Gérer les erreurs de refresh token
 /// 3. Nettoyer les tokens en cas d'échec permanent
 void main() async {
-  await example1_BasicRefreshHandling();
-  await example2_RefreshErrorHandling();
-  await example3_PersistentStorageIntegration();
+  await example1BasicRefreshHandling();
+  await example2RefreshErrorHandling();
+  await example3PersistentStorageIntegration();
 }
 
 /// Exemple 1: Configuration de base du refresh token
-Future<void> example1_BasicRefreshHandling() async {
+Future<void> example1BasicRefreshHandling() async {
   print('\n=== Exemple 1: Configuration de base ===\n');
 
   final client = DirectusClient(
@@ -57,7 +57,7 @@ Future<void> example1_BasicRefreshHandling() async {
 }
 
 /// Exemple 2: Gestion des erreurs de refresh token
-Future<void> example2_RefreshErrorHandling() async {
+Future<void> example2RefreshErrorHandling() async {
   print('\n=== Exemple 2: Gestion des erreurs de refresh ===\n');
 
   final client = DirectusClient(
@@ -109,7 +109,7 @@ Future<void> example2_RefreshErrorHandling() async {
 }
 
 /// Exemple 3: Intégration avec stockage persistant
-Future<void> example3_PersistentStorageIntegration() async {
+Future<void> example3PersistentStorageIntegration() async {
   print('\n=== Exemple 3: Stockage persistant ===\n');
 
   // Simuler un service de stockage

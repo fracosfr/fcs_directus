@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 
 import 'package:fcs_directus/fcs_directus.dart';
 
