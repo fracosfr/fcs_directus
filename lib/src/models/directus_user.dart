@@ -184,30 +184,27 @@ class DirectusUser<R extends DirectusRole> extends DirectusModel {
   /// }
   /// ```
   List<DirectusPolicy> getAllPolicies() {
-    // Récupérer les politiques directes de l'utilisateur
-    final userPolicies = policiesItem.value;
+    final allPolicies = <String, DirectusPolicy>{};
 
-    // Récupérer les politiques du rôle
-    final userRole = role.value;
-    final rolePolicies = userRole?.policiesItem.value ?? [];
-
-    // Combiner les deux listes
-    final allPolicies = <DirectusPolicy>[...userPolicies];
-
-    // Ajouter les politiques du rôle qui ne sont pas déjà présentes
-    for (final rolePolicy in rolePolicies) {
-      // Vérifier si la politique n'est pas déjà dans la liste
-      // On compare par ID
-      final policyId = rolePolicy.id;
-      if (policyId == null) continue;
-
-      final alreadyExists = allPolicies.any((p) => p.id == policyId);
-
-      if (!alreadyExists) {
-        allPolicies.add(rolePolicy);
+    // Ajouter les politiques de l'utilisateur
+    for (final policy in policiesItem.value) {
+      final id = policy.id;
+      if (id != null) {
+        allPolicies[id] = policy;
       }
     }
 
-    return allPolicies;
+    // Ajouter les politiques du rôle, en évitant les doublons
+    final userRole = role.value;
+    if (userRole != null) {
+      for (final policy in userRole.policiesItem.value) {
+        final id = policy.id;
+        if (id != null) {
+          allPolicies.putIfAbsent(id, () => policy);
+        }
+      }
+    }
+
+    return allPolicies.values.toList();
   }
 }
