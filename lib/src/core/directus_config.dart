@@ -62,10 +62,10 @@ class DirectusConfig {
   /// ```
   final Future<void> Function(DirectusAuthException exception)? onAuthError;
 
-  /// User-Agent personnalisé à ajouter aux requêtes HTTP
+  /// User-Agent personnalisé pour les requêtes HTTP
   ///
-  /// Ce User-Agent est ajouté au User-Agent par défaut de la librairie.
-  /// Le format final sera : `fcs_directus/<version> <customUserAgent>`
+  /// Si défini, ce User-Agent sera envoyé dans le header des requêtes.
+  /// Si non défini, aucun header User-Agent ne sera ajouté par la librairie.
   ///
   /// Exemple :
   /// ```dart
@@ -74,8 +74,6 @@ class DirectusConfig {
   ///   customUserAgent: 'MyApp/1.0.0',
   /// )
   /// ```
-  ///
-  /// Résultat : `fcs_directus/1.0.0 MyApp/1.0.0`
   final String? customUserAgent;
 
   /// Crée une nouvelle configuration Directus.
@@ -124,19 +122,14 @@ class DirectusConfig {
     );
   }
 
-  /// Version de la librairie fcs_directus
-  static const String libraryVersion = '1.0.0';
-
-  /// Génère le User-Agent complet pour les requêtes HTTP
+  /// Retourne le User-Agent personnalisé s'il est défini
   ///
-  /// Le format est : `fcs_directus/<version>` ou `fcs_directus/<version> <customUserAgent>`
-  /// si un customUserAgent est défini.
-  String get userAgent {
-    final baseUserAgent = 'fcs_directus/$libraryVersion';
+  /// Retourne `null` si aucun customUserAgent n'est défini.
+  String? get userAgent {
     if (customUserAgent != null && customUserAgent!.isNotEmpty) {
-      return '$baseUserAgent $customUserAgent';
+      return customUserAgent;
     }
-    return baseUserAgent;
+    return null;
   }
 
   @override
