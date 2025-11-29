@@ -1,147 +1,133 @@
 # Documentation fcs_directus
 
-Documentation complète de la librairie Dart/Flutter pour interagir avec l'API Directus.
+Bienvenue dans la documentation complète de la librairie fcs_directus.
 
-## 📚 Table des matières
+## Table des matières
 
-### Guide d'utilisation
+### Guides
 
-1. [**Getting Started**](01-getting-started.md) - Installation et premiers pas
-2. [**Core Concepts**](02-core-concepts.md) - Concepts fondamentaux de la librairie
-3. [**Authentication**](03-authentication.md) - Gestion de l'authentification
-4. [**Models**](04-models.md) - Création de modèles personnalisés
-5. [**Queries**](05-queries.md) - Requêtes et filtres
-6. [**Relationships**](06-relationships.md) - Relations et deep queries
-7. [**Aggregations**](07-aggregations.md) - Agrégations et fonctions
-8. [**Services**](08-services.md) - Services disponibles
-9. [**WebSockets**](09-websockets.md) - Communication temps réel
-10. [**File Management**](10-file-management.md) - Gestion des fichiers et assets
-11. [**Error Handling**](11-error-handling.md) - Gestion des erreurs
-12. [**Advanced**](12-advanced.md) - Fonctionnalités avancées
+1. **[Démarrage rapide](01-getting-started.md)**
+   - Installation
+   - Configuration
+   - Première requête
+   - Structure recommandée
 
-### 🔧 Guides de résolution de problèmes
+2. **[Authentification](02-authentication.md)**
+   - Login email/password
+   - Token statique
+   - OAuth/SSO
+   - Gestion de session
+   - Two-Factor Authentication
 
-- [**Troubleshooting Permissions**](troubleshooting-permissions.md) - Diagnostic des erreurs de permissions
-- [**Fix: 404 sur /auth/refresh**](FIX_404_REFRESH_TOKEN.md) - Résolution erreur 404 lors du refresh
-- [**Fix: Filtres imbriqués**](NESTED_FILTER_FIX.md) - Notation pointée dans les filtres
-- [**Nested Field Filters**](nested-field-filters.md) - Guide des filtres sur relations imbriquées
+3. **[Opérations CRUD](03-crud-operations.md)**
+   - Créer des items
+   - Lire des items
+   - Mettre à jour
+   - Supprimer
+   - Pagination
+   - Tri et recherche
 
-### Référence API
+4. **[Modèles personnalisés](04-custom-models.md)**
+   - Créer un modèle
+   - Property Wrappers
+   - Enums type-safe
+   - Relations
+   - Dirty tracking
 
-- [**Services**](api-reference/services/) - Documentation détaillée de tous les services
-  - [AuthService](api-reference/services/auth-service.md)
-  - [ItemsService](api-reference/services/items-service.md)
-  - [UsersService](api-reference/services/users-service.md)
-  - [FilesService](api-reference/services/files-service.md)
-  - [Et 30+ autres services...](api-reference/services/)
-  
-- [**Models**](api-reference/models/) - Documentation des modèles principaux
-  - [DirectusModel](api-reference/models/directus-model.md)
-  - [DirectusFilter](api-reference/models/directus-filter.md)
-  - [DirectusDeep](api-reference/models/directus-deep.md)
-  - [DirectusAggregate](api-reference/models/directus-aggregate.md)
-  - [Property Wrappers](api-reference/models/property-wrappers.md)
+5. **[Filtres](05-filters.md)**
+   - Filtres de champs
+   - Opérateurs disponibles
+   - Combinaisons AND/OR
+   - Filtres relationnels
+   - Filtres dynamiques
 
-- [**Exceptions**](api-reference/exceptions.md) - Gestion des erreurs et exceptions
+6. **[Deep Queries](06-deep-queries.md)**
+   - Charger les relations
+   - Configuration des DeepQuery
+   - Relations imbriquées
+   - Relations M2M
 
-### Exemples
+7. **[Agrégations](07-aggregations.md)**
+   - Count, Sum, Avg, Min, Max
+   - GroupBy
+   - Statistiques avancées
 
-- [**Basic CRUD**](examples/basic-crud.md) - Opérations CRUD de base
-- [**Advanced Filters**](examples/advanced-filters.md) - Filtres avancés
-- [**Complex Relationships**](examples/complex-relationships.md) - Relations complexes
-- [**Real World Scenarios**](examples/real-world-scenarios.md) - Scénarios réels
+8. **[WebSocket](08-websocket.md)**
+   - Configuration
+   - Abonnements
+   - Événements temps réel
+   - Collections système
 
-## 🚀 Quick Start
+9. **[Fichiers et Assets](09-files-assets.md)**
+   - Upload de fichiers
+   - Gestion des dossiers
+   - Transformation d'images
+   - Helpers prédéfinis
 
-```dart
-import 'package:fcs_directus/fcs_directus.dart';
+10. **[Gestion des utilisateurs](10-users.md)**
+    - CRUD utilisateurs
+    - Invitations
+    - 2FA
+    - Rôles et permissions
 
-// Configuration
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-  ),
-);
+11. **[Gestion des erreurs](11-error-handling.md)**
+    - Hiérarchie des exceptions
+    - Codes d'erreur
+    - Patterns de gestion
+    - Bonnes pratiques
 
-// Authentification
-await directus.auth.login(
-  email: 'admin@example.com',
-  password: 'password',
-);
+## Services disponibles
 
-// Utilisation des services
-final items = await directus.items('articles').readMany();
+| Service | Description | Documentation |
+|---------|-------------|---------------|
+| `auth` | Authentification | [Guide Auth](02-authentication.md) |
+| `items(collection)` | CRUD générique | [Guide CRUD](03-crud-operations.md) |
+| `itemsOf<T>()` | CRUD typé | [Guide Modèles](04-custom-models.md) |
+| `users` | Gestion utilisateurs | [Guide Users](10-users.md) |
+| `roles` | Gestion des rôles | [Guide Users](10-users.md) |
+| `policies` | Politiques d'accès | [Guide Users](10-users.md) |
+| `permissions` | Permissions | [Guide Users](10-users.md) |
+| `files` | Upload fichiers | [Guide Files](09-files-assets.md) |
+| `assets` | Transformation images | [Guide Files](09-files-assets.md) |
+| `folders` | Organisation fichiers | [Guide Files](09-files-assets.md) |
+| `websocket` | Temps réel | [Guide WebSocket](08-websocket.md) |
+| `collections` | Schéma collections | API Reference |
+| `fields` | Gestion des champs | API Reference |
+| `relations` | Gestion des relations | API Reference |
+| `activity` | Logs d'activité | API Reference |
+| `revisions` | Historique | API Reference |
+| `comments` | Commentaires | API Reference |
+| `notifications` | Notifications | API Reference |
+| `presets` | Préférences | API Reference |
+| `dashboards` | Tableaux de bord | API Reference |
+| `panels` | Panneaux | API Reference |
+| `flows` | Automatisation | API Reference |
+| `operations` | Opérations flows | API Reference |
+| `shares` | Partage | API Reference |
+| `versions` | Versioning | API Reference |
+| `translations` | Traductions | API Reference |
+| `extensions` | Extensions | API Reference |
+| `schema` | Snapshot schéma | API Reference |
+| `settings` | Paramètres | API Reference |
+| `server` | Info serveur | API Reference |
+| `utilities` | Utilitaires | API Reference |
+| `metrics` | Métriques | API Reference |
 
-// Gestion d'erreur avec helpers
-try {
-  await directus.auth.login(email: email, password: password);
-} on DirectusAuthException catch (e) {
-  if (e.isOtpRequired) {
-    print('Code 2FA requis');
-  }
-  if (e.isInvalidCredentials) {
-    print('Identifiants incorrects');
-  }
-}
-```
+## Liens utiles
 
-Pour plus de détails, consultez le [guide Getting Started](01-getting-started.md).
+- **[README](../README.md)** - Vue d'ensemble et exemples rapides
+- **[API Reference](../doc/api/index.html)** - Documentation générée (dart doc)
+- **[CHANGELOG](../CHANGELOG.md)** - Historique des versions
+- **[CONTRIBUTING](../CONTRIBUTING.md)** - Guide de contribution
 
-## 📖 À propos
+## Ressources externes
 
-**Version actuelle** : 0.2.0
+- [Documentation Directus](https://directus.io/docs)
+- [API Reference Directus](https://directus.io/docs/api)
+- [Communauté Directus](https://directus.io/community)
 
-Cette librairie fournit une interface Dart/Flutter complète pour interagir avec l'API Directus, incluant :
+## Support
 
-- ✅ 30+ services pour toutes les fonctionnalités Directus
-- ✅ Système de filtres type-safe
-- ✅ Deep queries pour les relations
-- ✅ Agrégations et fonctions
-- ✅ Support WebSocket pour le temps réel
-- ✅ Pattern Active Record pour les modèles
-- ✅ Gestion complète des fichiers et transformations d'images
-- ✅ Gestion robuste des erreurs
-- ✅ Support de l'authentification (cookie, JSON, static token)
-
-## 🎯 Navigation rapide par cas d'usage
-
-### Je veux...
-
-- **Installer la librairie** → [01-getting-started.md](01-getting-started.md)
-- **M'authentifier** → [03-authentication.md](03-authentication.md)
-- **Créer mes modèles** → [04-models.md](04-models.md)
-- **Faire des requêtes simples** → [05-queries.md](05-queries.md)
-- **Filtrer mes données** → [05-queries.md#filtres](05-queries.md)
-- **Gérer les relations** → [06-relationships.md](06-relationships.md)
-- **Faire des agrégations** → [07-aggregations.md](07-aggregations.md)
-- **Uploader des fichiers** → [10-file-management.md](10-file-management.md)
-- **Recevoir des événements en temps réel** → [09-websockets.md](09-websockets.md)
-- **Gérer les erreurs** → [11-error-handling.md](11-error-handling.md)
-
-### Par service Directus
-
-Consultez le [guide des services](08-services.md) pour une vue d'ensemble, ou accédez directement à la documentation d'un service spécifique dans [api-reference/services/](api-reference/services/).
-
-## 📝 Conventions
-
-Cette documentation utilise les conventions suivantes :
-
-- `Code inline` : noms de classes, méthodes, variables
-- **Gras** : termes importants ou titres
-- 💡 : Conseil ou bonne pratique
-- ⚠️ : Avertissement ou point d'attention
-- ✅ : Fonctionnalité disponible
-- 🔧 : Configuration requise
-
-## 🔗 Ressources externes
-
-- [API Directus officielle](https://docs.directus.io/reference/api/)
-- [Spécifications OpenAPI](../openapi/index.yaml)
-- [Dépôt GitHub](https://github.com/fracosfr/fcs_directus)
-- [pub.dev](https://pub.dev/packages/fcs_directus)
-
-## 🤝 Contribution
-
-Cette documentation doit rester à jour avec l'état actuel de la librairie. Si vous constatez des incohérences ou des informations obsolètes, veuillez les corriger.
-
-Consultez [CONTRIBUTING.md](../CONTRIBUTING.md) pour plus d'informations sur la contribution au projet.
+Pour toute question ou problème :
+- Ouvrir une [issue sur GitHub](https://github.com/fracosfr/fcs_directus/issues)
+- Consulter les [discussions](https://github.com/fracosfr/fcs_directus/discussions)

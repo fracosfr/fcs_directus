@@ -31,6 +31,7 @@ class DirectusHttpClient {
           baseUrl: _config.baseUrl,
           connectTimeout: _config.timeout,
           receiveTimeout: _config.timeout,
+
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',

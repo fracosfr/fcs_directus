@@ -1,341 +1,240 @@
-# Getting Started
+# Guide de démarrage
 
-Guide d'installation et de premiers pas avec fcs_directus.
+Ce guide vous accompagne dans l'installation et la configuration de la librairie fcs_directus.
 
-## 📋 Prérequis
+## Prérequis
 
-- **Dart SDK** : ≥3.9.2
-- **Flutter** : ≥1.17.0 (si utilisé dans une app Flutter)
-- **Serveur Directus** : Instance Directus accessible (v10+)
+- **Dart SDK** : 3.0 ou supérieur
+- **Flutter** : 3.0 ou supérieur (pour les applications Flutter)
+- **Serveur Directus** : v11.1.0 ou supérieur (recommandé)
 
-## 📦 Installation
+## Installation
 
-### Ajouter la dépendance
-
-Ajoutez `fcs_directus` à votre fichier `pubspec.yaml` :
+Ajoutez la dépendance dans votre fichier `pubspec.yaml` :
 
 ```yaml
 dependencies:
-  fcs_directus: ^0.2.0
+  fcs_directus: ^2.0.0
 ```
 
-Puis exécutez :
+Exécutez la commande suivante pour installer les dépendances :
 
 ```bash
+# Pour Flutter
 flutter pub get
-# ou
+
+# Pour Dart pur
 dart pub get
 ```
 
-### Import
+## Configuration de base
+
+### Créer le client
 
 ```dart
 import 'package:fcs_directus/fcs_directus.dart';
-```
 
-## 🚀 Configuration de base
-
-### Créer une instance DirectusClient
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
+void main() async {
+  // Configuration minimale
+  final config = DirectusConfig(
     baseUrl: 'https://your-directus-instance.com',
-    // Autres modes disponibles: cookie, session (spécifiés lors du login)
-  ),
-);
+  );
+  
+  // Créer le client
+  final client = DirectusClient(config);
+  
+  // Le client est prêt à être utilisé !
+}
 ```
 
 ### Options de configuration
 
+La classe `DirectusConfig` accepte plusieurs paramètres :
+
 ```dart
 final config = DirectusConfig(
-  baseUrl: 'https://api.example.com',
+  // URL de base du serveur Directus (obligatoire)
+  baseUrl: 'https://your-directus-instance.com',
   
-  // Timeout des requêtes (optionnel)
+  // Timeout des requêtes HTTP (défaut: 30 secondes)
   timeout: Duration(seconds: 30),
   
-  // Headers personnalisés (optionnel)
+  // Headers personnalisés ajoutés à toutes les requêtes
   headers: {
     'X-Custom-Header': 'value',
   },
+  
+  // User-Agent personnalisé
+  customUserAgent: 'MyApp/1.0.0',
+  
+  // Activer les logs de debug
+  enableLogging: true,
+  
+  // Callback appelé après chaque refresh de token réussi
+  onTokenRefreshed: (accessToken, refreshToken) async {
+    print('Nouveaux tokens reçus');
+  },
+  
+  // Callback appelé en cas d'erreur d'authentification
+  onAuthError: (exception) async {
+    print('Erreur auth: ${exception.message}');
+  },
 );
-
-final directus = DirectusClient(config);
 ```
 
-## 🔐 Authentification
+## Authentification
 
-### Login avec email/password
+### Login avec email et mot de passe
 
 ```dart
 try {
-  final response = await directus.auth.login(
-    email: 'admin@example.com',
+  final response = await client.auth.login(
+    email: 'user@example.com',
     password: 'your-password',
   );
   
-  print('Access token: ${response.accessToken}');
-  print('Expires: ${response.expires}');
+  print('Connecté !');
+  print('Access Token: ${response.accessToken}');
+  print('Expire dans: ${response.expiresIn} secondes');
+  
+  // Si 2FA activé
+  if (response.refreshToken != null) {
+    print('Refresh Token: ${response.refreshToken}');
+  }
 } on DirectusAuthException catch (e) {
-  print('Erreur d\'authentification: ${e.message}');
-}
-```
-
-### Token statique
-
-Pour utiliser un token statique (sans login avec email/password) :
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-  ),
-);
-
-// Login avec un token statique généré dans Directus
-await directus.auth.loginWithToken('your-static-admin-token');
-
-// Toutes les requêtes utilisent maintenant ce token
-final items = await directus.items('articles').readMany();
-```
-
-### Vérifier l'authentification
-
-```dart
-final isAuthenticated = await directus.auth.isAuthenticated();
-print('Authentifié: $isAuthenticated');
-```
-
-## 📝 Premier exemple complet
-
-Voici un exemple complet d'utilisation basique :
-
-```dart
-import 'package:fcs_directus/fcs_directus.dart';
-
-Future<void> main() async {
-  // 1. Configuration
-  final directus = DirectusClient(
-    DirectusConfig(
-      baseUrl: 'https://your-directus-instance.com',
-    ),
-  );
-
-  try {
-    // 2. Authentification
-    await directus.auth.login(
-      email: 'admin@example.com',
-      password: 'password',
-    );
-    print('✅ Authentifié avec succès');
-
-    // 3. Lire des données
-    final articles = await directus.items('articles').readMany();
-    print('📚 ${articles.data?.length ?? 0} articles trouvés');
-
-    // 4. Créer un item
-    final newArticle = await directus.items('articles').createOne(
-      item: {
-        'title': 'Mon premier article',
-        'content': 'Contenu de l\'article',
-        'status': 'published',
-      },
-    );
-    print('✅ Article créé: ${newArticle.data?['title']}');
-
-    // 5. Mettre à jour
-    await directus.items('articles').updateOne(
-      id: newArticle.data?['id'],
-      item: {
-        'title': 'Titre modifié',
-      },
-    );
-    print('✅ Article mis à jour');
-
-    // 6. Supprimer
-    await directus.items('articles').deleteOne(
-      id: newArticle.data?['id'],
-    );
-    print('✅ Article supprimé');
-
-    // 7. Déconnexion
-    await directus.auth.logout();
-    print('✅ Déconnecté');
-
-  } on DirectusException catch (e) {
-    print('❌ Erreur: ${e.message}');
-    print('Code: ${e.code}');
+  if (e.isOtpRequired) {
+    // Demander le code OTP à l'utilisateur
+    print('Code 2FA requis');
+  } else if (e.isInvalidCredentials) {
+    print('Identifiants incorrects');
+  } else {
+    print('Erreur: ${e.message}');
   }
 }
 ```
 
-## 🔍 Requêtes avec filtres
-
-Ajoutez des filtres, pagination et tri à vos requêtes :
+### Login avec 2FA (TOTP)
 
 ```dart
-final result = await directus.items('articles').readMany(
-  query: QueryParameters(
-    // Filtrer
-    filter: {
-      'status': {'_eq': 'published'},
-      'date_created': {'_gte': '2024-01-01'},
-    },
-    
-    // Trier
-    sort: ['-date_created'], // - pour desc, sans - pour asc
-    
-    // Paginer
-    limit: 10,
-    offset: 0,
-    
-    // Sélectionner des champs
-    fields: ['id', 'title', 'content', 'author.name'],
-  ),
+final response = await client.auth.login(
+  email: 'user@example.com',
+  password: 'your-password',
+  otp: '123456', // Code TOTP de l'app d'authentification
 );
-
-print('Articles: ${result.data?.length}');
-print('Total: ${result.meta?.totalCount}');
 ```
 
-## 🎯 Services disponibles
+### Login avec token statique
 
-La librairie fournit 30+ services pour interagir avec toutes les fonctionnalités Directus :
+Pour les applications backend ou les scripts :
 
 ```dart
-// Items (collections personnalisées)
-directus.items('collection_name')
-
-// Authentification
-directus.auth
-
-// Utilisateurs
-directus.users
-
-// Fichiers
-directus.files
-
-// Dossiers
-directus.folders
-
-// Rôles et permissions
-directus.roles
-directus.permissions
-directus.policies
-
-// Activité et révisions
-directus.activity
-directus.revisions
-
-// Et bien plus...
+await client.auth.loginWithToken('votre-token-statique-directus');
 ```
 
-Consultez [08-services.md](08-services.md) pour la liste complète.
-
-## 📖 Prochaines étapes
-
-Maintenant que vous avez configuré fcs_directus, explorez les guides suivants :
-
-1. [**Core Concepts**](02-core-concepts.md) - Comprendre l'architecture de la librairie
-2. [**Models**](04-models.md) - Créer vos propres modèles Dart
-3. [**Queries**](05-queries.md) - Maîtriser le système de requêtes type-safe
-4. [**Relationships**](06-relationships.md) - Gérer les relations entre collections
-
-## 💡 Conseils
-
-### Organisation du code
-
-Il est recommandé de créer une classe singleton pour votre client Directus :
+### Déconnexion
 
 ```dart
-// lib/services/directus_service.dart
+await client.auth.logout();
+```
+
+### Rafraîchir le token manuellement
+
+```dart
+await client.auth.refresh();
+```
+
+> **Note** : Le client gère automatiquement le refresh des tokens expirés. Cette méthode n'est utile que si vous voulez forcer un refresh.
+
+## Première requête
+
+Une fois authentifié, vous pouvez effectuer des requêtes :
+
+```dart
+// Lire tous les articles
+final articles = await client.items('articles').readMany();
+
+print('${articles.data.length} articles trouvés');
+
+for (final article in articles.data) {
+  print('- ${article['title']}');
+}
+```
+
+## Structure du projet recommandée
+
+Pour une application Flutter, nous recommandons cette structure :
+
+```
+lib/
+  main.dart
+  directus/
+    client.dart          # Singleton du client
+    models/
+      article.dart       # Modèle Article
+      user.dart          # Modèle User
+    services/
+      article_service.dart
+```
+
+### Singleton du client (exemple)
+
+```dart
+// lib/directus/client.dart
+import 'package:fcs_directus/fcs_directus.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class DirectusService {
-  static final DirectusService _instance = DirectusService._internal();
-  late final DirectusClient client;
-
-  factory DirectusService() => _instance;
-
-  DirectusService._internal() {
-    client = DirectusClient(
+  static DirectusClient? _client;
+  static final _storage = FlutterSecureStorage();
+  
+  static DirectusClient get client {
+    _client ??= DirectusClient(
       DirectusConfig(
         baseUrl: 'https://your-directus-instance.com',
+        onTokenRefreshed: (accessToken, refreshToken) async {
+          await _storage.write(key: 'access_token', value: accessToken);
+          if (refreshToken != null) {
+            await _storage.write(key: 'refresh_token', value: refreshToken);
+          }
+        },
+        onAuthError: (exception) async {
+          await _storage.deleteAll();
+          // Naviguer vers la page de login
+        },
       ),
     );
+    return _client!;
+  }
+  
+  static Future<bool> restoreSession() async {
+    final refreshToken = await _storage.read(key: 'refresh_token');
+    if (refreshToken != null) {
+      try {
+        await client.auth.restoreSession(refreshToken);
+        return true;
+      } catch (e) {
+        await _storage.deleteAll();
+      }
+    }
+    return false;
+  }
+  
+  static void dispose() {
+    _client?.dispose();
+    _client = null;
   }
 }
-
-// Utilisation dans votre app
-final directus = DirectusService().client;
 ```
 
-### Variables d'environnement
+## Prochaines étapes
 
-Ne hardcodez jamais vos credentials. Utilisez des variables d'environnement :
-
-```dart
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-await dotenv.load();
-
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: dotenv.env['DIRECTUS_URL']!,
-  ),
-);
-
-await directus.auth.login(
-  email: dotenv.env['DIRECTUS_EMAIL']!,
-  password: dotenv.env['DIRECTUS_PASSWORD']!,
-);
-```
-
-### Gestion des erreurs
-
-Toujours wrapper vos appels dans des try-catch :
-
-```dart
-try {
-  final result = await directus.items('articles').readMany();
-  // Traiter le résultat
-} on DirectusAuthException catch (e) {
-  // Erreur d'authentification
-  print('Auth error: ${e.message}');
-} on DirectusValidationException catch (e) {
-  // Erreur de validation
-  print('Validation errors: ${e.errors}');
-} on DirectusException catch (e) {
-  // Autres erreurs Directus
-  print('Error: ${e.message}');
-} catch (e) {
-  // Erreurs inattendues
-  print('Unexpected error: $e');
-}
-```
-
-## ⚠️ Points d'attention
-
-### CORS
-
-Si vous utilisez fcs_directus dans une application web, assurez-vous que votre instance Directus autorise les requêtes CORS depuis votre domaine.
-
-### Sécurité
-
-- Ne stockez jamais les tokens en clair dans votre code
-- Utilisez HTTPS pour toutes les communications
-- Respectez les permissions Directus pour chaque utilisateur
-- Utilisez des tokens statiques avec précaution (limitez les permissions)
-
-### Performance
-
-- Utilisez la pagination pour les grandes collections
-- Limitez les champs retournés avec le paramètre `fields`
-- Utilisez le cache quand c'est approprié
-- Évitez les deep queries trop profondes
-
-## 🔗 Ressources
-
-- [Documentation complète](README.md)
-- [API Reference](api-reference/)
-- [Exemples](examples/)
-- [API Directus](https://docs.directus.io/reference/api/)
+- [02-authentication.md](02-authentication.md) - Guide complet de l'authentification
+- [03-crud-operations.md](03-crud-operations.md) - Opérations CRUD sur les items
+- [04-custom-models.md](04-custom-models.md) - Créer des modèles personnalisés
+- [05-filters.md](05-filters.md) - Système de filtres type-safe
+- [06-deep-queries.md](06-deep-queries.md) - Charger les relations
+- [07-aggregations.md](07-aggregations.md) - Agrégations et statistiques
+- [08-websocket.md](08-websocket.md) - Temps réel avec WebSocket
+- [09-files-assets.md](09-files-assets.md) - Gestion des fichiers et assets
+- [10-users.md](10-users.md) - Gestion des utilisateurs
+- [11-error-handling.md](11-error-handling.md) - Gestion des erreurs

@@ -2,21 +2,25 @@
 
 [![Pub Version](https://img.shields.io/pub/v/fcs_directus)](https://pub.dev/packages/fcs_directus)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Directus](https://img.shields.io/badge/Directus-v11.1.0-blue)](https://directus.io)
+[![Dart](https://img.shields.io/badge/Dart-3.0+-blue)](https://dart.dev)
 
-Une librairie Dart/Flutter complète pour interagir avec l'API Directus. Fournit une interface type-safe, orientée objet avec support REST et WebSocket pour tous les endpoints Directus.
+Une librairie Dart/Flutter complète pour interagir avec l'API Directus. Fournit une interface type-safe, orientée objet avec support REST et WebSocket pour tous les endpoints Directus v11.1+.
 
 ## ✨ Fonctionnalités
 
-- 🚀 **API complète** : Support de tous les endpoints Directus (30+ services)
-- 🔐 **Authentification** : Login/logout, refresh tokens, OAuth
-- � **Refresh automatique** : Gestion automatique de l'expiration des tokens avec callback de notification
-- �📦 **CRUD typé** : Opérations Create, Read, Update, Delete avec type-safety
+- 🚀 **API complète** : Support de 31 services couvrant 96% des endpoints Directus
+- 🔐 **Authentification** : Login/logout, refresh automatique, OAuth, 2FA
+- 🔄 **Auto-refresh** : Gestion automatique de l'expiration des tokens avec callbacks
+- 📦 **CRUD typé** : Opérations Create, Read, Update, Delete avec type-safety
 - 🔍 **Filtres type-safe** : Builder intuitif sans manipuler JSON
 - 🔗 **Relations** : Deep queries pour charger les relations imbriquées
 - 📊 **Agrégations** : Count, sum, avg, min, max avec groupBy
 - ⚡ **WebSocket** : Mises à jour temps réel sur toutes les collections
 - 🎨 **Active Record Pattern** : Modèles avec stockage JSON interne
 - 🛠️ **Property Wrappers** : API simplifiée pour l'accès aux propriétés
+- 🎯 **Enums type-safe** : Conversion automatique String ↔ Enum
+- 🖼️ **Asset Transforms** : Redimensionnement, focal points, formats
 - 🧪 **Tests** : Tests unitaires inclus
 - 📝 **Documentation** : Documentation complète générée avec dart doc
 
@@ -26,7 +30,7 @@ Ajoutez la dépendance dans votre `pubspec.yaml` :
 
 ```yaml
 dependencies:
-  fcs_directus: ^1.0.0
+  fcs_directus: ^2.0.0
 ```
 
 Puis exécutez :
@@ -56,24 +60,30 @@ final client = DirectusClient(config);
 ### Authentification
 
 ```dart
-// Connexion
-try {
-  final response = await client.auth.login(
-    email: 'user@example.com',
-    password: 'your-password',
-  );
-  
-  print('Token: ${response.accessToken}');
-  print('Expire dans: ${response.expiresIn} secondes');
-} on DirectusException catch (e) {
-  print('Erreur: ${e.message}');
-}
+// Connexion avec email/password
+final response = await client.auth.login(
+  email: 'user@example.com',
+  password: 'your-password',
+);
+
+print('Token: ${response.accessToken}');
+print('Expire dans: ${response.expiresIn} secondes');
+
+// Connexion avec token statique
+await client.auth.loginWithToken('votre-token-statique');
+
+// Connexion OAuth
+final providers = await client.auth.listOAuthProviders();
+final url = client.auth.getOAuthUrl('google', redirect: 'myapp://callback');
 
 // Déconnexion
 await client.auth.logout();
 
 // Rafraîchir le token manuellement
 await client.auth.refresh();
+
+// Restaurer une session
+await client.auth.restoreSession(savedRefreshToken);
 ```
 
 ### ⚡ Refresh automatique avec persistance
@@ -99,67 +109,68 @@ final client = DirectusClient(
     
     // ❌ Callback appelé lors d'une erreur d'authentification
     onAuthError: (exception) async {
-      // Gérer l'erreur (ex: redirection vers login si refresh échoue)
       if (exception.errorCode == 'TOKEN_REFRESH_FAILED') {
         await storage.deleteAll();
-        // await navigateToLogin();
+        // Rediriger vers la page de login
       }
     },
   ),
 );
-
-// Login initial
-final auth = await client.auth.login(
-  email: 'user@example.com',
-  password: 'password',
-);
-await storage.write(key: 'refresh_token', value: auth.refreshToken!);
-
-// Utiliser normalement - le refresh est automatique !
-await client.items('articles').readMany(); // Si token expiré, refresh automatique
-
-// Au redémarrage de l'app
-final savedToken = await storage.read(key: 'refresh_token');
-if (savedToken != null) {
-  await client.auth.restoreSession(savedToken);
-  // Nouveaux tokens automatiquement sauvegardés via callback
-}
 ```
-
-> 💡 Voir [`example/example_token_refresh_callback.dart`](example/example_token_refresh_callback.dart) pour un exemple complet avec workflow de persistance  
-> 💡 Voir [`example/example_auth_error_callback.dart`](example/example_auth_error_callback.dart) pour la gestion des erreurs d'authentification
 
 ### Opérations CRUD basiques
 
 ```dart
-// Créer un item
+// === Créer ===
 final newArticle = await client.items('articles').createOne({
   'title': 'Mon premier article',
   'content': 'Contenu de l\'article',
   'status': 'published',
 });
 
-// Lire plusieurs items
-final articles = await client.items('articles').readMany();
-print('${articles.data.length} articles trouvés');
+// Créer plusieurs items
+await client.items('articles').createMany([
+  {'title': 'Article 1'},
+  {'title': 'Article 2'},
+]);
 
-// Lire un item spécifique
+// === Lire ===
+// Plusieurs items
+final response = await client.items('articles').readMany();
+print('${response.data.length} articles trouvés');
+
+// Un item spécifique
 final article = await client.items('articles').readOne('1');
 
-// Mettre à jour un item
-await client.items('articles').updateOne('1', {
-  'title': 'Titre modifié',
-});
+// Singleton (ex: settings)
+final settings = await client.items('settings').readSingleton();
 
-// Supprimer un item
+// === Mettre à jour ===
+await client.items('articles').updateOne('1', {'title': 'Nouveau titre'});
+
+// Mettre à jour plusieurs items
+await client.items('articles').updateMany(
+  keys: ['1', '2', '3'],
+  data: {'status': 'published'},
+);
+
+// === Supprimer ===
 await client.items('articles').deleteOne('1');
+
+// Supprimer plusieurs items
+await client.items('articles').deleteMany(keys: ['1', '2', '3']);
+
+// Supprimer avec filtre
+await client.items('articles').deleteMany(
+  filter: Filter.field('status').equals('archived'),
+);
 ```
 
-## 🎯 Utilisation avancée
-
-### Modèles personnalisés
+## 🎯 Modèles personnalisés
 
 Créez vos propres classes pour représenter vos collections Directus :
+
+### Approche 1 : Getters/Setters classiques
 
 ```dart
 class Article extends DirectusModel {
@@ -168,7 +179,6 @@ class Article extends DirectusModel {
   @override
   String get itemName => 'articles';
   
-  // Approche 1 : Getters/Setters classiques
   String get title => getString('title');
   set title(String value) => setString('title', value);
   
@@ -180,12 +190,12 @@ class Article extends DirectusModel {
   
   int get viewCount => getInt('view_count');
   set viewCount(int value) => setInt('view_count', value);
-  
-  bool get featured => getBool('featured');
-  set featured(bool value) => setBool('featured', value);
 }
+```
 
-// Approche 2 : Property Wrappers (API simplifiée)
+### Approche 2 : Property Wrappers (recommandée)
+
+```dart
 class Product extends DirectusModel {
   Product(super.data);
   
@@ -196,25 +206,28 @@ class Product extends DirectusModel {
   late final price = doubleValue('price');
   late final stock = intValue('stock');
   late final active = boolValue('active');
+  late final createdAt = dateTimeValue('date_created');
+  late final metadata = jsonValue('metadata');
+  
+  // Relation Many-to-One
+  late final category = modelValue<Category>('category');
+  
+  // Relation Many-to-Many (table de jonction)
+  late final tags = modelListValueM2M<Tag>('tags', 'tags_id');
 }
 
 // Utilisation
 final product = Product({'name': 'Laptop', 'price': 999.99});
-print(product.name); // 'Laptop'
-product.price.set(899.99); // Modification
+print(product.name.value);        // 'Laptop'
+product.price.set(899.99);        // Modification
+product.stock.increment();        // Helpers intégrés
+product.active.toggle();          // Toggle boolean
 ```
 
 ### Enums type-safe
 
-Utilisez des enums Dart au lieu de Strings pour plus de sécurité :
-
 ```dart
-enum ArticleStatus {
-  draft,
-  review,
-  published,
-  archived,
-}
+enum ArticleStatus { draft, review, published, archived }
 
 class Article extends DirectusModel {
   Article(super.data);
@@ -231,46 +244,58 @@ class Article extends DirectusModel {
     ArticleStatus.values,   // Toutes les valeurs
   );
   
-  // Getters dérivés
+  // Helpers
   bool get isPublished => status.is_(ArticleStatus.published);
-  bool get canEdit => status.isOneOf([
-    ArticleStatus.draft,
-    ArticleStatus.review,
-  ]);
+  bool get canEdit => status.isOneOf([ArticleStatus.draft, ArticleStatus.review]);
 }
 
 // Utilisation
-final article = Article({'status': 'published'});  // String de Directus
-print(article.status.value);        // ArticleStatus.published (Enum)
-print(article.status.asString);     // "published"
-
+final article = Article({'status': 'published'});
+print(article.status.value);    // ArticleStatus.published (Enum)
+print(article.status.asString); // "published"
 article.status.set(ArticleStatus.draft);
-print(article.isPublished);         // false
-
-// Gestion automatique des valeurs invalides
-final broken = Article({'status': 'invalid'});
-print(broken.status.value);         // ArticleStatus.draft (fallback)
 ```
 
-### Registrer les factories de modèles
-
-Pour utiliser des modèles typés avec les services :
+### Dirty tracking (suivi des modifications)
 
 ```dart
-// Enregistrer la factory
-DirectusModel.registerFactory<Article>((data) => Article(data));
-DirectusModel.registerFactory<Product>((data) => Product(data));
+final user = DirectusUser(await client.users.getUser('123'));
 
-// Utiliser avec le service items
+// Modifier des champs
+user.firstName.set('Jean');
+user.email.set('jean@example.com');
+
+// Vérifier les modifications
+print(user.isDirty);              // true
+print(user.dirtyFields);          // {'first_name', 'email'}
+print(user.isDirtyField('email')); // true
+
+// Envoyer uniquement les modifications
+await client.users.updateUser(user);  // Utilise toJsonDirty() automatiquement
+
+// Réinitialiser le tracking
+user.markClean();
+
+// Ou annuler les modifications
+user.revert();
+```
+
+### Registrer les factories
+
+```dart
+// Enregistrer les factories une seule fois au démarrage
+DirectusModel.registerFactory<Article>(Article.new);
+DirectusModel.registerFactory<Product>(Product.new);
+DirectusModel.registerFactory<Category>(Category.new);
+
+// Utiliser avec le service typé
 final articles = await client.itemsOf<Article>().readMany();
 for (final article in articles.data) {
-  print(article.title); // Type-safe !
+  print(article.title.value);  // Type-safe !
 }
 ```
 
-### Filtres type-safe
-
-Construisez des requêtes complexes sans manipuler JSON :
+## 🔍 Filtres type-safe
 
 ```dart
 // Filtre simple
@@ -278,7 +303,7 @@ final query = QueryParameters(
   filter: Filter.field('status').equals('published'),
 );
 
-// Filtres combinés avec AND
+// Combinaison AND
 final query = QueryParameters(
   filter: Filter.and([
     Filter.field('price').greaterThan(100),
@@ -287,17 +312,12 @@ final query = QueryParameters(
   ]),
 );
 
-// Filtres avec OR
+// Combinaison OR
 final query = QueryParameters(
   filter: Filter.or([
     Filter.field('featured').equals(true),
     Filter.field('price').lessThan(50),
   ]),
-);
-
-// Opérateurs de chaîne
-final query = QueryParameters(
-  filter: Filter.field('title').contains('laptop'),
 );
 
 // Filtres imbriqués complexes
@@ -312,44 +332,24 @@ final query = QueryParameters(
   ]),
 );
 
-// Utilisation
-final products = await client.items('products').readMany(query: query);
+// Filtres sur relations (notation pointée)
+final query = QueryParameters(
+  filter: Filter.field('author.role.name').equals('admin'),
+);
 ```
 
-#### Opérateurs disponibles
+### Opérateurs disponibles
 
-**Comparaison :**
-- `equals(value)` - Égal à
-- `notEquals(value)` - Différent de
-- `lessThan(value)` - Inférieur à
-- `lessThanOrEqual(value)` - Inférieur ou égal à
-- `greaterThan(value)` - Supérieur à
-- `greaterThanOrEqual(value)` - Supérieur ou égal à
+| Catégorie | Opérateurs |
+|-----------|------------|
+| **Comparaison** | `equals`, `notEquals`, `lessThan`, `lessThanOrEqual`, `greaterThan`, `greaterThanOrEqual` |
+| **Collection** | `inList`, `notInList`, `between`, `notBetween` |
+| **Chaînes** | `contains`, `notContains`, `startsWith`, `endsWith`, `containsInsensitive`, `startsWithInsensitive`, `endsWithInsensitive` |
+| **NULL** | `isNull`, `isNotNull`, `isEmpty`, `isNotEmpty` |
+| **Relations** | `Filter.some()`, `Filter.none()`, `Filter.relation()` |
+| **Géo** | `intersects`, `notIntersects`, `intersectsBBox`, `notIntersectsBBox` |
 
-**Collection :**
-- `inList(values)` - Dans la liste
-- `notInList(values)` - Pas dans la liste
-- `between(min, max)` - Entre deux valeurs
-- `notBetween(min, max)` - Pas entre deux valeurs
-
-**Chaînes :**
-- `contains(text)` - Contient
-- `notContains(text)` - Ne contient pas
-- `startsWith(text)` - Commence par
-- `endsWith(text)` - Se termine par
-- `containsInsensitive(text)` - Contient (insensible à la casse)
-
-**NULL :**
-- `isNull()` - Est NULL
-- `isNotNull()` - N'est pas NULL
-
-**Booléens :**
-- `isTrue()` - Est vrai
-- `isFalse()` - Est faux
-
-### Deep queries (Relations)
-
-Chargez les relations imbriquées de manière élégante :
+## 🔗 Deep Queries (Relations)
 
 ```dart
 // Charger une relation simple
@@ -359,7 +359,7 @@ final query = QueryParameters(
   }),
 );
 
-// Relations multiples avec filtres
+// Relations multiples avec filtres et tri
 final query = QueryParameters(
   deep: Deep({
     'author': DeepQuery()
@@ -368,7 +368,7 @@ final query = QueryParameters(
     'categories': DeepQuery()
       .fields(['id', 'name'])
       .limit(5)
-      .sort('-name'),
+      .sortDesc('name'),
     'comments': DeepQuery()
       .filter(Filter.field('approved').equals(true))
       .limit(10),
@@ -390,9 +390,7 @@ final query = QueryParameters(
 final articles = await client.items('articles').readMany(query: query);
 ```
 
-### Agrégations et groupBy
-
-Effectuez des calculs statistiques sur vos données :
+## 📊 Agrégations et GroupBy
 
 ```dart
 // Compter les items
@@ -407,6 +405,7 @@ final result = await client.items('orders').readMany(
   query: QueryParameters(
     aggregate: Aggregate()
       ..count(['*'])
+      ..countDistinct(['customer_id'])
       ..sum(['total', 'quantity'])
       ..avg(['rating'])
       ..min(['price'])
@@ -425,77 +424,56 @@ final result = await client.items('sales').readMany(
 );
 ```
 
-### Tri et pagination
+## 📄 Tri et Pagination
 
 ```dart
-// Tri simple
+// Tri
 final query = QueryParameters(
-  sort: ['name'], // Ordre croissant
+  sort: ['category', '-price'],  // Catégorie ASC, prix DESC
 );
 
-// Tri décroissant
-final query = QueryParameters(
-  sort: ['-created_at'], // Ordre décroissant
-);
-
-// Tri multiple
-final query = QueryParameters(
-  sort: ['category', '-price'], // Par catégorie puis prix décroissant
-);
-
-// Pagination avec limit/offset
+// Pagination offset
 final query = QueryParameters(
   limit: 20,
   offset: 40,
 );
 
-// Pagination avec page
+// Pagination par page
 final query = QueryParameters(
   limit: 20,
-  page: 3, // Page 3 (items 41-60)
+  page: 3,
 );
 
 // Sélection de champs
 final query = QueryParameters(
   fields: ['id', 'title', 'status', 'author.name'],
 );
-```
 
-### Recherche full-text
-
-```dart
+// Recherche full-text
 final query = QueryParameters(
-  search: 'laptop',
+  search: 'laptop gaming',
 );
-
-final products = await client.items('products').readMany(query: query);
 ```
 
-## 🔄 WebSocket (Temps réel)
-
-Recevez des mises à jour en temps réel depuis Directus :
+## ⚡ WebSocket (Temps réel)
 
 ```dart
-// Configuration avec authentification
-final wsConfig = DirectusConfig(
-  baseUrl: 'https://your-directus-instance.com',
-);
-
-final wsClient = DirectusWebSocketClient(wsConfig);
+// Créer le client WebSocket
+final wsClient = DirectusWebSocketClient(config, accessToken: token);
 
 // Connexion
-await wsClient.connect(accessToken: 'your-access-token');
+await wsClient.connect();
 
 // S'abonner à une collection
-final subscription = wsClient.subscribe(
+final uid = await wsClient.subscribe(
   collection: 'articles',
-  onEvent: (event, data) {
-    switch (event) {
+  onMessage: (message) {
+    switch (message.event) {
       case DirectusItemEvent.create:
-        print('Nouvel article créé: ${data['id']}');
+        print('Nouvel article: ${message.data}');
         break;
       case DirectusItemEvent.update:
-        print('Article modifié: ${data['id']}');
+        print('Article modifié: ${message.data}');
         break;
       case DirectusItemEvent.delete:
         print('Article supprimé');
@@ -504,51 +482,40 @@ final subscription = wsClient.subscribe(
   },
 );
 
-// S'abonner avec filtre
-final subscription = wsClient.subscribe(
-  collection: 'products',
-  query: {
-    'filter': {
-      'status': {'_eq': 'published'},
-    },
-  },
-  onEvent: (event, data) {
-    print('Événement sur produit publié: $event');
-  },
+// S'abonner avec événement spécifique
+await wsClient.subscribeToCreate(
+  collection: 'notifications',
+  onMessage: (msg) => print('Nouvelle notification !'),
 );
 
+// Helpers pour collections système
+await wsClient.subscribeToUsers(onMessage: handleUserChange);
+await wsClient.subscribeToFiles(onMessage: handleFileChange);
+await wsClient.subscribeToNotifications(onMessage: handleNotification);
+
 // Se désabonner
-await wsClient.unsubscribe(subscription.uid);
+await wsClient.unsubscribe(uid);
 
-// Collections système supportées
-wsClient.subscribe(collection: 'directus_users', ...);
-wsClient.subscribe(collection: 'directus_files', ...);
-wsClient.subscribe(collection: 'directus_notifications', ...);
-
-// Fermer la connexion
+// Fermer
 await wsClient.disconnect();
+await wsClient.dispose();
 ```
 
 ## 📁 Gestion des fichiers
-
-### Upload de fichiers
 
 ```dart
 // Upload depuis un chemin local
 final file = await client.files.uploadFile(
   filePath: '/path/to/image.jpg',
   title: 'Mon image',
-  folder: 'folder-uuid', // Optionnel
+  folder: 'folder-uuid',
 );
 
-print('Fichier uploadé: ${file['id']}');
-
 // Upload depuis des bytes
-final bytes = await File('/path/to/file.pdf').readAsBytes();
 final file = await client.files.uploadFileFromBytes(
-  bytes: bytes,
-  filename: 'document.pdf',
-  title: 'Mon document',
+  bytes: imageBytes,
+  filename: 'photo.png',
+  title: 'Ma photo',
 );
 
 // Import depuis une URL
@@ -557,184 +524,154 @@ final file = await client.files.importFile(
   title: 'Image importée',
 );
 
-// Lister les fichiers
+// Récupérer les métadonnées
 final files = await client.files.getFiles(
   query: QueryParameters(
     filter: Filter.field('type').contains('image'),
-    limit: 20,
   ),
 );
 ```
 
-### Transformation d'assets
+## 🖼️ Transformation d'assets
 
 ```dart
-// Construire une URL d'asset avec transformations
-final transform = AssetTransform(
+// URL avec transformations
+final url = client.assets.getAssetUrl(
+  'file-uuid',
+  transforms: [
+    AssetTransform(
+      width: 800,
+      height: 600,
+      fit: AssetFit.cover,
+      quality: 80,
+      format: AssetFormat.webp,
+    ),
+  ],
+);
+
+// Helpers prédéfinis
+final avatarUrl = client.assets.getAvatarUrl('file-id', size: 200);
+final bannerUrl = client.assets.getBannerUrl('file-id', width: 1920);
+final cardUrl = client.assets.getCardUrl('file-id', width: 400);
+final mobileUrl = client.assets.getMobileUrl('file-id', maxWidth: 800);
+final placeholderUrl = client.assets.getPlaceholderUrl('file-id'); // LQIP
+
+// Focal point
+final url = client.assets.getAssetWithFocalPoint(
+  'file-id',
   width: 800,
   height: 600,
-  fit: AssetFit.cover,
+  focalPoint: FocalPoint(0.3, 0.7),  // 30% depuis la gauche, 70% depuis le haut
+);
+
+// Srcset pour images responsive
+final srcSet = client.assets.getSrcSet(
+  'file-id',
+  widths: [320, 640, 1024, 1920],
   quality: 80,
   format: AssetFormat.webp,
 );
+// Retourne: {320: 'url1', 640: 'url2', ...}
 
-final url = client.assets.buildAssetUrl(
-  fileId: 'file-uuid',
-  transform: transform,
-);
+// Avec preset Directus
+final url = client.assets.getAssetUrl('file-id', key: 'thumbnail');
 
-// Avec un preset
-final url = client.assets.buildAssetUrl(
-  fileId: 'file-uuid',
-  preset: 'thumbnail',
-);
+// URL de téléchargement
+final downloadUrl = client.assets.getDownloadUrl('file-id');
 ```
 
 ## 👥 Gestion des utilisateurs
 
 ```dart
-// Créer un utilisateur
-final user = await client.users.createUser({
-  'email': 'newuser@example.com',
-  'password': 'secure-password',
-  'first_name': 'John',
-  'last_name': 'Doe',
-  'role': 'role-uuid',
-});
+// CRUD utilisateurs
+final users = await client.users.getUsers();
+final user = await client.users.getUser('user-id');
 
-// Lister les utilisateurs
-final users = await client.users.getUsers(
-  query: QueryParameters(
-    filter: Filter.field('status').equals('active'),
-  ),
+final newUser = await client.users.createUser(DirectusUser.empty()
+  ..email.set('user@example.com')
+  ..password.set('secure123')
+  ..firstName.set('John')
+  ..role.setById('role-id'));
+
+await client.users.updateUser(user);
+await client.users.deleteUser(user);
+
+// Utilisateur courant
+final me = await client.users.me<DirectusUser>();
+await client.users.updateMe({'first_name': 'Jean'});
+
+// Invitations
+await client.users.inviteUsers(
+  email: ['user1@example.com', 'user2@example.com'],
+  roleId: 'role-id',
 );
+await client.users.acceptInvite(token: 'invite-token', password: 'password');
 
-// Mettre à jour un utilisateur
-await client.users.updateUser('user-uuid', {
-  'first_name': 'Jane',
-});
+// Inscription publique
+await client.users.register(
+  email: 'new@example.com',
+  password: 'password',
+  firstName: 'John',
+);
+await client.users.verifyEmail('verification-token');
 
-// Obtenir l'utilisateur courant
-final me = await client.users.me();
-print('Connecté en tant que: ${me['email']}');
+// Two-Factor Authentication
+final tfa = await client.users.generateTwoFactorSecret('password');
+await client.users.enableTwoFactor(secret: tfa!.secret, otp: '123456');
+await client.users.disableTwoFactor('123456');
 
-// Inviter un utilisateur
-await client.users.inviteUser({
-  'email': 'invite@example.com',
-  'role': 'role-uuid',
-});
-```
-
-## 🔐 Permissions et Rôles
-
-```dart
-// Créer un rôle
-final role = await client.roles.createRole({
-  'name': 'Editor',
-  'description': 'Can edit content',
-});
-
-// Lister les rôles
-final roles = await client.roles.getRoles();
-
-// Créer une permission
-final permission = await client.permissions.createPermission({
-  'role': 'role-uuid',
-  'collection': 'articles',
-  'action': 'read',
-  'fields': ['*'],
-});
-
-// Lister les permissions
-final permissions = await client.permissions.getPermissions(
-  query: QueryParameters(
-    filter: Filter.field('role').equals('role-uuid'),
-  ),
+// Gestion des policies
+await client.users.addPoliciesToUser(
+  userId: 'user-id',
+  policyIds: ['policy-1', 'policy-2'],
 );
 ```
 
-## 📊 Autres services
+## 🛡️ Services disponibles
 
-### Collections
+| Service | Description |
+|---------|-------------|
+| `auth` | Authentification (login, logout, refresh, OAuth, 2FA) |
+| `items(collection)` | CRUD générique sur n'importe quelle collection |
+| `itemsOf<T>()` | CRUD typé avec modèles personnalisés |
+| `users` | Gestion des utilisateurs, invitations, 2FA |
+| `roles` | Gestion des rôles |
+| `policies` | Gestion des politiques d'accès |
+| `permissions` | Gestion des permissions |
+| `files` | Upload et gestion des fichiers |
+| `assets` | Transformation d'images |
+| `folders` | Organisation des fichiers |
+| `collections` | Gestion du schéma des collections |
+| `fields` | Gestion des champs |
+| `relations` | Gestion des relations |
+| `activity` | Logs d'activité (lecture seule) |
+| `revisions` | Historique des modifications |
+| `comments` | Commentaires sur les items |
+| `notifications` | Notifications utilisateurs |
+| `presets` | Préférences utilisateurs |
+| `dashboards` | Tableaux de bord Insights |
+| `panels` | Panneaux de tableaux de bord |
+| `flows` | Automatisation et workflows |
+| `operations` | Opérations des flows |
+| `shares` | Partage d'items |
+| `versions` | Versioning de contenu |
+| `translations` | Traductions personnalisées |
+| `extensions` | Extensions installées |
+| `schema` | Snapshot/Apply du schéma |
+| `settings` | Paramètres globaux |
+| `server` | Info serveur (ping, health, specs) |
+| `utilities` | Hash, random, cache, sort, import/export |
+| `metrics` | Métriques Prometheus |
+| `websocket` | Mises à jour temps réel |
 
-```dart
-// Lister les collections
-final collections = await client.collections.getCollections();
-
-// Obtenir une collection spécifique
-final collection = await client.collections.getCollection('articles');
-```
-
-### Fields
-
-```dart
-// Lister les champs d'une collection
-final fields = await client.fields.getFields('articles');
-
-// Créer un champ
-final field = await client.fields.createField('articles', {
-  'field': 'subtitle',
-  'type': 'string',
-  'meta': {
-    'interface': 'input',
-    'width': 'full',
-  },
-});
-```
-
-### Activity (Logs)
-
-```dart
-// Obtenir les logs d'activité
-final activities = await client.activity.getActivity(
-  query: QueryParameters(
-    filter: Filter.field('action').equals('create'),
-    limit: 50,
-    sort: ['-timestamp'],
-  ),
-);
-```
-
-### Server Info
-
-```dart
-// Informations du serveur
-final info = await client.server.ping();
-print('Version Directus: ${info['version']}');
-
-// Santé du serveur
-final health = await client.server.health();
-```
-
-## 🛠️ Utilitaires
-
-### Cache
-
-```dart
-// Le client inclut un système de cache
-final cacheUtil = CacheUtility();
-
-// Mettre en cache
-await cacheUtil.set('key', {'data': 'value'}, duration: Duration(minutes: 5));
-
-// Récupérer du cache
-final data = await cacheUtil.get('key');
-
-// Vider le cache
-await cacheUtil.clear();
-```
-
-### Gestion des erreurs
-
-La librairie fournit des exceptions typées avec des helpers pour faciliter la gestion d'erreur :
+## 🚨 Gestion des erreurs
 
 ```dart
 try {
-  final article = await client.items('articles').readOne('999');
+  await client.items('articles').readOne('999');
 } on DirectusNotFoundException catch (e) {
-  print('Article non trouvé: ${e.message}');
+  print('Non trouvé: ${e.message}');
 } on DirectusAuthException catch (e) {
-  // Utiliser les helpers
   if (e.isOtpRequired) {
     print('Code 2FA requis');
   } else if (e.isInvalidCredentials) {
@@ -744,106 +681,82 @@ try {
   } else if (e.isUserSuspended) {
     print('Compte suspendu');
   }
-  
-  // Ou vérifier avec DirectusErrorCode
-  if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
-    print('OTP invalide');
-  }
 } on DirectusValidationException catch (e) {
-  print('Validation échouée');
+  print('Validation: ${e.message}');
   if (e.fieldErrors != null) {
-    print('Erreurs par champ: ${e.fieldErrors}');
+    e.fieldErrors!.forEach((field, errors) {
+      print('  $field: ${errors.join(", ")}');
+    });
   }
 } on DirectusPermissionException catch (e) {
   print('Permission refusée: ${e.message}');
 } on DirectusRateLimitException catch (e) {
-  print('Rate limit atteint: ${e.message}');
+  print('Rate limit atteint');
+} on DirectusNetworkException catch (e) {
+  print('Erreur réseau: ${e.message}');
 } on DirectusServerException catch (e) {
   print('Erreur serveur: ${e.message}');
 } on DirectusException catch (e) {
-  print('Erreur Directus: ${e.message}');
-  print('Code: ${e.errorCode}');
-  print('Status: ${e.statusCode}');
+  print('Erreur: ${e.message} (${e.errorCode})');
 }
 ```
 
-**Helpers DirectusAuthException disponibles** :
-- `isOtpRequired` : OTP requis (2FA)
-- `isInvalidCredentials` : Credentials invalides
-- `isInvalidToken` : Token invalide/expiré
-- `isUserSuspended` : Utilisateur suspendu
-- `hasErrorCode(DirectusErrorCode)` : Vérifier un code spécifique
+### Codes d'erreur Directus
 
-Pour plus de détails, consultez la [documentation complète sur la gestion des erreurs](docs/11-error-handling.md).
+Tous les codes d'erreur officiels sont disponibles via l'enum `DirectusErrorCode` :
+- `invalidCredentials`, `invalidToken`, `tokenExpired`, `invalidOtp`, `userSuspended`
+- `invalidPayload`, `invalidQuery`, `unprocessableContent`
+- `forbidden`, `routeNotFound`
+- `requestsExceeded`, `limitExceeded`
+- Et plus encore...
 
-### Dispose
-
-N'oubliez pas de libérer les ressources :
+## 🧹 Nettoyage des ressources
 
 ```dart
 // À la fin de l'utilisation
-client.dispose();
+client.dispose();  // Ferme le client HTTP
 
 // Pour WebSocket
-wsClient.disconnect();
+await wsClient.disconnect();
+await wsClient.dispose();
+
+// Effacer les tokens manuellement
+client.clearTokens();
 ```
 
-## 📚 Documentation API complète
+## 📚 Documentation
 
-La documentation complète de l'API est générée avec `dart doc` et disponible dans le dossier `/doc/api/`.
-
-Pour la générer localement :
+- **API complète** : Générée avec `dart doc` dans `/doc/api/`
+- **Documentation** : Fichiers `.md` dans `/docs/`
 
 ```bash
+# Générer la documentation
 dart doc
+
+# Ouvrir
+open doc/api/index.html
 ```
 
-Puis ouvrez `doc/api/index.html` dans votre navigateur.
-
 ## 🧪 Tests
-
-Pour exécuter les tests :
 
 ```bash
 flutter test
 ```
 
-## 📝 Exemples complets
-
-Des exemples complets sont disponibles dans le dossier `/example` :
-
-- `example_basic.dart` - CRUD basique
-- `example_filters.dart` - Filtres avancés
-- `example_relations.dart` - Deep queries
-- `example_custom_model.dart` - Modèles personnalisés
-
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-
-1. Fork le projet
-2. Créer une branche (`git checkout -b feature/AmazingFeature`)
-3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
-4. Push vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrir une Pull Request
+Les contributions sont les bienvenues ! Voir [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir [LICENSE](LICENSE).
 
-## 🔗 Liens utiles
+## 🔗 Liens
 
-- [Documentation Directus](https://docs.directus.io/)
-- [API Reference Directus](https://docs.directus.io/reference/api/)
-- [Pub.dev](https://pub.dev/packages/fcs_directus)
+- [Documentation Directus](https://directus.io/docs)
+- [API Reference Directus](https://directus.io/docs/api)
 - [GitHub](https://github.com/fracosfr/fcs_directus)
-
-## 💬 Support
-
-Pour toute question ou problème :
-
-- Ouvrir une [issue](https://github.com/fracosfr/fcs_directus/issues)
-- Consulter la [documentation Directus](https://docs.directus.io/)
+- [Pub.dev](https://pub.dev/packages/fcs_directus)
 
 ---
 

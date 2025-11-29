@@ -1,749 +1,508 @@
-# Error Handling
+# Gestion des erreurs
 
-Guide complet de la gestion des erreurs dans fcs_directus.
+Ce guide explique comment gérer les erreurs retournées par l'API Directus.
 
-## 🚨 Types d'exceptions
+## Hiérarchie des exceptions
 
-fcs_directus fournit une hiérarchie d'exceptions pour gérer tous les cas d'erreur.
+La librairie fournit une hiérarchie d'exceptions pour faciliter la gestion des erreurs :
 
-### DirectusException (Base)
-
-Exception de base pour toutes les erreurs Directus.
-
-```dart
-class DirectusException implements Exception {
-  final String message;
-  final int? statusCode;
-  final String? errorCode;
-  final Map<String, dynamic>? extensions;
-  
-  // ...
-}
+```
+DirectusException (base)
+├── DirectusAuthException       # Erreurs d'authentification
+├── DirectusValidationException # Erreurs de validation
+├── DirectusPermissionException # Erreurs de permission
+├── DirectusNotFoundException   # Ressource non trouvée
+├── DirectusRateLimitException  # Rate limiting
+├── DirectusNetworkException    # Erreurs réseau
+└── DirectusServerException     # Erreurs serveur (5xx)
 ```
 
-**Propriétés communes** :
-- `message` : Message d'erreur lisible
-- `statusCode` : Code HTTP (401, 404, 500, etc.)
-- `errorCode` : Code d'erreur Directus (INVALID_CREDENTIALS, etc.)
-- `extensions` : Données supplémentaires
+## Exception de base
 
-### DirectusAuthException
-
-Erreurs d'authentification et d'autorisation.
+Toutes les exceptions héritent de `DirectusException` :
 
 ```dart
 try {
-  await directus.auth.login(email: 'wrong@email.com', password: 'wrong');
+  await client.items('articles').readOne('invalid-id');
+} on DirectusException catch (e) {
+  print('Message: ${e.message}');
+  print('Code erreur: ${e.errorCode}');
+  print('Status HTTP: ${e.statusCode}');
+  print('Détails: ${e.extensions}');
+}
+```
+
+### Propriétés
+
+| Propriété | Type | Description |
+|-----------|------|-------------|
+| `message` | `String` | Message d'erreur lisible |
+| `errorCode` | `String?` | Code d'erreur Directus |
+| `statusCode` | `int?` | Code HTTP (401, 403, 404, etc.) |
+| `extensions` | `Map?` | Détails additionnels |
+
+## DirectusAuthException
+
+Erreurs liées à l'authentification (HTTP 401, 403) :
+
+```dart
+try {
+  await client.auth.login(email: email, password: password);
 } on DirectusAuthException catch (e) {
-  // Utiliser les helpers (recommandé)
-  if (e.isOtpRequired) {
-    print('Code OTP requis');
-  }
+  // Helpers booléens
   if (e.isInvalidCredentials) {
-    print('Email ou mot de passe incorrect');
+    showError('Email ou mot de passe incorrect');
+  } else if (e.isOtpRequired) {
+    showOtpScreen();
+  } else if (e.isInvalidOtp) {
+    showError('Code 2FA incorrect');
+  } else if (e.isUserSuspended) {
+    showError('Votre compte est suspendu');
+  } else if (e.isInvalidToken) {
+    // Token expiré ou invalide
+    await logout();
+  } else {
+    showError(e.message);
   }
-  if (e.isInvalidToken) {
-    print('Token invalide ou expiré');
-  }
-  if (e.isUserSuspended) {
-    print('Compte suspendu');
-  }
-  
-  // Ou vérifier avec DirectusErrorCode
-  if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
-    print('OTP invalide');
-  }
-  
-  print('Erreur auth: ${e.message}');
-  print('Code HTTP: ${e.statusCode}'); // 401
-  print('Code erreur: ${e.errorCode}'); // INVALID_CREDENTIALS
 }
 ```
 
-**Helpers disponibles** :
-- `isOtpRequired` : OTP requis ou invalide (2FA)
-- `isInvalidCredentials` : Email/mot de passe incorrect
-- `isInvalidToken` : Token invalide ou expiré
-- `isUserSuspended` : Utilisateur suspendu
-- `hasErrorCode(DirectusErrorCode)` : Vérifier un code spécifique
+### Helpers disponibles
 
-**Codes d'erreur courants** :
-- `DirectusErrorCode.invalidCredentials` : Credentials invalides
-- `DirectusErrorCode.invalidToken` : Token invalide
-- `DirectusErrorCode.tokenExpired` : Token expiré
-- `DirectusErrorCode.invalidOtp` : Code OTP invalide
-- `DirectusErrorCode.userSuspended` : Utilisateur suspendu
+| Helper | Description |
+|--------|-------------|
+| `isInvalidCredentials` | Email/mot de passe incorrect |
+| `isOtpRequired` | Code 2FA requis |
+| `isInvalidOtp` | Code 2FA incorrect |
+| `isInvalidToken` | Token invalide ou expiré |
+| `isUserSuspended` | Compte utilisateur suspendu |
+| `isTokenExpired` | Token spécifiquement expiré |
 
-### DirectusValidationException
+### Vérifier un code spécifique
 
-Erreurs de validation des données.
+```dart
+if (e.hasErrorCode(DirectusErrorCode.invalidOtp)) {
+  // Traitement spécifique
+}
+```
+
+## DirectusValidationException
+
+Erreurs de validation des données (HTTP 400) :
 
 ```dart
 try {
-  await directus.items('articles').createOne({
-    'title': '', // Titre requis
-    'email': 'invalid-email', // Format invalide
-  });
+  await client.items('articles').createOne({'title': ''});
 } on DirectusValidationException catch (e) {
-  print('Erreur de validation: ${e.message}');
-  print('Code erreur: ${e.errorCode}'); // INVALID_PAYLOAD, UNPROCESSABLE_CONTENT
+  print('Erreur: ${e.message}');
   
   // Erreurs par champ (si disponibles)
-  final fieldErrors = e.fieldErrors;
-  if (fieldErrors != null) {
-    for (final entry in fieldErrors.entries) {
-      print('${entry.key}: ${entry.value.join(', ')}');
-    }
+  if (e.fieldErrors != null) {
+    e.fieldErrors!.forEach((field, errors) {
+      print('$field: ${errors.join(", ")}');
+    });
+    // Exemple: title: ["Title is required", "Title must be at least 3 characters"]
   }
-  // Output:
-  // title: Le champ title est requis
-  // email: Format email invalide
 }
 ```
 
-**Codes d'erreur courants** :
-- `DirectusErrorCode.invalidPayload` : Données invalides
-- `DirectusErrorCode.invalidQuery` : Requête invalide
-- `DirectusErrorCode.unprocessableContent` : Contenu non traitable
-- `DirectusErrorCode.containsNullValues` : Valeurs NULL
-- `DirectusErrorCode.notNullViolation` : Violation NOT NULL
-- `DirectusErrorCode.valueOutOfRange` : Valeur hors limites
-- `DirectusErrorCode.valueTooLong` : Valeur trop longue
+### Propriétés spécifiques
 
-### DirectusPermissionException
+| Propriété | Type | Description |
+|-----------|------|-------------|
+| `fieldErrors` | `Map<String, List<String>>?` | Erreurs par champ |
 
-Erreurs de permission (403).
+### Affichage dans un formulaire
 
 ```dart
 try {
-  await directus.items('admin_only_collection').readMany();
-} on DirectusPermissionException catch (e) {
-  print('Permission refusée: ${e.message}');
-  print('Code: ${e.statusCode}'); // 403
-  print('Code erreur: ${e.errorCode}'); // FORBIDDEN
-}
-```
-
-### DirectusNotFoundException
-
-Ressource non trouvée (404).
-
-```dart
-try {
-  await directus.items('articles').readOne('non-existent-id');
-} on DirectusNotFoundException catch (e) {
-  print('Article non trouvé: ${e.message}');
-  print('Code: ${e.statusCode}'); // 404
-  print('Code erreur: ${e.errorCode}'); // ROUTE_NOT_FOUND
-}
-```
-
-### DirectusServerException
-
-Erreurs serveur (5xx).
-
-```dart
-try {
-  await directus.items('articles').readMany();
-} on DirectusServerException catch (e) {
-  print('Erreur serveur: ${e.message}');
-  print('Code: ${e.statusCode}'); // 500, 503
-  print('Code erreur: ${e.errorCode}'); // INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE
-}
-```
-
-**Codes d'erreur courants** :
-- `DirectusErrorCode.internal` : Erreur serveur interne
-- `DirectusErrorCode.serviceUnavailable` : Service indisponible
-- `DirectusErrorCode.outOfDate` : Version obsolète
-
-### DirectusRateLimitException
-
-Erreurs de limitation de taux (429).
-
-```dart
-try {
-  // Trop de requêtes
-  for (int i = 0; i < 1000; i++) {
-    await directus.items('articles').readMany();
-  }
-} on DirectusRateLimitException catch (e) {
-  print('Rate limit atteint: ${e.message}');
-  print('Code: ${e.statusCode}'); // 429
-  print('Code erreur: ${e.errorCode}'); // REQUESTS_EXCEEDED
-}
-```
-
-**Codes d'erreur courants** :
-- `DirectusErrorCode.requestsExceeded` : Trop de requêtes
-- `DirectusErrorCode.limitExceeded` : Limite dépassée
-- `DirectusErrorCode.emailLimitExceeded` : Limite d'emails dépassée
-
-### DirectusNetworkException
-
-Erreurs réseau (timeout, pas de connexion, etc.).
-
-```dart
-try {
-  await directus.items('articles').readMany();
-} on DirectusNetworkException catch (e) {
-  print('Erreur réseau: ${e.message}');
-  // Possible de réessayer
-}
-```
-
-### DirectusFileException
-
-Erreurs liées aux fichiers.
-
-```dart
-try {
-  await directus.files.uploadFile(
-    bytes: largefile, // Fichier trop gros
-    filename: 'large.pdf',
-  );
-} on DirectusFileException catch (e) {
-  print('Erreur fichier: ${e.message}');
-  print('Code erreur: ${e.errorCode}'); // CONTENT_TOO_LARGE
-}
-```
-
-**Codes d'erreur courants** :
-- `DirectusErrorCode.contentTooLarge` : Contenu trop large
-- `DirectusErrorCode.unsupportedMediaType` : Type média non supporté
-- `DirectusErrorCode.illegalAssetTransformation` : Transformation d'asset illégale
-
-### DirectusDatabaseException
-
-Erreurs de base de données.
-
-```dart
-try {
-  await directus.items('articles').createOne({
-    'title': 'Duplicate',
-    'slug': 'existing-slug', // Slug unique déjà existant
-  });
-} on DirectusDatabaseException catch (e) {
-  print('Erreur BD: ${e.message}');
-  print('Collection: ${e.collection}');
-  print('Champ: ${e.field}');
-  print('Code erreur: ${e.errorCode}'); // RECORD_NOT_UNIQUE
-}
-```
-
-**Codes d'erreur courants** :
-- `DirectusErrorCode.invalidForeignKey` : Clé étrangère invalide
-- `DirectusErrorCode.recordNotUnique` : Enregistrement non unique
-
-## 📋 DirectusErrorCode - Liste complète
-
-### Authentification
-```dart
-DirectusErrorCode.invalidCredentials  // Credentials invalides
-DirectusErrorCode.invalidToken        // Token invalide
-DirectusErrorCode.tokenExpired        // Token expiré
-DirectusErrorCode.invalidOtp          // OTP invalide (2FA)
-DirectusErrorCode.userSuspended       // Utilisateur suspendu
-```
-
-### Validation
-```dart
-DirectusErrorCode.invalidPayload      // Payload invalide
-DirectusErrorCode.invalidQuery        // Query invalide
-DirectusErrorCode.unprocessableContent // Contenu non traitable
-DirectusErrorCode.containsNullValues  // Valeurs NULL
-DirectusErrorCode.notNullViolation    // Violation NOT NULL
-DirectusErrorCode.valueOutOfRange     // Valeur hors limites
-DirectusErrorCode.valueTooLong        // Valeur trop longue
-```
-
-### Permissions et ressources
-```dart
-DirectusErrorCode.forbidden           // Accès interdit
-DirectusErrorCode.routeNotFound       // Route non trouvée
-```
-
-### Serveur
-```dart
-DirectusErrorCode.internal            // Erreur serveur interne
-DirectusErrorCode.serviceUnavailable  // Service indisponible
-DirectusErrorCode.outOfDate           // Version obsolète
-```
-
-### Rate limiting
-```dart
-DirectusErrorCode.requestsExceeded    // Trop de requêtes
-DirectusErrorCode.limitExceeded       // Limite dépassée
-DirectusErrorCode.emailLimitExceeded  // Limite d'emails dépassée
-```
-
-### Base de données
-```dart
-DirectusErrorCode.invalidForeignKey   // Clé étrangère invalide
-DirectusErrorCode.recordNotUnique     // Enregistrement non unique
-```
-
-### Fichiers
-```dart
-DirectusErrorCode.contentTooLarge         // Contenu trop large
-DirectusErrorCode.unsupportedMediaType    // Type média non supporté
-DirectusErrorCode.illegalAssetTransformation // Transformation illégale
-DirectusErrorCode.rangeNotSatisfiable     // Plage non satisfaisable
-```
-
-### Configuration
-```dart
-DirectusErrorCode.invalidIp              // IP invalide
-DirectusErrorCode.invalidProvider        // Provider invalide
-DirectusErrorCode.invalidProviderConfig  // Config provider invalide
-DirectusErrorCode.methodNotAllowed       // Méthode non autorisée
-```
-
-## 🎯 Gestion des erreurs
-
-### Pattern de base
-
-```dart
-try {
-  final result = await directus.items('articles').readMany();
-  // Traiter le résultat
-} on DirectusAuthException catch (e) {
-  // Erreur d'authentification
-  if (e.isInvalidToken) {
-    print('Token expiré, reconnexion nécessaire');
-    navigateToLogin();
-  } else if (e.isInvalidCredentials) {
-    print('Identifiants incorrects');
-  }
-} on DirectusPermissionException catch (e) {
-  // Permission refusée
-  print('Accès non autorisé: ${e.message}');
+  await saveArticle(article);
 } on DirectusValidationException catch (e) {
-  // Erreur de validation
-  print('Validation échouée:');
-  e.fieldErrors?.forEach((field, errors) {
-    print('  $field: ${errors.join(', ')}');
-  });
-} on DirectusNotFoundException catch (e) {
-  // Ressource non trouvée
-  print('Ressource introuvable: ${e.message}');
-} on DirectusRateLimitException catch (e) {
-  // Rate limit
-  print('Trop de requêtes: ${e.message}');
-} on DirectusServerException catch (e) {
-  // Erreur serveur
-  print('Erreur serveur: ${e.message}');
-} on DirectusNetworkException catch (e) {
-  // Erreur réseau
-  print('Erreur réseau: ${e.message}');
-  showRetryDialog();
-} on DirectusException catch (e) {
-  // Autres erreurs Directus
-  print('Erreur Directus: ${e.message}');
-  print('Code: ${e.errorCode}');
-} catch (e) {
-  // Erreurs inattendues
-  print('Erreur inattendue: $e');
+  if (e.fieldErrors != null) {
+    e.fieldErrors!.forEach((field, errors) {
+      // Afficher l'erreur sous le champ correspondant
+      formKey.currentState?.fields[field]?.invalidate(errors.first);
+    });
+  }
 }
 ```
 
-### Gestion simplifiée
+## DirectusPermissionException
+
+Accès refusé (HTTP 403) :
 
 ```dart
-Future<List<Article>?> getArticles() async {
+try {
+  await client.items('secret_data').readMany();
+} on DirectusPermissionException catch (e) {
+  print('Accès refusé: ${e.message}');
+  // Rediriger ou afficher un message
+}
+```
+
+## DirectusNotFoundException
+
+Ressource non trouvée (HTTP 404) :
+
+```dart
+try {
+  final article = await client.items('articles').readOne('non-existent-id');
+} on DirectusNotFoundException catch (e) {
+  print('Article non trouvé');
+  // Afficher une page 404 ou rediriger
+}
+```
+
+## DirectusRateLimitException
+
+Limite de requêtes atteinte (HTTP 429) :
+
+```dart
+try {
+  await client.items('articles').readMany();
+} on DirectusRateLimitException catch (e) {
+  print('Trop de requêtes');
+  
+  // Attendre avant de réessayer
+  await Future.delayed(Duration(seconds: 5));
+  // Réessayer...
+}
+```
+
+## DirectusNetworkException
+
+Erreurs réseau (pas de connexion, timeout, etc.) :
+
+```dart
+try {
+  await client.items('articles').readMany();
+} on DirectusNetworkException catch (e) {
+  print('Erreur réseau: ${e.message}');
+  
+  // Afficher un message hors ligne
+  showOfflineMessage();
+}
+```
+
+## DirectusServerException
+
+Erreurs serveur (HTTP 5xx) :
+
+```dart
+try {
+  await client.items('articles').readMany();
+} on DirectusServerException catch (e) {
+  print('Erreur serveur: ${e.message}');
+  print('Status: ${e.statusCode}');
+  
+  // Logger et notifier l'équipe technique
+  logError(e);
+}
+```
+
+## Codes d'erreur Directus
+
+L'enum `DirectusErrorCode` contient tous les codes d'erreur officiels :
+
+```dart
+enum DirectusErrorCode {
+  // Authentification
+  invalidCredentials,
+  invalidToken,
+  tokenExpired,
+  invalidOtp,
+  userSuspended,
+  
+  // Validation
+  invalidPayload,
+  invalidQuery,
+  unprocessableContent,
+  failedValidation,
+  
+  // Permission
+  forbidden,
+  
+  // Ressources
+  routeNotFound,
+  recordNotUnique,
+  
+  // Rate limiting
+  requestsExceeded,
+  limitExceeded,
+  
+  // Serveur
+  internalServerError,
+  serviceUnavailable,
+  
+  // Contenu
+  illegalAssetTransformation,
+  contentTooLarge,
+  unsupportedMediaType,
+  rangeNotSatisfiable,
+  
+  // Autres
+  methodNotAllowed,
+  notAcceptable,
+  unknown,
+}
+```
+
+### Convertir depuis une string
+
+```dart
+final code = DirectusErrorCode.fromString('INVALID_CREDENTIALS');
+// DirectusErrorCode.invalidCredentials
+```
+
+## Pattern de gestion complète
+
+### Wrapper try-catch
+
+```dart
+Future<T?> safeCall<T>(Future<T> Function() action) async {
   try {
-    final result = await directus.items('articles').readMany();
-    return result.data?.map((d) => Article(d)).toList();
+    return await action();
+  } on DirectusNotFoundException catch (e) {
+    showError('Ressource non trouvée');
+    return null;
+  } on DirectusAuthException catch (e) {
+    if (e.isInvalidToken) {
+      await handleTokenExpired();
+    } else {
+      showError(e.message);
+    }
+    return null;
+  } on DirectusValidationException catch (e) {
+    showValidationErrors(e.fieldErrors);
+    return null;
+  } on DirectusPermissionException catch (e) {
+    showError('Vous n\'avez pas les permissions nécessaires');
+    return null;
+  } on DirectusRateLimitException catch (e) {
+    showError('Trop de requêtes, veuillez patienter');
+    return null;
+  } on DirectusNetworkException catch (e) {
+    showError('Erreur de connexion');
+    return null;
+  } on DirectusServerException catch (e) {
+    showError('Erreur serveur, veuillez réessayer');
+    logError(e);
+    return null;
   } on DirectusException catch (e) {
-    print('Erreur lors du chargement: ${e.message}');
+    showError(e.message);
     return null;
   }
 }
-```
-
-## 📝 Erreurs de validation
-
-### Structure des erreurs de champ
-
-```dart
-try {
-  await directus.users.createUser({
-    'email': 'invalid',
-    'password': '123', // Trop court
-  });
-} on DirectusValidationException catch (e) {
-  print('Validation échouée:');
-  
-  // Map<String, List<String>>?
-  final fieldErrors = e.fieldErrors;
-  
-  if (fieldErrors != null) {
-    // Exemple:
-    // {
-    //   'email': ['Email invalide'],
-    //   'password': ['Minimum 8 caractères'],
-    // }
-    
-    for (final entry in fieldErrors.entries) {
-      print('${entry.key}:');
-      for (final error in entry.value) {
-        print('  - $error');
-      }
-    }
-  }
-}
-```
-
-### Afficher dans un formulaire Flutter
-
-```dart
-class ArticleForm extends StatefulWidget {
-  @override
-  _ArticleFormState createState() => _ArticleFormState();
-}
-
-class _ArticleFormState extends State<ArticleForm> {
-  final _formKey = GlobalKey<FormState>();
-  Map<String, String> _fieldErrors = {};
-  
-  Future<void> _submit() async {
-    setState(() => _fieldErrors.clear());
-    
-    try {
-      await directus.items('articles').createOne({
-        'title': _titleController.text,
-        'content': _contentController.text,
-      });
-      
-      Navigator.pop(context);
-    } on DirectusValidationException catch (e) {
-      setState(() {
-        // Convertir List<String> en String
-        final errors = e.fieldErrors;
-        if (errors != null) {
-          _fieldErrors = errors.map(
-            (key, value) => MapEntry(key, value.join(', ')),
-          );
-        }
-      });
-    }
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          TextFormField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: 'Titre',
-              errorText: _fieldErrors['title'],
-            ),
-          ),
-          TextFormField(
-            controller: _contentController,
-            decoration: InputDecoration(
-              labelText: 'Contenu',
-              errorText: _fieldErrors['content'],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: _submit,
-            child: Text('Sauvegarder'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-```
-
-## 🔄 Retry et fallback
-
-### Retry automatique
-
-```dart
-Future<T?> retryOperation<T>({
-  required Future<T> Function() operation,
-  int maxAttempts = 3,
-  Duration delay = const Duration(seconds: 2),
-}) async {
-  for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await operation();
-    } on DirectusNetworkException catch (e) {
-      if (attempt == maxAttempts) {
-        print('Échec après $maxAttempts tentatives');
-        rethrow;
-      }
-      print('Tentative $attempt échouée, réessai dans ${delay.inSeconds}s');
-      await Future.delayed(delay);
-    }
-  }
-  return null;
-}
 
 // Utilisation
-final articles = await retryOperation(
-  operation: () => directus.items('articles').readMany(),
+final article = await safeCall(() => 
+  client.items('articles').readOne('123')
 );
 ```
 
-### Fallback sur cache
+### Gestion centralisée avec callbacks
 
 ```dart
-class ArticleService {
-  List<Article>? _cachedArticles;
+class DirectusErrorHandler {
+  void Function(String)? onError;
+  void Function()? onAuthError;
+  void Function()? onNetworkError;
   
-  Future<List<Article>> getArticles({bool forceRefresh = false}) async {
-    if (!forceRefresh && _cachedArticles != null) {
-      return _cachedArticles!;
-    }
-    
+  Future<T?> handle<T>(Future<T> Function() action) async {
     try {
-      final result = await directus.items('articles').readMany();
-      _cachedArticles = result.data?.map((d) => Article(d)).toList();
-      return _cachedArticles!;
-    } on DirectusException catch (e) {
-      print('Erreur: ${e.message}');
-      
-      // Retourner le cache si disponible
-      if (_cachedArticles != null) {
-        print('Utilisation du cache');
-        return _cachedArticles!;
-      }
-      
-      rethrow;
-    }
-  }
-}
-```
-
-## 🎨 Exemples pratiques
-
-### Service avec gestion d'erreurs complète
-
-```dart
-class ProductService {
-  final DirectusClient directus;
-  
-  ProductService(this.directus);
-  
-  Future<Result<List<Product>>> getProducts() async {
-    try {
-      final result = await directus.items('products').readMany(
-        query: QueryParameters(
-          filter: Filter.field('status').equals('published'),
-        ),
-      );
-      
-      final products = result.data
-          ?.map((d) => Product(d))
-          .toList() ?? [];
-      
-      return Result.success(products);
+      return await action();
     } on DirectusAuthException catch (e) {
-      return Result.failure('Non authentifié. Veuillez vous reconnecter.');
-    } on DirectusNetworkException catch (e) {
-      return Result.failure('Erreur réseau. Vérifiez votre connexion.');
-    } on DirectusException catch (e) {
-      return Result.failure(e.message);
-    } catch (e) {
-      return Result.failure('Une erreur inattendue s\'est produite');
-    }
-  }
-}
-
-// Classe Result
-class Result<T> {
-  final T? data;
-  final String? error;
-  
-  bool get isSuccess => error == null;
-  bool get isFailure => error != null;
-  
-  Result.success(this.data) : error = null;
-  Result.failure(this.error) : data = null;
-}
-
-// Utilisation
-final result = await productService.getProducts();
-
-if (result.isSuccess) {
-  showProducts(result.data!);
-} else {
-  showError(result.error!);
-}
-```
-
-### Gestion centralisée avec Provider
-
-```dart
-class ErrorHandler {
-  void handleError(BuildContext context, dynamic error) {
-    String message;
-    
-    if (error is DirectusAuthException) {
-      message = 'Erreur d\'authentification. Veuillez vous reconnecter.';
-      Navigator.pushNamed(context, '/login');
-    } else if (error is DirectusValidationException) {
-      message = 'Données invalides:\n';
-      error.fieldErrors.forEach((field, errors) {
-        message += '• $field: ${errors.join(', ')}\n';
-      });
-    } else if (error is DirectusNotFoundException) {
-      message = 'Ressource introuvable';
-    } else if (error is DirectusNetworkException) {
-      message = 'Erreur réseau. Vérifiez votre connexion.';
-    } else if (error is DirectusException) {
-      message = error.message;
-    } else {
-      message = 'Une erreur inattendue s\'est produite';
-    }
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-}
-
-// Utilisation
-try {
-  await directus.items('articles').createOne(item: {...});
-} catch (e) {
-  errorHandler.handleError(context, e);
-}
-```
-
-### Logging des erreurs
-
-```dart
-class ErrorLogger {
-  void log(dynamic error, [StackTrace? stackTrace]) {
-    if (error is DirectusException) {
-      print('=== Directus Error ===');
-      print('Type: ${error.runtimeType}');
-      print('Message: ${error.message}');
-      print('Code: ${error.code}');
-      if (error.errors != null) {
-        print('Errors: ${error.errors}');
+      if (e.isInvalidToken) {
+        onAuthError?.call();
+      } else {
+        onError?.call(e.message);
       }
-    } else {
-      print('=== Unexpected Error ===');
-      print('Error: $error');
+    } on DirectusNetworkException {
+      onNetworkError?.call();
+    } on DirectusException catch (e) {
+      onError?.call(e.message);
     }
-    
-    if (stackTrace != null) {
-      print('Stack trace:');
-      print(stackTrace);
-    }
-    
-    // Envoyer à un service de monitoring (ex: Sentry)
-    // Sentry.captureException(error, stackTrace: stackTrace);
+    return null;
   }
+}
+
+// Configuration
+final errorHandler = DirectusErrorHandler()
+  ..onError = (msg) => showSnackBar(msg)
+  ..onAuthError = () => navigateToLogin()
+  ..onNetworkError = () => showOfflineBanner();
+
+// Utilisation
+final articles = await errorHandler.handle(() => 
+  client.items('articles').readMany()
+);
+```
+
+## Callback global d'erreur d'authentification
+
+Configurez un callback pour gérer les erreurs d'auth de manière globale :
+
+```dart
+final client = DirectusClient(
+  DirectusConfig(
+    baseUrl: 'https://your-directus.com',
+    onAuthError: (exception) async {
+      // Appelé pour toute erreur d'authentification
+      // (refresh échoué, token invalide, etc.)
+      
+      if (exception.hasErrorCode(DirectusErrorCode.tokenExpired)) {
+        // Token expiré et refresh impossible
+        await clearSession();
+        navigateToLogin();
+      } else if (exception.isUserSuspended) {
+        showSuspendedDialog();
+      }
+    },
+  ),
+);
+```
+
+## Retry automatique
+
+Pour les erreurs temporaires :
+
+```dart
+Future<T> withRetry<T>(
+  Future<T> Function() action, {
+  int maxAttempts = 3,
+  Duration delay = const Duration(seconds: 1),
+}) async {
+  int attempts = 0;
+  
+  while (true) {
+    try {
+      return await action();
+    } on DirectusRateLimitException {
+      attempts++;
+      if (attempts >= maxAttempts) rethrow;
+      await Future.delayed(delay * attempts);
+    } on DirectusNetworkException {
+      attempts++;
+      if (attempts >= maxAttempts) rethrow;
+      await Future.delayed(delay * attempts);
+    } on DirectusServerException catch (e) {
+      if (e.statusCode == 503) {
+        // Service unavailable - retry
+        attempts++;
+        if (attempts >= maxAttempts) rethrow;
+        await Future.delayed(delay * attempts);
+      } else {
+        rethrow;
+      }
+    }
+  }
+}
+
+// Utilisation
+final articles = await withRetry(() => 
+  client.items('articles').readMany()
+);
+```
+
+## Logging des erreurs
+
+```dart
+void logDirectusError(DirectusException e) {
+  final log = {
+    'type': e.runtimeType.toString(),
+    'message': e.message,
+    'errorCode': e.errorCode,
+    'statusCode': e.statusCode,
+    'timestamp': DateTime.now().toIso8601String(),
+  };
+  
+  // Envoyer à votre service de logging
+  logger.error(log);
+  
+  // Ou Firebase Crashlytics
+  FirebaseCrashlytics.instance.recordError(
+    e,
+    StackTrace.current,
+    reason: 'Directus API Error',
+  );
 }
 ```
 
-## 💡 Bonnes pratiques
+## Bonnes pratiques
 
 ### 1. Toujours gérer les erreurs
 
-❌ **À éviter** :
 ```dart
-final articles = await directus.items('articles').readMany();
-// Crash si erreur
-```
+// ❌ Pas de gestion d'erreur
+final article = await client.items('articles').readOne('123');
 
-✅ **Bon** :
-```dart
+// ✅ Avec gestion
 try {
-  final articles = await directus.items('articles').readMany();
+  final article = await client.items('articles').readOne('123');
 } on DirectusException catch (e) {
-  print('Erreur: ${e.message}');
+  handleError(e);
 }
 ```
 
-### 2. Être spécifique dans les catches
+### 2. Être spécifique
 
-✅ **Bon** :
 ```dart
+// ❌ Catch trop générique
 try {
-  // ...
+  await action();
+} catch (e) {
+  print(e);
+}
+
+// ✅ Catch spécifique
+try {
+  await action();
+} on DirectusNotFoundException {
+  // Traitement 404
 } on DirectusAuthException catch (e) {
-  // Rediriger vers login
-} on DirectusValidationException catch (e) {
-  // Afficher erreurs de validation
+  // Traitement auth
 } on DirectusException catch (e) {
   // Autres erreurs Directus
 }
 ```
 
-❌ **À éviter** :
-```dart
-try {
-  // ...
-} catch (e) {
-  // Trop général
-}
-```
-
-### 3. Fournir du feedback utilisateur
+### 3. Messages utilisateur clairs
 
 ```dart
-try {
-  await directus.items('articles').createOne(item: {...});
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text('✅ Article créé')),
-  );
-} on DirectusException catch (e) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('❌ ${e.message}'),
-      backgroundColor: Colors.red,
-    ),
-  );
-}
-```
-
-### 4. Logger les erreurs
-
-```dart
-try {
-  // ...
-} on DirectusException catch (e, stackTrace) {
-  errorLogger.log(e, stackTrace);
-  rethrow;
-}
-```
-
-### 5. Gérer les timeout
-
-```dart
-final directus = DirectusClient(
-  DirectusConfig(
-    baseUrl: 'https://your-directus-instance.com',
-    timeout: Duration(seconds: 30),
-  ),
-);
-
-try {
-  await directus.items('articles').readMany();
-} on DirectusNetworkException catch (e) {
-  if (e.message.contains('timeout')) {
-    print('La requête a pris trop de temps');
+String getUserMessage(DirectusException e) {
+  if (e is DirectusNotFoundException) {
+    return 'L\'élément demandé n\'existe pas';
   }
+  if (e is DirectusAuthException) {
+    if (e.isInvalidCredentials) return 'Identifiants incorrects';
+    if (e.isUserSuspended) return 'Compte suspendu';
+    return 'Problème d\'authentification';
+  }
+  if (e is DirectusValidationException) {
+    return 'Données invalides';
+  }
+  if (e is DirectusPermissionException) {
+    return 'Accès refusé';
+  }
+  if (e is DirectusNetworkException) {
+    return 'Problème de connexion';
+  }
+  return 'Une erreur est survenue';
 }
 ```
 
-## 🔗 Prochaines étapes
+### 4. Logger pour le debug
 
-- [**Advanced**](12-advanced.md) - Fonctionnalités avancées
-- [**Services**](08-services.md) - Services disponibles
+En développement, loggez les erreurs complètes :
 
-## 📚 Référence API
-
-- [DirectusException](api-reference/exceptions.md)
-- [DirectusAuthException](api-reference/exceptions.md#authexception)
-- [DirectusValidationException](api-reference/exceptions.md#validationexception)
+```dart
+if (kDebugMode) {
+  print('=== Directus Error ===');
+  print('Type: ${e.runtimeType}');
+  print('Message: ${e.message}');
+  print('Code: ${e.errorCode}');
+  print('Status: ${e.statusCode}');
+  print('Extensions: ${e.extensions}');
+  print('=====================');
+}
+```
