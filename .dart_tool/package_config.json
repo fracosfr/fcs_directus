@@ -357,8 +357,8 @@
     }
   ],
   "generator": "pub",
-  "generatorVersion": "3.8.1",
-  "flutterRoot": "file:///home/do/snap/flutter/common/flutter",
-  "flutterVersion": "3.32.2",
+  "generatorVersion": "3.11.0-93.1.beta",
+  "flutterRoot": "file:///code/flutter/flutter",
+  "flutterVersion": "3.39.0-0.1.pre",
   "pubCache": "file:///home/do/.pub-cache"
 }
