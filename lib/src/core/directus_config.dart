@@ -62,6 +62,22 @@ class DirectusConfig {
   /// ```
   final Future<void> Function(DirectusAuthException exception)? onAuthError;
 
+  /// User-Agent personnalisé à ajouter aux requêtes HTTP
+  ///
+  /// Ce User-Agent est ajouté au User-Agent par défaut de la librairie.
+  /// Le format final sera : `fcs_directus/<version> <customUserAgent>`
+  ///
+  /// Exemple :
+  /// ```dart
+  /// DirectusConfig(
+  ///   baseUrl: 'https://directus.example.com',
+  ///   customUserAgent: 'MyApp/1.0.0',
+  /// )
+  /// ```
+  ///
+  /// Résultat : `fcs_directus/1.0.0 MyApp/1.0.0`
+  final String? customUserAgent;
+
   /// Crée une nouvelle configuration Directus.
   ///
   /// [baseUrl] est l'URL de base de votre instance Directus (ex: 'https://directus.example.com')
@@ -70,6 +86,7 @@ class DirectusConfig {
   /// [enableLogging] active les logs de debug (défaut: false)
   /// [onTokenRefreshed] callback pour notifier du refresh automatique des tokens
   /// [onAuthError] callback pour notifier des erreurs d'authentification
+  /// [customUserAgent] User-Agent personnalisé à ajouter aux requêtes
   DirectusConfig({
     required this.baseUrl,
     this.timeout = const Duration(seconds: 30),
@@ -77,6 +94,7 @@ class DirectusConfig {
     this.enableLogging = false,
     this.onTokenRefreshed,
     this.onAuthError,
+    this.customUserAgent,
   }) {
     // Validation de l'URL
     if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
@@ -93,6 +111,7 @@ class DirectusConfig {
     Future<void> Function(String accessToken, String? refreshToken)?
     onTokenRefreshed,
     Future<void> Function(DirectusAuthException exception)? onAuthError,
+    String? customUserAgent,
   }) {
     return DirectusConfig(
       baseUrl: baseUrl ?? this.baseUrl,
@@ -101,7 +120,23 @@ class DirectusConfig {
       enableLogging: enableLogging ?? this.enableLogging,
       onTokenRefreshed: onTokenRefreshed ?? this.onTokenRefreshed,
       onAuthError: onAuthError ?? this.onAuthError,
+      customUserAgent: customUserAgent ?? this.customUserAgent,
     );
+  }
+
+  /// Version de la librairie fcs_directus
+  static const String libraryVersion = '1.0.0';
+
+  /// Génère le User-Agent complet pour les requêtes HTTP
+  ///
+  /// Le format est : `fcs_directus/<version>` ou `fcs_directus/<version> <customUserAgent>`
+  /// si un customUserAgent est défini.
+  String get userAgent {
+    final baseUserAgent = 'fcs_directus/$libraryVersion';
+    if (customUserAgent != null && customUserAgent!.isNotEmpty) {
+      return '$baseUserAgent $customUserAgent';
+    }
+    return baseUserAgent;
   }
 
   @override

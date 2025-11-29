@@ -34,6 +34,7 @@ class DirectusHttpClient {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            'User-Agent': _config.userAgent,
             ..._config.headers ?? {},
           },
         ),
@@ -217,6 +218,7 @@ class DirectusHttpClient {
       final refreshHeaders = <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'User-Agent': _config.userAgent,
       };
 
       // Ajouter les headers personnalisés de la configuration s'ils existent
