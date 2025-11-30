@@ -1,5 +1,5 @@
 import 'package:fcs_directus/fcs_directus.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 enum TestStatus { draft, published, archived }
 

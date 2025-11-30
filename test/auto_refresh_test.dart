@@ -1,5 +1,5 @@
 // ignore_for_file: avoid_print
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:fcs_directus/fcs_directus.dart';
 
 /// Tests pour le refresh automatique des tokens

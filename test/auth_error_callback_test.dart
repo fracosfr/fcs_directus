@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 import 'package:fcs_directus/fcs_directus.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('DirectusConfig onAuthError callback', () {
