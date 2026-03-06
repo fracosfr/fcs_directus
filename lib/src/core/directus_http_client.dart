@@ -85,12 +85,26 @@ class DirectusHttpClient {
           }
 
           // Convertir l'erreur Dio en exception Directus
-          final directusError = _handleError(error);
+          final directusError = handleDioError(error);
 
           // Vérifier si c'est une erreur TOKEN_EXPIRED
           if (directusError is DirectusAuthException &&
               directusError.errorCode == 'TOKEN_EXPIRED' &&
               _refreshToken != null) {
+            // Ne pas auto-refresh pour les endpoints d'authentification
+            // (/auth/refresh, /auth/login, /auth/logout) car ils gèrent
+            // eux-mêmes leurs tokens. Sans cette garde, l'intercepteur
+            // consomme le refresh token via _performRefresh(), puis retente
+            // la requête originale /auth/refresh avec l'ancien token
+            // (toujours dans le body) → INVALID_CREDENTIALS.
+            final requestPath = error.requestOptions.path;
+            if (requestPath.startsWith('/auth/')) {
+              _logger.info(
+                'Skipping auto-refresh for auth endpoint: $requestPath',
+              );
+              return handler.next(error);
+            }
+
             // Créer un identifiant unique pour cette requête
             final requestId =
                 '${error.requestOptions.method}_${error.requestOptions.path}';
@@ -373,7 +387,7 @@ class DirectusHttpClient {
         options: options,
       );
     } on DioException catch (e) {
-      throw _handleError(e);
+      throw handleDioError(e);
     }
   }
 
@@ -401,7 +415,7 @@ class DirectusHttpClient {
       }
       return result;
     } on DioException catch (e) {
-      throw _handleError(e);
+      throw handleDioError(e);
     }
   }
 
@@ -429,7 +443,7 @@ class DirectusHttpClient {
       }
       return result;
     } on DioException catch (e) {
-      throw _handleError(e);
+      throw handleDioError(e);
     }
   }
 
@@ -457,12 +471,16 @@ class DirectusHttpClient {
       }
       return result;
     } on DioException catch (e) {
-      throw _handleError(e);
+      throw handleDioError(e);
     }
   }
 
   /// Gère les erreurs Dio et les convertit en exceptions Directus
-  DirectusException _handleError(DioException error) {
+  ///
+  /// Cette méthode est publique pour permettre aux services (ex: AuthService)
+  /// d'utiliser un Dio temporaire tout en convertissant les erreurs de la même
+  /// façon que le client principal.
+  DirectusException handleDioError(DioException error) {
     final response = error.response;
     final statusCode = response?.statusCode;
     final data = response?.data;

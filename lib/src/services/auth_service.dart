@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import '../core/directus_http_client.dart';
+import '../exceptions/directus_exception.dart';
 
 /// Mode d'authentification pour les réponses Directus.
 ///
@@ -206,13 +208,48 @@ class AuthService {
       throw Exception('Aucun refresh token disponible');
     }
 
-    final response = await _httpClient.post(
-      '/auth/refresh',
-      data: {'refresh_token': token, 'mode': mode.toApiValue()},
+    // Utiliser un Dio temporaire SANS intercepteurs pour éviter que
+    // l'intercepteur auto-refresh ne consomme le refresh token avant nous.
+    // C'est le même pattern que _performRefresh() dans DirectusHttpClient.
+    final refreshHeaders = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (_httpClient.config.userAgent != null) {
+      refreshHeaders['User-Agent'] = _httpClient.config.userAgent!;
+    }
+    if (_httpClient.config.headers != null) {
+      refreshHeaders.addAll(_httpClient.config.headers!);
+    }
+
+    final tempDio = Dio(
+      BaseOptions(
+        baseUrl: _httpClient.config.baseUrl,
+        connectTimeout: _httpClient.config.timeout,
+        receiveTimeout: _httpClient.config.timeout,
+        headers: refreshHeaders,
+      ),
     );
 
+    final Response<Map<String, dynamic>> response;
+    try {
+      response = await tempDio.post<Map<String, dynamic>>(
+        '/auth/refresh',
+        data: {'refresh_token': token, 'mode': mode.toApiValue()},
+      );
+    } on DioException catch (e) {
+      throw _httpClient.handleDioError(e);
+    }
+
+    if (response.data == null || !response.data!.containsKey('data')) {
+      throw DirectusAuthException(
+        message: 'Invalid refresh response',
+        errorCode: 'INVALID_REFRESH_RESPONSE',
+      );
+    }
+
     final authResponse = AuthResponse.fromJson(
-      response.data['data'] as Map<String, dynamic>,
+      response.data!['data'] as Map<String, dynamic>,
     );
 
     // Mettre à jour les tokens
@@ -251,8 +288,8 @@ class AuthService {
       }
     }
 
-    // Supprimer les tokens localement
-    _httpClient.setTokens();
+    // Supprimer les tokens localement et nettoyer les états internes
+    _httpClient.clearTokens();
   }
 
   /// Définit manuellement les tokens d'authentification
