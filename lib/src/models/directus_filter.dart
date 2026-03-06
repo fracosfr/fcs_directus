@@ -221,16 +221,23 @@ class OperatorFilter extends Filter {
 
   OperatorFilter(this._fieldName, this._operator, this._value);
 
+  dynamic get _serializedValue =>
+      _value is DateTime ? (_value as DateTime).toIso8601String() : _value;
+
   @override
   Map<String, dynamic> toJson() {
     // Si le nom du champ contient un point (notation imbriquée),
     // on crée une structure JSON imbriquée pour les filtres sur relations
     if (_fieldName.contains('.')) {
-      return _buildNestedFilter(_fieldName.split('.'), _operator, _value);
+      return _buildNestedFilter(
+        _fieldName.split('.'),
+        _operator,
+        _serializedValue,
+      );
     }
 
     return {
-      _fieldName: {_operator: _value},
+      _fieldName: {_operator: _serializedValue},
     };
   }
 
