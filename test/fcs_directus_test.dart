@@ -102,12 +102,7 @@ void main() {
 
       final params = query.toQueryParameters();
 
-      expect(
-        params['filter'],
-        equals({
-          'status': {'_eq': 'published'},
-        }),
-      );
+      expect(params['filter'], equals('{"status":{"_eq":"published"}}'));
       expect(params['fields'], equals('id,title,content'));
       expect(params['sort'], equals('-date_created,title'));
       expect(params['limit'], equals(10));

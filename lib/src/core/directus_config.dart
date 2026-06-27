@@ -76,12 +76,15 @@ class DirectusConfig {
   /// ```
   final String? customUserAgent;
 
+  final bool logWithData;
+
   /// Crée une nouvelle configuration Directus.
   ///
   /// [baseUrl] est l'URL de base de votre instance Directus (ex: 'https://directus.example.com')
   /// [timeout] définit le timeout des requêtes (défaut: 30 secondes)
   /// [headers] permet d'ajouter des headers personnalisés
   /// [enableLogging] active les logs de debug (défaut: false)
+  /// [logWithData] inclut les données des requêtes/réponses dans les logs (défaut: false)
   /// [onTokenRefreshed] callback pour notifier du refresh automatique des tokens
   /// [onAuthError] callback pour notifier des erreurs d'authentification
   /// [customUserAgent] User-Agent personnalisé à ajouter aux requêtes
@@ -90,6 +93,7 @@ class DirectusConfig {
     this.timeout = const Duration(seconds: 30),
     this.headers,
     this.enableLogging = false,
+    this.logWithData = false,
     this.onTokenRefreshed,
     this.onAuthError,
     this.customUserAgent,
@@ -110,11 +114,13 @@ class DirectusConfig {
     onTokenRefreshed,
     Future<void> Function(DirectusAuthException exception)? onAuthError,
     String? customUserAgent,
+    bool? logWithData,
   }) {
     return DirectusConfig(
       baseUrl: baseUrl ?? this.baseUrl,
       timeout: timeout ?? this.timeout,
       headers: headers ?? this.headers,
+      logWithData: logWithData ?? this.logWithData,
       enableLogging: enableLogging ?? this.enableLogging,
       onTokenRefreshed: onTokenRefreshed ?? this.onTokenRefreshed,
       onAuthError: onAuthError ?? this.onAuthError,

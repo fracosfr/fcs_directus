@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
 import '../models/directus_deep.dart';
@@ -60,11 +62,11 @@ class QueryParameters {
     final params = <String, dynamic>{};
 
     if (filter != null) {
-      // Convertir Filter en Map si nécessaire
+      // Convertir Filter en JSON string pour que Dio ne l'encode pas en bracket notation
       if (filter is Filter) {
-        params['filter'] = (filter as Filter).toJson();
+        params['filter'] = jsonEncode((filter as Filter).toJson());
       } else if (filter is Map<String, dynamic>) {
-        params['filter'] = filter;
+        params['filter'] = jsonEncode(filter);
       }
     }
     if (fields != null && fields!.isNotEmpty) {

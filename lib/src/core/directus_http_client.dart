@@ -8,6 +8,8 @@ import '../exceptions/directus_exception.dart';
 /// Cette classe encapsule Dio et gère les erreurs, l'authentification
 /// et le formatage des requêtes/réponses.
 class DirectusHttpClient {
+  static bool _rootLoggingConfigured = false;
+
   final DirectusConfig _config;
   final Dio _dio;
   final Logger _logger;
@@ -43,7 +45,8 @@ class DirectusHttpClient {
       _logger = Logger('DirectusHttpClient') {
     _setupInterceptors();
 
-    if (_config.enableLogging) {
+    if (_config.enableLogging && !_rootLoggingConfigured) {
+      _rootLoggingConfigured = true;
       Logger.root.level = Level.ALL;
       Logger.root.onRecord.listen((record) {
         // ignore: avoid_print
@@ -74,7 +77,7 @@ class DirectusHttpClient {
         onResponse: (response, handler) {
           if (_config.enableLogging) {
             _logger.info(
-              '← ${response.statusCode} ${response.requestOptions.uri}',
+              '← ${response.statusCode} ${response.requestOptions.uri}${response.data != null && _config.logWithData ? ' - Data: ${response.data}' : ''}',
             );
           }
           return handler.next(response);

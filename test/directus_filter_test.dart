@@ -330,9 +330,7 @@ void main() {
         );
 
         final query = params.toQueryParameters();
-        expect(query['filter'], {
-          'status': {'_eq': 'active'},
-        });
+        expect(query['filter'], equals('{"status":{"_eq":"active"}}'));
         expect(query['limit'], 10);
       });
 
@@ -345,9 +343,7 @@ void main() {
         );
 
         final query = params.toQueryParameters();
-        expect(query['filter'], {
-          'status': {'_eq': 'active'},
-        });
+        expect(query['filter'], equals('{"status":{"_eq":"active"}}'));
         expect(query['limit'], 10);
       });
 
