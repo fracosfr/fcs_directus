@@ -1,0 +1,2660 @@
+{
+  "lib/fcs_directus.dart": {
+    "mtime": 1764445959.0967495,
+    "seen": 1792327946.0899317,
+    "ast_hash": "6945d0d3be90b351f780fac209f98118",
+    "semantic_hash": "6945d0d3be90b351f780fac209f98118"
+  },
+  "lib/src/core/directus_client.dart": {
+    "mtime": 1764445959.0967495,
+    "seen": 1792327946.0899372,
+    "ast_hash": "5d22ae0c0c1510aae3a9969a6b291242",
+    "semantic_hash": "5d22ae0c0c1510aae3a9969a6b291242"
+  },
+  "lib/src/core/directus_config.dart": {
+    "mtime": 1775988389.9271688,
+    "seen": 1792327946.0899394,
+    "ast_hash": "fa9494aeb14166ca47b512aa5223f014",
+    "semantic_hash": "fa9494aeb14166ca47b512aa5223f014"
+  },
+  "lib/src/core/directus_http_client.dart": {
+    "mtime": 1775994304.0552902,
+    "seen": 1792327946.0899408,
+    "ast_hash": "6e06b11feaaf836bd76c9a787d0fef05",
+    "semantic_hash": "6e06b11feaaf836bd76c9a787d0fef05"
+  },
+  "lib/src/exceptions/directus_exception.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899422,
+    "ast_hash": "2aa1a8fd11d44a0a9b3215997df2ecde",
+    "semantic_hash": "2aa1a8fd11d44a0a9b3215997df2ecde"
+  },
+  "lib/src/models/asset_transforms.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.089943,
+    "ast_hash": "1f7a4403beba80dadc0add9ce61fab4f",
+    "semantic_hash": "1f7a4403beba80dadc0add9ce61fab4f"
+  },
+  "lib/src/models/directus_activity.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899444,
+    "ast_hash": "6ee69253053a3afc2e7547176f795e21",
+    "semantic_hash": "6ee69253053a3afc2e7547176f795e21"
+  },
+  "lib/src/models/directus_aggregate.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899448,
+    "ast_hash": "d9b3d0400436cfa8b8199b5adf3ad327",
+    "semantic_hash": "d9b3d0400436cfa8b8199b5adf3ad327"
+  },
+  "lib/src/models/directus_comment.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899458,
+    "ast_hash": "fc32ddbdeeb5b1826cd6436726feae45",
+    "semantic_hash": "fc32ddbdeeb5b1826cd6436726feae45"
+  },
+  "lib/src/models/directus_dashboard.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899463,
+    "ast_hash": "3daa6ac8c5300051fa2f9be37c3ffcb7",
+    "semantic_hash": "3daa6ac8c5300051fa2f9be37c3ffcb7"
+  },
+  "lib/src/models/directus_deep.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899475,
+    "ast_hash": "7e1f5193bd78b73b3448cfbdfe9ce303",
+    "semantic_hash": "7e1f5193bd78b73b3448cfbdfe9ce303"
+  },
+  "lib/src/models/directus_field.dart": {
+    "mtime": 1764445959.0970814,
+    "seen": 1792327946.0899484,
+    "ast_hash": "d178043f5366d7a0e1cfc24f3aff37ca",
+    "semantic_hash": "d178043f5366d7a0e1cfc24f3aff37ca"
+  },
+  "lib/src/models/directus_filter.dart": {
+    "mtime": 1772808608.7416732,
+    "seen": 1792327946.0899491,
+    "ast_hash": "0a68d2dcffea46fd83e2edc66d04d3fe",
+    "semantic_hash": "0a68d2dcffea46fd83e2edc66d04d3fe"
+  },
+  "lib/src/models/directus_flow.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899498,
+    "ast_hash": "9af503e85cbfedd72eaafd007b15fcb9",
+    "semantic_hash": "9af503e85cbfedd72eaafd007b15fcb9"
+  },
+  "lib/src/models/directus_folder.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899508,
+    "ast_hash": "3751bfe46970e31ff5cc17de0e45b491",
+    "semantic_hash": "3751bfe46970e31ff5cc17de0e45b491"
+  },
+  "lib/src/models/directus_functions.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899513,
+    "ast_hash": "aed716b6239408a9684852f164263f5e",
+    "semantic_hash": "aed716b6239408a9684852f164263f5e"
+  },
+  "lib/src/models/directus_model.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.089952,
+    "ast_hash": "ca8db109ae91a0c0a7a024d6e0e9edaf",
+    "semantic_hash": "ca8db109ae91a0c0a7a024d6e0e9edaf"
+  },
+  "lib/src/models/directus_notification.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899527,
+    "ast_hash": "c8c11a728db1eb3c06db59842df1120d",
+    "semantic_hash": "c8c11a728db1eb3c06db59842df1120d"
+  },
+  "lib/src/models/directus_operation.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899534,
+    "ast_hash": "09970f7c0031610d0203e05bc9bb8d48",
+    "semantic_hash": "09970f7c0031610d0203e05bc9bb8d48"
+  },
+  "lib/src/models/directus_panel.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899544,
+    "ast_hash": "cb51af3e38132d81450af675f7477b5c",
+    "semantic_hash": "cb51af3e38132d81450af675f7477b5c"
+  },
+  "lib/src/models/directus_permission.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.089955,
+    "ast_hash": "ca9ce1e94114f4d82dc9a3fc7383a9c4",
+    "semantic_hash": "ca9ce1e94114f4d82dc9a3fc7383a9c4"
+  },
+  "lib/src/models/directus_policy.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899558,
+    "ast_hash": "a064e3c6d217ac63982eb057ad246592",
+    "semantic_hash": "a064e3c6d217ac63982eb057ad246592"
+  },
+  "lib/src/models/directus_preset.dart": {
+    "mtime": 1764445959.0971217,
+    "seen": 1792327946.0899572,
+    "ast_hash": "9508069ab270a08c69c0af5c53b6ee54",
+    "semantic_hash": "9508069ab270a08c69c0af5c53b6ee54"
+  },
+  "lib/src/models/directus_property.dart": {
+    "mtime": 1764445959.098122,
+    "seen": 1792327946.089958,
+    "ast_hash": "1ac0bc055bdd8789ec25273e5131cb7c",
+    "semantic_hash": "1ac0bc055bdd8789ec25273e5131cb7c"
+  },
+  "lib/src/models/directus_relation.dart": {
+    "mtime": 1764445959.098122,
+    "seen": 1792327946.0899584,
+    "ast_hash": "e319a9fe8baf6039d85e21d74adcf63e",
+    "semantic_hash": "e319a9fe8baf6039d85e21d74adcf63e"
+  },
+  "lib/src/models/directus_revision.dart": {
+    "mtime": 1764445959.098122,
+    "seen": 1792327946.0899591,
+    "ast_hash": "8068c31ae78eaec79eef7502c3a92bbb",
+    "semantic_hash": "8068c31ae78eaec79eef7502c3a92bbb"
+  },
+  "lib/src/models/directus_role.dart": {
+    "mtime": 1764445959.098122,
+    "seen": 1792327946.0899599,
+    "ast_hash": "258ea6b695b09c61fd092ace535350ff",
+    "semantic_hash": "258ea6b695b09c61fd092ace535350ff"
+  },
+  "lib/src/models/directus_user.dart": {
+    "mtime": 1764446397.216873,
+    "seen": 1792327946.0899603,
+    "ast_hash": "b195fdd15944e9de9cedc20266ef1108",
+    "semantic_hash": "b195fdd15944e9de9cedc20266ef1108"
+  },
+  "lib/src/services/activity_service.dart": {
+    "mtime": 1764445959.098122,
+    "seen": 1792327946.0899615,
+    "ast_hash": "10e51d73e8a23460394e63e30694610c",
+    "semantic_hash": "10e51d73e8a23460394e63e30694610c"
+  },
+  "lib/src/services/assets_service.dart": {
+    "mtime": 1764445959.0994377,
+    "seen": 1792327946.089962,
+    "ast_hash": "70bdd7d8dec735b13cf9b481de653ef1",
+    "semantic_hash": "70bdd7d8dec735b13cf9b481de653ef1"
+  },
+  "lib/src/services/auth_service.dart": {
+    "mtime": 1771962973.8239117,
+    "seen": 1792327946.0899627,
+    "ast_hash": "772fdb01cdab58e1674172d4d558982b",
+    "semantic_hash": "772fdb01cdab58e1674172d4d558982b"
+  },
+  "lib/src/services/collections_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899637,
+    "ast_hash": "bdec4fb214688f46edf35fb71b4453a0",
+    "semantic_hash": "bdec4fb214688f46edf35fb71b4453a0"
+  },
+  "lib/src/services/comments_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899644,
+    "ast_hash": "07e2381abd57a301de7da1c5e535c002",
+    "semantic_hash": "07e2381abd57a301de7da1c5e535c002"
+  },
+  "lib/src/services/dashboards_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.089965,
+    "ast_hash": "39e141fba48af24b25a93a247b088318",
+    "semantic_hash": "39e141fba48af24b25a93a247b088318"
+  },
+  "lib/src/services/extensions_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899658,
+    "ast_hash": "70cfe90d0f16559eea68afdf178ea84e",
+    "semantic_hash": "70cfe90d0f16559eea68afdf178ea84e"
+  },
+  "lib/src/services/fields_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899665,
+    "ast_hash": "2b9814efcfd629ee40b0d29e0875f365",
+    "semantic_hash": "2b9814efcfd629ee40b0d29e0875f365"
+  },
+  "lib/src/services/files_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899673,
+    "ast_hash": "6f7da690cce683a9778c2415eb83057e",
+    "semantic_hash": "6f7da690cce683a9778c2415eb83057e"
+  },
+  "lib/src/services/flows_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899682,
+    "ast_hash": "51208ade27149cec12afd6bcd63e4bff",
+    "semantic_hash": "51208ade27149cec12afd6bcd63e4bff"
+  },
+  "lib/src/services/folders_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.089969,
+    "ast_hash": "f4de9198cedeb32249c87c33bf74dbf3",
+    "semantic_hash": "f4de9198cedeb32249c87c33bf74dbf3"
+  },
+  "lib/src/services/item_active_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899696,
+    "ast_hash": "befeca321e4b4eda1cf3efc19f3563fa",
+    "semantic_hash": "befeca321e4b4eda1cf3efc19f3563fa"
+  },
+  "lib/src/services/items_service.dart": {
+    "mtime": 1775987510.0424156,
+    "seen": 1792327946.0899706,
+    "ast_hash": "6ccc9828afcebc139538082c8e73bb58",
+    "semantic_hash": "6ccc9828afcebc139538082c8e73bb58"
+  },
+  "lib/src/services/metrics_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899713,
+    "ast_hash": "ae5b547f1107e3496eb11cdce62f448d",
+    "semantic_hash": "ae5b547f1107e3496eb11cdce62f448d"
+  },
+  "lib/src/services/notifications_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899723,
+    "ast_hash": "b8a28cf4676e510deda8edb49e90170f",
+    "semantic_hash": "b8a28cf4676e510deda8edb49e90170f"
+  },
+  "lib/src/services/operations_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.089974,
+    "ast_hash": "caf2ca7daad732dd0f23b24c0f4fbef9",
+    "semantic_hash": "caf2ca7daad732dd0f23b24c0f4fbef9"
+  },
+  "lib/src/services/panels_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899749,
+    "ast_hash": "27a5bbb640db445c64cb1c02d270a546",
+    "semantic_hash": "27a5bbb640db445c64cb1c02d270a546"
+  },
+  "lib/src/services/permissions_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899756,
+    "ast_hash": "1dceda1a1977faa78558a1397737a62e",
+    "semantic_hash": "1dceda1a1977faa78558a1397737a62e"
+  },
+  "lib/src/services/policies_service.dart": {
+    "mtime": 1764445959.09963,
+    "seen": 1792327946.0899763,
+    "ast_hash": "520d877d140d6154c0d7d0674f742aab",
+    "semantic_hash": "520d877d140d6154c0d7d0674f742aab"
+  },
+  "lib/src/services/presets_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.089977,
+    "ast_hash": "e1a6ff76a7b3f607636dbff7c024875d",
+    "semantic_hash": "e1a6ff76a7b3f607636dbff7c024875d"
+  },
+  "lib/src/services/relations_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899787,
+    "ast_hash": "5d1ffcacec79a70ec9b0e76ad4a77338",
+    "semantic_hash": "5d1ffcacec79a70ec9b0e76ad4a77338"
+  },
+  "lib/src/services/revisions_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899794,
+    "ast_hash": "82c144c22fce5f6f2ae581e9cae1324c",
+    "semantic_hash": "82c144c22fce5f6f2ae581e9cae1324c"
+  },
+  "lib/src/services/roles_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899801,
+    "ast_hash": "34eb1090195a6e48787e48963e9d5002",
+    "semantic_hash": "34eb1090195a6e48787e48963e9d5002"
+  },
+  "lib/src/services/schema_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899808,
+    "ast_hash": "c2c5e289f1f019bf1abd9bd46ef9f44f",
+    "semantic_hash": "c2c5e289f1f019bf1abd9bd46ef9f44f"
+  },
+  "lib/src/services/server_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899818,
+    "ast_hash": "df2b730b0fcf56d016bf25a75980122e",
+    "semantic_hash": "df2b730b0fcf56d016bf25a75980122e"
+  },
+  "lib/src/services/settings_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899825,
+    "ast_hash": "e626aebc916a23274705fa768b50ccb6",
+    "semantic_hash": "e626aebc916a23274705fa768b50ccb6"
+  },
+  "lib/src/services/shares_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899832,
+    "ast_hash": "eaaadd28e1ffd5cdf32469c352f2e0e3",
+    "semantic_hash": "eaaadd28e1ffd5cdf32469c352f2e0e3"
+  },
+  "lib/src/services/translations_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.089984,
+    "ast_hash": "21bdab69fb88d32b524a6f5850a114ed",
+    "semantic_hash": "21bdab69fb88d32b524a6f5850a114ed"
+  },
+  "lib/src/services/users_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899847,
+    "ast_hash": "17d69daca9b2a50062242a64c4b1abc7",
+    "semantic_hash": "17d69daca9b2a50062242a64c4b1abc7"
+  },
+  "lib/src/services/utilities_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899856,
+    "ast_hash": "8b4d1d869b1d00d6df5659b7e004a065",
+    "semantic_hash": "8b4d1d869b1d00d6df5659b7e004a065"
+  },
+  "lib/src/services/versions_service.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.0899863,
+    "ast_hash": "39391f0029beba42f86599e18df0fb68",
+    "semantic_hash": "39391f0029beba42f86599e18df0fb68"
+  },
+  "lib/src/utils/response_helper.dart": {
+    "mtime": 1764445959.1001217,
+    "seen": 1792327946.089987,
+    "ast_hash": "aa63dd9e24f9b19095a6d13535aaaa93",
+    "semantic_hash": "aa63dd9e24f9b19095a6d13535aaaa93"
+  },
+  "lib/src/websocket/directus_websocket_client.dart": {
+    "mtime": 1764445959.101122,
+    "seen": 1792327946.0899878,
+    "ast_hash": "e82fe2effdd3853602a995f218cbdaec",
+    "semantic_hash": "e82fe2effdd3853602a995f218cbdaec"
+  },
+  "test/auth_error_callback_test.dart": {
+    "mtime": 1764522210.1492994,
+    "seen": 1792327946.0899887,
+    "ast_hash": "9da0c57083e40e9ce7778a6754994c4a",
+    "semantic_hash": "9da0c57083e40e9ce7778a6754994c4a"
+  },
+  "test/auto_refresh_test.dart": {
+    "mtime": 1764522210.1492994,
+    "seen": 1792327946.0899894,
+    "ast_hash": "b0c6d0a08588c9e982d1bf9fec3d4ff4",
+    "semantic_hash": "b0c6d0a08588c9e982d1bf9fec3d4ff4"
+  },
+  "test/bool_property_diagnostic_test.dart": {
+    "mtime": 1764522210.1480136,
+    "seen": 1792327946.0899901,
+    "ast_hash": "682e53488f6fb2859b3a44c59a6188b9",
+    "semantic_hash": "682e53488f6fb2859b3a44c59a6188b9"
+  },
+  "test/directus_deep_test.dart": {
+    "mtime": 1764522210.1474369,
+    "seen": 1792327946.0899909,
+    "ast_hash": "128fd33abf732fcaee85d0654434098b",
+    "semantic_hash": "128fd33abf732fcaee85d0654434098b"
+  },
+  "test/directus_filter_test.dart": {
+    "mtime": 1775987510.0444157,
+    "seen": 1792327946.0899913,
+    "ast_hash": "80a27d794a36cf2fe16713e9435580d9",
+    "semantic_hash": "80a27d794a36cf2fe16713e9435580d9"
+  },
+  "test/enum_property_test.dart": {
+    "mtime": 1764522210.1474369,
+    "seen": 1792327946.0899923,
+    "ast_hash": "153fc4a8c4b0d1f7b19f5cd0e3280aea",
+    "semantic_hash": "153fc4a8c4b0d1f7b19f5cd0e3280aea"
+  },
+  "test/fcs_directus_test.dart": {
+    "mtime": 1775987510.0634158,
+    "seen": 1792327946.089993,
+    "ast_hash": "4bd6970b25ae9f820760924d72fb67a4",
+    "semantic_hash": "4bd6970b25ae9f820760924d72fb67a4"
+  },
+  "test/item_active_service_test.dart": {
+    "mtime": 1764522210.1492994,
+    "seen": 1792327946.0899937,
+    "ast_hash": "6a34474220a4f2df001d6d951fef50cc",
+    "semantic_hash": "6a34474220a4f2df001d6d951fef50cc"
+  },
+  "test/item_active_service_test.mocks.dart": {
+    "mtime": 1764445959.101122,
+    "seen": 1792327946.0899944,
+    "ast_hash": "4e090ccf36eb35a92108a098c1e33771",
+    "semantic_hash": "4e090ccf36eb35a92108a098c1e33771"
+  },
+  "test/nested_field_filters_test.dart": {
+    "mtime": 1764522210.1492994,
+    "seen": 1792327946.0899951,
+    "ast_hash": "d46bd341bece1f9f18a85a395349816a",
+    "semantic_hash": "d46bd341bece1f9f18a85a395349816a"
+  },
+  "test/now_dynamic_var_test.dart": {
+    "mtime": 1764522210.1492994,
+    "seen": 1792327946.0899959,
+    "ast_hash": "ec637dbdbf88969ca7af7ea0a56ad352",
+    "semantic_hash": "ec637dbdbf88969ca7af7ea0a56ad352"
+  },
+  ".github/instructions/documentation.instructions.md": {
+    "mtime": 1764445926.471109,
+    "seen": 1792327946.0899966,
+    "ast_hash": "a3466cf1ed624041070e8233cc73cb50",
+    "semantic_hash": "a3466cf1ed624041070e8233cc73cb50"
+  },
+  ".github/instructions/projet.instructions.md": {
+    "mtime": 1764445926.4711888,
+    "seen": 1792327946.0899973,
+    "ast_hash": "987ad54f95f6687270aaf2a6bbcfc8f0",
+    "semantic_hash": "987ad54f95f6687270aaf2a6bbcfc8f0"
+  },
+  "CHANGELOG.md": {
+    "mtime": 1764445959.0944061,
+    "seen": 1792327946.089998,
+    "ast_hash": "d1b1c1d94639bdb4632ecd94d39ffbc2",
+    "semantic_hash": "d1b1c1d94639bdb4632ecd94d39ffbc2"
+  },
+  "CONTRIBUTING.md": {
+    "mtime": 1764445959.0944061,
+    "seen": 1792327946.0899985,
+    "ast_hash": "1d39ec7124e14f61618e8d62fb45223b",
+    "semantic_hash": "1d39ec7124e14f61618e8d62fb45223b"
+  },
+  "README.md": {
+    "mtime": 1764445959.0944061,
+    "seen": 1792327946.0899994,
+    "ast_hash": "e35164fe15e9984ca3d8a5b17c705297",
+    "semantic_hash": "e35164fe15e9984ca3d8a5b17c705297"
+  },
+  "analysis_options.yaml": {
+    "mtime": 1764445959.0944061,
+    "seen": 1792327946.0900002,
+    "ast_hash": "e0b429a27bd86f8a3f1d0542e5f70362",
+    "semantic_hash": "e0b429a27bd86f8a3f1d0542e5f70362"
+  },
+  "docs/01-getting-started.md": {
+    "mtime": 1764445959.0944061,
+    "seen": 1792327946.090001,
+    "ast_hash": "513a4d95bc7118bd0a0d95ce4ce229bf",
+    "semantic_hash": "513a4d95bc7118bd0a0d95ce4ce229bf"
+  },
+  "docs/02-authentication.md": {
+    "mtime": 1764445959.0955238,
+    "seen": 1792327946.0900018,
+    "ast_hash": "1ffc11ce676c10d221e7a3a85ffb4605",
+    "semantic_hash": "1ffc11ce676c10d221e7a3a85ffb4605"
+  },
+  "docs/03-crud-operations.md": {
+    "mtime": 1764445959.0956957,
+    "seen": 1792327946.0900028,
+    "ast_hash": "6147aa37fff5c8e9c53adbdea04ef179",
+    "semantic_hash": "6147aa37fff5c8e9c53adbdea04ef179"
+  },
+  "docs/04-custom-models.md": {
+    "mtime": 1764445959.0958142,
+    "seen": 1792327946.0900035,
+    "ast_hash": "7b50fc472cf7c7f67241ca52bb27ae10",
+    "semantic_hash": "7b50fc472cf7c7f67241ca52bb27ae10"
+  },
+  "docs/05-filters.md": {
+    "mtime": 1764445959.09593,
+    "seen": 1792327946.0900042,
+    "ast_hash": "6360706618d8a78b45cccc2fc7bf1255",
+    "semantic_hash": "6360706618d8a78b45cccc2fc7bf1255"
+  },
+  "docs/06-deep-queries.md": {
+    "mtime": 1764445959.0960326,
+    "seen": 1792327946.090005,
+    "ast_hash": "e641dc26002302e85eefce9374c97d95",
+    "semantic_hash": "e641dc26002302e85eefce9374c97d95"
+  },
+  "docs/07-aggregations.md": {
+    "mtime": 1764445959.0961285,
+    "seen": 1792327946.0900059,
+    "ast_hash": "e72a1bbc80764b358b92dcde5b4444bf",
+    "semantic_hash": "e72a1bbc80764b358b92dcde5b4444bf"
+  },
+  "docs/08-websocket.md": {
+    "mtime": 1764445959.0962336,
+    "seen": 1792327946.0900064,
+    "ast_hash": "915470ea905136a92d71d42191bd7cde",
+    "semantic_hash": "915470ea905136a92d71d42191bd7cde"
+  },
+  "docs/09-files-assets.md": {
+    "mtime": 1764445959.0963433,
+    "seen": 1792327946.0900083,
+    "ast_hash": "8851323bc04cc9daab7cd755c277902a",
+    "semantic_hash": "8851323bc04cc9daab7cd755c277902a"
+  },
+  "docs/10-users.md": {
+    "mtime": 1764445959.096454,
+    "seen": 1792327946.090009,
+    "ast_hash": "f4d3ebe5a8f432c1a35d938c1a4a43f3",
+    "semantic_hash": "f4d3ebe5a8f432c1a35d938c1a4a43f3"
+  },
+  "docs/11-error-handling.md": {
+    "mtime": 1764445959.096564,
+    "seen": 1792327946.09001,
+    "ast_hash": "f6a4acfd535b5ac01a101ad4f5e3eb73",
+    "semantic_hash": "f6a4acfd535b5ac01a101ad4f5e3eb73"
+  },
+  "docs/README.md": {
+    "mtime": 1764445959.0966463,
+    "seen": 1792327946.0900106,
+    "ast_hash": "37a83844e14e8f348c1ef95a4f1b0382",
+    "semantic_hash": "37a83844e14e8f348c1ef95a4f1b0382"
+  },
+  "openapi/components/parameters.yaml": {
+    "mtime": 1764445927.0375998,
+    "seen": 1792327946.0900114,
+    "ast_hash": "83072f1aef2a1a36470898d7e9d4f41d",
+    "semantic_hash": "83072f1aef2a1a36470898d7e9d4f41d"
+  },
+  "openapi/components/responses.yaml": {
+    "mtime": 1764445927.0376935,
+    "seen": 1792327946.090012,
+    "ast_hash": "db2eb9d68341e6f4cc7d5c22026e3946",
+    "semantic_hash": "db2eb9d68341e6f4cc7d5c22026e3946"
+  },
+  "openapi/components/schemas/_index.yaml": {
+    "mtime": 1764445927.0376935,
+    "seen": 1792327946.090013,
+    "ast_hash": "ef94da3bef6038a28e057561bdece350",
+    "semantic_hash": "ef94da3bef6038a28e057561bdece350"
+  },
+  "openapi/components/schemas/activity.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900135,
+    "ast_hash": "80fea79cad4f1c4152e6921f1b7ae9ef",
+    "semantic_hash": "80fea79cad4f1c4152e6921f1b7ae9ef"
+  },
+  "openapi/components/schemas/collections.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900142,
+    "ast_hash": "9384ea7df3eb115fba5cde58dd765223",
+    "semantic_hash": "9384ea7df3eb115fba5cde58dd765223"
+  },
+  "openapi/components/schemas/comments.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.090015,
+    "ast_hash": "6ef7477b18013c778357660bc81f8044",
+    "semantic_hash": "6ef7477b18013c778357660bc81f8044"
+  },
+  "openapi/components/schemas/dashboards.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900156,
+    "ast_hash": "92a68b1ad5481437f79a024a09fc027f",
+    "semantic_hash": "92a68b1ad5481437f79a024a09fc027f"
+  },
+  "openapi/components/schemas/diff.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900166,
+    "ast_hash": "6197886ff6fedd5b7514fd0c767c5c62",
+    "semantic_hash": "6197886ff6fedd5b7514fd0c767c5c62"
+  },
+  "openapi/components/schemas/extensions.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900173,
+    "ast_hash": "3c7b5b042cf97bc40aab95975b0fb25e",
+    "semantic_hash": "3c7b5b042cf97bc40aab95975b0fb25e"
+  },
+  "openapi/components/schemas/fields.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900178,
+    "ast_hash": "ab9661bfe74371a4ecf19a753e6b0325",
+    "semantic_hash": "ab9661bfe74371a4ecf19a753e6b0325"
+  },
+  "openapi/components/schemas/files.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900185,
+    "ast_hash": "d2a1705b7e8698b1fe886f7561b20c2f",
+    "semantic_hash": "d2a1705b7e8698b1fe886f7561b20c2f"
+  },
+  "openapi/components/schemas/flows.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900192,
+    "ast_hash": "2fa5f26f0bcb894730d9905d89bf9d29",
+    "semantic_hash": "2fa5f26f0bcb894730d9905d89bf9d29"
+  },
+  "openapi/components/schemas/folders.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900202,
+    "ast_hash": "5207c2a7cc8f9f2fb6ff6d23b3215c0b",
+    "semantic_hash": "5207c2a7cc8f9f2fb6ff6d23b3215c0b"
+  },
+  "openapi/components/schemas/items.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.090021,
+    "ast_hash": "356ede37451fdcff9d188a46662a300a",
+    "semantic_hash": "356ede37451fdcff9d188a46662a300a"
+  },
+  "openapi/components/schemas/notifications.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900216,
+    "ast_hash": "b3708312811630a2b0fed167a07e69ab",
+    "semantic_hash": "b3708312811630a2b0fed167a07e69ab"
+  },
+  "openapi/components/schemas/operations.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900223,
+    "ast_hash": "8e1df1f79970cbd3a1086b3ef50eba76",
+    "semantic_hash": "8e1df1f79970cbd3a1086b3ef50eba76"
+  },
+  "openapi/components/schemas/panels.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900233,
+    "ast_hash": "185216a5d5f33939409788dee73653bc",
+    "semantic_hash": "185216a5d5f33939409788dee73653bc"
+  },
+  "openapi/components/schemas/permissions.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.090024,
+    "ast_hash": "86b311919df8e04b71fb2752c4fbf31b",
+    "semantic_hash": "86b311919df8e04b71fb2752c4fbf31b"
+  },
+  "openapi/components/schemas/policies.yaml": {
+    "mtime": 1764445927.0378394,
+    "seen": 1792327946.0900247,
+    "ast_hash": "8e06672ba21355f9835206c7ca85aa8b",
+    "semantic_hash": "8e06672ba21355f9835206c7ca85aa8b"
+  },
+  "openapi/components/schemas/presets.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900254,
+    "ast_hash": "4fd332b2c1f81ce7c17f43f7527f25b9",
+    "semantic_hash": "4fd332b2c1f81ce7c17f43f7527f25b9"
+  },
+  "openapi/components/schemas/query.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900261,
+    "ast_hash": "50ca21b5d3c817d1d39d89231e39cf24",
+    "semantic_hash": "50ca21b5d3c817d1d39d89231e39cf24"
+  },
+  "openapi/components/schemas/relations.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.090027,
+    "ast_hash": "e6f8d5d8e9cf70946e72eae869fe13d5",
+    "semantic_hash": "e6f8d5d8e9cf70946e72eae869fe13d5"
+  },
+  "openapi/components/schemas/revisions.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900278,
+    "ast_hash": "9c7607204d480a755e59773cba822fec",
+    "semantic_hash": "9c7607204d480a755e59773cba822fec"
+  },
+  "openapi/components/schemas/roles.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900285,
+    "ast_hash": "97b192ba1b71446135b6463d901e937b",
+    "semantic_hash": "97b192ba1b71446135b6463d901e937b"
+  },
+  "openapi/components/schemas/schema.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.090029,
+    "ast_hash": "a1e3e841fa6be725e6b928689f76bb45",
+    "semantic_hash": "a1e3e841fa6be725e6b928689f76bb45"
+  },
+  "openapi/components/schemas/settings.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900297,
+    "ast_hash": "6e40a3e7031117cc6c63691139340e7c",
+    "semantic_hash": "6e40a3e7031117cc6c63691139340e7c"
+  },
+  "openapi/components/schemas/shares.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900307,
+    "ast_hash": "a005fb7ef8aa68a8f1d8bca8b9c02ab1",
+    "semantic_hash": "a005fb7ef8aa68a8f1d8bca8b9c02ab1"
+  },
+  "openapi/components/schemas/translations.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900314,
+    "ast_hash": "77339f44d27a986bad55a3defbf3c058",
+    "semantic_hash": "77339f44d27a986bad55a3defbf3c058"
+  },
+  "openapi/components/schemas/users.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.090032,
+    "ast_hash": "c2837f47809f2bfd0ccba0358138232b",
+    "semantic_hash": "c2837f47809f2bfd0ccba0358138232b"
+  },
+  "openapi/components/schemas/versions.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900328,
+    "ast_hash": "c64e9667014816ebe7a70701f8a02f97",
+    "semantic_hash": "c64e9667014816ebe7a70701f8a02f97"
+  },
+  "openapi/components/schemas/x-metadata.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900338,
+    "ast_hash": "e961de8f35c1c62d3c0e15fca9520dc5",
+    "semantic_hash": "e961de8f35c1c62d3c0e15fca9520dc5"
+  },
+  "openapi/components/security.yaml": {
+    "mtime": 1764445927.0379138,
+    "seen": 1792327946.0900345,
+    "ast_hash": "db640ec604d88ae7d0d5838c99740f20",
+    "semantic_hash": "db640ec604d88ae7d0d5838c99740f20"
+  },
+  "openapi/index.yaml": {
+    "mtime": 1764445927.0397987,
+    "seen": 1792327946.090035,
+    "ast_hash": "f0d14194f9fc90d34800dadad6db05de",
+    "semantic_hash": "f0d14194f9fc90d34800dadad6db05de"
+  },
+  "openapi/paths/activity/_id/getActivity.yaml": {
+    "mtime": 1764445927.0398512,
+    "seen": 1792327946.0900357,
+    "ast_hash": "f1646189881fea912ee2e4576adf7294",
+    "semantic_hash": "f1646189881fea912ee2e4576adf7294"
+  },
+  "openapi/paths/activity/_id/index.yaml": {
+    "mtime": 1764445927.0399573,
+    "seen": 1792327946.0900364,
+    "ast_hash": "f4a51ec36ac4ab6a35c93b0d02e67531",
+    "semantic_hash": "f4a51ec36ac4ab6a35c93b0d02e67531"
+  },
+  "openapi/paths/activity/getActivities.yaml": {
+    "mtime": 1764445927.0399573,
+    "seen": 1792327946.0900373,
+    "ast_hash": "2ab249bce9cd83cc522a086f1d3c1578",
+    "semantic_hash": "2ab249bce9cd83cc522a086f1d3c1578"
+  },
+  "openapi/paths/activity/index.yaml": {
+    "mtime": 1764445927.0399573,
+    "seen": 1792327946.090038,
+    "ast_hash": "8eccf2f3387bb8d5eafbc1f54c8ede2f",
+    "semantic_hash": "8eccf2f3387bb8d5eafbc1f54c8ede2f"
+  },
+  "openapi/paths/assets/_id/getAsset.yaml": {
+    "mtime": 1764445927.04013,
+    "seen": 1792327946.0900388,
+    "ast_hash": "c95afa157e323f67b3687d5a1600b547",
+    "semantic_hash": "c95afa157e323f67b3687d5a1600b547"
+  },
+  "openapi/paths/assets/_id/index.yaml": {
+    "mtime": 1764445927.0402107,
+    "seen": 1792327946.0900395,
+    "ast_hash": "7f1be96220f7962de2080796c0e8915d",
+    "semantic_hash": "7f1be96220f7962de2080796c0e8915d"
+  },
+  "openapi/paths/auth/login/index.yaml": {
+    "mtime": 1764445927.0402753,
+    "seen": 1792327946.0900402,
+    "ast_hash": "c0a59c5843e6cea7e41554100a07da03",
+    "semantic_hash": "c0a59c5843e6cea7e41554100a07da03"
+  },
+  "openapi/paths/auth/login/login.yaml": {
+    "mtime": 1764445927.0403597,
+    "seen": 1792327946.0900412,
+    "ast_hash": "f7647967d56ef16d6857b3d6b3c84ab4",
+    "semantic_hash": "f7647967d56ef16d6857b3d6b3c84ab4"
+  },
+  "openapi/paths/auth/logout/index.yaml": {
+    "mtime": 1764445927.0403597,
+    "seen": 1792327946.090042,
+    "ast_hash": "c84c95e654b97b41178c39297ec9a6b1",
+    "semantic_hash": "c84c95e654b97b41178c39297ec9a6b1"
+  },
+  "openapi/paths/auth/logout/logout.yaml": {
+    "mtime": 1764445927.040515,
+    "seen": 1792327946.0900428,
+    "ast_hash": "4d0f1e0cfe246b44773cbbad00b1a3ef",
+    "semantic_hash": "4d0f1e0cfe246b44773cbbad00b1a3ef"
+  },
+  "openapi/paths/auth/oauth/_provider/index.yaml": {
+    "mtime": 1764445927.0405962,
+    "seen": 1792327946.0900433,
+    "ast_hash": "d29bf138e18c6974605dd87ed11ef34e",
+    "semantic_hash": "d29bf138e18c6974605dd87ed11ef34e"
+  },
+  "openapi/paths/auth/oauth/_provider/oauthProvider.yaml": {
+    "mtime": 1764445927.0406628,
+    "seen": 1792327946.0900443,
+    "ast_hash": "67a0e7661224a71d0f4e1803de362ab8",
+    "semantic_hash": "67a0e7661224a71d0f4e1803de362ab8"
+  },
+  "openapi/paths/auth/oauth/index.yaml": {
+    "mtime": 1764445927.0406628,
+    "seen": 1792327946.090045,
+    "ast_hash": "da836ce2157e41cd9dbd86272d75b74c",
+    "semantic_hash": "da836ce2157e41cd9dbd86272d75b74c"
+  },
+  "openapi/paths/auth/oauth/oauth.yaml": {
+    "mtime": 1764445927.0406628,
+    "seen": 1792327946.0900457,
+    "ast_hash": "4d008ce4c66f088f08cb6f6abe7fe1ba",
+    "semantic_hash": "4d008ce4c66f088f08cb6f6abe7fe1ba"
+  },
+  "openapi/paths/auth/password/request/index.yaml": {
+    "mtime": 1764445927.0408516,
+    "seen": 1792327946.0900466,
+    "ast_hash": "b63f47d66fdb0861540f8cd78791d1a2",
+    "semantic_hash": "b63f47d66fdb0861540f8cd78791d1a2"
+  },
+  "openapi/paths/auth/password/request/passwordRequest.yaml": {
+    "mtime": 1764445927.0409336,
+    "seen": 1792327946.0900476,
+    "ast_hash": "4e8e487b7b5ddf0319b982cf6ace22be",
+    "semantic_hash": "4e8e487b7b5ddf0319b982cf6ace22be"
+  },
+  "openapi/paths/auth/password/reset/index.yaml": {
+    "mtime": 1764445927.0409336,
+    "seen": 1792327946.0900483,
+    "ast_hash": "be5ebb139907094c1360ac9b9f4400c9",
+    "semantic_hash": "be5ebb139907094c1360ac9b9f4400c9"
+  },
+  "openapi/paths/auth/password/reset/passwordReset.yaml": {
+    "mtime": 1764445927.0410662,
+    "seen": 1792327946.090049,
+    "ast_hash": "4936326c2f18a9fcdde78d4c957e8cd3",
+    "semantic_hash": "4936326c2f18a9fcdde78d4c957e8cd3"
+  },
+  "openapi/paths/auth/refresh/index.yaml": {
+    "mtime": 1764445927.0410662,
+    "seen": 1792327946.0900497,
+    "ast_hash": "9fd4c72f4be36fa385749323c3e45cfc",
+    "semantic_hash": "9fd4c72f4be36fa385749323c3e45cfc"
+  },
+  "openapi/paths/auth/refresh/refresh.yaml": {
+    "mtime": 1764445927.0412064,
+    "seen": 1792327946.0900505,
+    "ast_hash": "627da96477bcb08ae942e6c06984e0f5",
+    "semantic_hash": "627da96477bcb08ae942e6c06984e0f5"
+  },
+  "openapi/paths/collections/_id/deleteCollection.yaml": {
+    "mtime": 1764445927.041288,
+    "seen": 1792327946.0900514,
+    "ast_hash": "f6624fd35eb0b82cf938209691861c1d",
+    "semantic_hash": "f6624fd35eb0b82cf938209691861c1d"
+  },
+  "openapi/paths/collections/_id/getCollection.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900521,
+    "ast_hash": "b31626bce1ba2e0d752542480c3c5173",
+    "semantic_hash": "b31626bce1ba2e0d752542480c3c5173"
+  },
+  "openapi/paths/collections/_id/index.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900528,
+    "ast_hash": "c5c65c6d5269b406e63f6d8e9581985f",
+    "semantic_hash": "c5c65c6d5269b406e63f6d8e9581985f"
+  },
+  "openapi/paths/collections/_id/updateCollection.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900538,
+    "ast_hash": "2b7b99435fa9c21305de3553d96eeac4",
+    "semantic_hash": "2b7b99435fa9c21305de3553d96eeac4"
+  },
+  "openapi/paths/collections/createCollection.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900548,
+    "ast_hash": "a1fa234449939554513a5a7d33103714",
+    "semantic_hash": "a1fa234449939554513a5a7d33103714"
+  },
+  "openapi/paths/collections/getCollections.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900555,
+    "ast_hash": "5b97c183264e161fb6db3f2e979552e0",
+    "semantic_hash": "5b97c183264e161fb6db3f2e979552e0"
+  },
+  "openapi/paths/collections/index.yaml": {
+    "mtime": 1764445927.0413718,
+    "seen": 1792327946.0900562,
+    "ast_hash": "c10fa950e07a0543963a7a1ddcf962f3",
+    "semantic_hash": "c10fa950e07a0543963a7a1ddcf962f3"
+  },
+  "openapi/paths/comments/_id/deleteComment.yaml": {
+    "mtime": 1764445927.0417771,
+    "seen": 1792327946.090057,
+    "ast_hash": "fb759bd13f5a6355b4762027b7b6b6c2",
+    "semantic_hash": "fb759bd13f5a6355b4762027b7b6b6c2"
+  },
+  "openapi/paths/comments/_id/getComment.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900576,
+    "ast_hash": "c6bac36701a84c303ceaf59577183c89",
+    "semantic_hash": "c6bac36701a84c303ceaf59577183c89"
+  },
+  "openapi/paths/comments/_id/index.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900586,
+    "ast_hash": "996b008bcbe10cc2832ca2c58612de5d",
+    "semantic_hash": "996b008bcbe10cc2832ca2c58612de5d"
+  },
+  "openapi/paths/comments/_id/updateComment.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.090059,
+    "ast_hash": "7bed188ba638cbff07e5d332762afcbb",
+    "semantic_hash": "7bed188ba638cbff07e5d332762afcbb"
+  },
+  "openapi/paths/comments/createComments.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900598,
+    "ast_hash": "fb87f0f802a7aea04be48239a712d2af",
+    "semantic_hash": "fb87f0f802a7aea04be48239a712d2af"
+  },
+  "openapi/paths/comments/deleteComments.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900605,
+    "ast_hash": "02e5fb218279b9a5148a8a48dff5109d",
+    "semantic_hash": "02e5fb218279b9a5148a8a48dff5109d"
+  },
+  "openapi/paths/comments/getComments.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900614,
+    "ast_hash": "8a0e849810036ed2a42ad3036aee1e16",
+    "semantic_hash": "8a0e849810036ed2a42ad3036aee1e16"
+  },
+  "openapi/paths/comments/index.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900621,
+    "ast_hash": "cc5d7bb0a8242560204903c7dd1f45ca",
+    "semantic_hash": "cc5d7bb0a8242560204903c7dd1f45ca"
+  },
+  "openapi/paths/comments/singular/createComment.yaml": {
+    "mtime": 1764445927.041859,
+    "seen": 1792327946.0900629,
+    "ast_hash": "cf339135b1f34948fd058d40c7f72345",
+    "semantic_hash": "cf339135b1f34948fd058d40c7f72345"
+  },
+  "openapi/paths/comments/singular/index.yaml": {
+    "mtime": 1764445927.0423675,
+    "seen": 1792327946.0900636,
+    "ast_hash": "ccd8ecfec13fae53e748660e814493bf",
+    "semantic_hash": "ccd8ecfec13fae53e748660e814493bf"
+  },
+  "openapi/paths/comments/updateComments.yaml": {
+    "mtime": 1764445927.0423675,
+    "seen": 1792327946.0900643,
+    "ast_hash": "f1d3acd1c15e9c665117705f7fff8a7c",
+    "semantic_hash": "f1d3acd1c15e9c665117705f7fff8a7c"
+  },
+  "openapi/paths/dashboards/_id/deleteDashboard.yaml": {
+    "mtime": 1764445927.0425174,
+    "seen": 1792327946.0900652,
+    "ast_hash": "c08efc6fb9f1a16ec78b966b8136ccd3",
+    "semantic_hash": "c08efc6fb9f1a16ec78b966b8136ccd3"
+  },
+  "openapi/paths/dashboards/_id/getDashboard.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900662,
+    "ast_hash": "113673f6053031f8066de1cc46658f9f",
+    "semantic_hash": "113673f6053031f8066de1cc46658f9f"
+  },
+  "openapi/paths/dashboards/_id/index.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.090067,
+    "ast_hash": "3bc451a999acd0bae6a0049cc6a50b6c",
+    "semantic_hash": "3bc451a999acd0bae6a0049cc6a50b6c"
+  },
+  "openapi/paths/dashboards/_id/updateDashboard.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900676,
+    "ast_hash": "3b9b5b60f90e57604b24808983a1d540",
+    "semantic_hash": "3b9b5b60f90e57604b24808983a1d540"
+  },
+  "openapi/paths/dashboards/createDashboards.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900686,
+    "ast_hash": "310c114a9fdef8f104ddb112a3d1d42f",
+    "semantic_hash": "310c114a9fdef8f104ddb112a3d1d42f"
+  },
+  "openapi/paths/dashboards/deleteDashboards.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900693,
+    "ast_hash": "7d34243db2832e7106bb2994af74a48c",
+    "semantic_hash": "7d34243db2832e7106bb2994af74a48c"
+  },
+  "openapi/paths/dashboards/getDashboards.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.09007,
+    "ast_hash": "cc0647488dec2b2120c5e0c07cd601e1",
+    "semantic_hash": "cc0647488dec2b2120c5e0c07cd601e1"
+  },
+  "openapi/paths/dashboards/index.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900707,
+    "ast_hash": "f579598bb8535dc20881aa76b07eebee",
+    "semantic_hash": "f579598bb8535dc20881aa76b07eebee"
+  },
+  "openapi/paths/dashboards/singular/createDashboard.yaml": {
+    "mtime": 1764445927.0425982,
+    "seen": 1792327946.0900714,
+    "ast_hash": "4488d0103f005c614136ffc91250133a",
+    "semantic_hash": "4488d0103f005c614136ffc91250133a"
+  },
+  "openapi/paths/dashboards/singular/index.yaml": {
+    "mtime": 1764445927.043187,
+    "seen": 1792327946.0900724,
+    "ast_hash": "eb2826f6695edb3cc4e277fc22efac52",
+    "semantic_hash": "eb2826f6695edb3cc4e277fc22efac52"
+  },
+  "openapi/paths/dashboards/updateDashboards.yaml": {
+    "mtime": 1764445927.043187,
+    "seen": 1792327946.0900753,
+    "ast_hash": "8bacc02b7a3aa0df6bb51980bb59a747",
+    "semantic_hash": "8bacc02b7a3aa0df6bb51980bb59a747"
+  },
+  "openapi/paths/extensions/_bundle/_name/index.yaml": {
+    "mtime": 1764445927.043317,
+    "seen": 1792327946.090076,
+    "ast_hash": "1f1b78894807efb7eb98244b71e63220",
+    "semantic_hash": "1f1b78894807efb7eb98244b71e63220"
+  },
+  "openapi/paths/extensions/_bundle/_name/updateExtensionBundle.yaml": {
+    "mtime": 1764445927.043401,
+    "seen": 1792327946.0900767,
+    "ast_hash": "5ae092f8d7cc44dde577d5ac676a18b1",
+    "semantic_hash": "5ae092f8d7cc44dde577d5ac676a18b1"
+  },
+  "openapi/paths/extensions/_name/index.yaml": {
+    "mtime": 1764445927.043401,
+    "seen": 1792327946.0900774,
+    "ast_hash": "c17d1501f90c0e9781486ad616915c56",
+    "semantic_hash": "c17d1501f90c0e9781486ad616915c56"
+  },
+  "openapi/paths/extensions/index.yaml": {
+    "mtime": 1764445927.0435498,
+    "seen": 1792327946.090078,
+    "ast_hash": "5a1225c1020806dd7d1eaebe66c24429",
+    "semantic_hash": "5a1225c1020806dd7d1eaebe66c24429"
+  },
+  "openapi/paths/extensions/listExtensions.yaml": {
+    "mtime": 1764445927.0435498,
+    "seen": 1792327946.090079,
+    "ast_hash": "a4d151455fe16a11670a9d24c2697d16",
+    "semantic_hash": "a4d151455fe16a11670a9d24c2697d16"
+  },
+  "openapi/paths/fields/_collection/_id/deleteField.yaml": {
+    "mtime": 1764445927.0437596,
+    "seen": 1792327946.09008,
+    "ast_hash": "190c8be03bc7d474debb465a7295411e",
+    "semantic_hash": "190c8be03bc7d474debb465a7295411e"
+  },
+  "openapi/paths/fields/_collection/_id/getCollectionField.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.0900805,
+    "ast_hash": "3e3b43628b58b8edcfc7448d024e3a65",
+    "semantic_hash": "3e3b43628b58b8edcfc7448d024e3a65"
+  },
+  "openapi/paths/fields/_collection/_id/index.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.0900812,
+    "ast_hash": "b1316c454807e63ef91116d3c9beede2",
+    "semantic_hash": "b1316c454807e63ef91116d3c9beede2"
+  },
+  "openapi/paths/fields/_collection/_id/updateField.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.090082,
+    "ast_hash": "53f3ceb7eea1a7ee413079d705785e5e",
+    "semantic_hash": "53f3ceb7eea1a7ee413079d705785e5e"
+  },
+  "openapi/paths/fields/_collection/createField.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.090083,
+    "ast_hash": "71672f0492207f01d4d02881ce3d6a7f",
+    "semantic_hash": "71672f0492207f01d4d02881ce3d6a7f"
+  },
+  "openapi/paths/fields/_collection/getCollectionFields.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.0900836,
+    "ast_hash": "f531c9e3e1a7dba191aafb9385677bce",
+    "semantic_hash": "f531c9e3e1a7dba191aafb9385677bce"
+  },
+  "openapi/paths/fields/_collection/index.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.0900843,
+    "ast_hash": "7c5cb3f38c87d6ba0043371a15443839",
+    "semantic_hash": "7c5cb3f38c87d6ba0043371a15443839"
+  },
+  "openapi/paths/fields/getFields.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.090085,
+    "ast_hash": "5f59801f473abb9b5fe1f24ea06f8919",
+    "semantic_hash": "5f59801f473abb9b5fe1f24ea06f8919"
+  },
+  "openapi/paths/fields/index.yaml": {
+    "mtime": 1764445927.043866,
+    "seen": 1792327946.090086,
+    "ast_hash": "74adf803c3a537106c579915950ec155",
+    "semantic_hash": "74adf803c3a537106c579915950ec155"
+  },
+  "openapi/paths/files/_id/deleteFile.yaml": {
+    "mtime": 1764445927.0444415,
+    "seen": 1792327946.0900867,
+    "ast_hash": "b3d039f16396130a46e77a37325ad13c",
+    "semantic_hash": "b3d039f16396130a46e77a37325ad13c"
+  },
+  "openapi/paths/files/_id/getFile.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900874,
+    "ast_hash": "0e4040bafa4f4121ef50ff6595fbd1f1",
+    "semantic_hash": "0e4040bafa4f4121ef50ff6595fbd1f1"
+  },
+  "openapi/paths/files/_id/index.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900881,
+    "ast_hash": "bfdc7a31c1a00dea27a0a1b885a9d7d6",
+    "semantic_hash": "bfdc7a31c1a00dea27a0a1b885a9d7d6"
+  },
+  "openapi/paths/files/_id/updateFile.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900888,
+    "ast_hash": "99462a3f7f0c75d1ff5b0147d705651e",
+    "semantic_hash": "99462a3f7f0c75d1ff5b0147d705651e"
+  },
+  "openapi/paths/files/deleteFiles.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900898,
+    "ast_hash": "6150c145ea4193655867a6ce6fc08ab1",
+    "semantic_hash": "6150c145ea4193655867a6ce6fc08ab1"
+  },
+  "openapi/paths/files/getFiles.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900905,
+    "ast_hash": "bf712f997630e6092588e8bc473dbd37",
+    "semantic_hash": "bf712f997630e6092588e8bc473dbd37"
+  },
+  "openapi/paths/files/import/importFile.yaml": {
+    "mtime": 1764445927.0445244,
+    "seen": 1792327946.0900912,
+    "ast_hash": "92699ccdaaa487f34df9455d0cc654a1",
+    "semantic_hash": "92699ccdaaa487f34df9455d0cc654a1"
+  },
+  "openapi/paths/files/import/index.yaml": {
+    "mtime": 1764445927.0449173,
+    "seen": 1792327946.090092,
+    "ast_hash": "320876db4001783683a01bd1252c9f23",
+    "semantic_hash": "320876db4001783683a01bd1252c9f23"
+  },
+  "openapi/paths/files/index.yaml": {
+    "mtime": 1764445927.0449173,
+    "seen": 1792327946.090093,
+    "ast_hash": "b269a09fa20b2eb34cf5280976e590d0",
+    "semantic_hash": "b269a09fa20b2eb34cf5280976e590d0"
+  },
+  "openapi/paths/files/updateFiles.yaml": {
+    "mtime": 1764445927.0449173,
+    "seen": 1792327946.0900936,
+    "ast_hash": "14b92ac7bc3c40035f7f103492a5af6a",
+    "semantic_hash": "14b92ac7bc3c40035f7f103492a5af6a"
+  },
+  "openapi/paths/files/uploadFile.yaml": {
+    "mtime": 1764445927.0449173,
+    "seen": 1792327946.0900946,
+    "ast_hash": "b1e1a6b30b66e81287bbdeb1480092a0",
+    "semantic_hash": "b1e1a6b30b66e81287bbdeb1480092a0"
+  },
+  "openapi/paths/flows/_id/deleteFlow.yaml": {
+    "mtime": 1764445927.045176,
+    "seen": 1792327946.0900953,
+    "ast_hash": "7b0deb6a59ae8ca6d7896d6fe7b7ddcd",
+    "semantic_hash": "7b0deb6a59ae8ca6d7896d6fe7b7ddcd"
+  },
+  "openapi/paths/flows/_id/getFlow.yaml": {
+    "mtime": 1764445927.045253,
+    "seen": 1792327946.0900962,
+    "ast_hash": "a2b5b14135d093495cc9e712499a5633",
+    "semantic_hash": "a2b5b14135d093495cc9e712499a5633"
+  },
+  "openapi/paths/flows/_id/index.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.0901015,
+    "ast_hash": "5651973b6c3d9a4ad18465f7801c46c9",
+    "semantic_hash": "5651973b6c3d9a4ad18465f7801c46c9"
+  },
+  "openapi/paths/flows/_id/updateFlow.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.0901036,
+    "ast_hash": "fa339d3e069bec15eab5b9a7a613ff84",
+    "semantic_hash": "fa339d3e069bec15eab5b9a7a613ff84"
+  },
+  "openapi/paths/flows/createFlows.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.0901046,
+    "ast_hash": "93b05afde72e728844db9c9f5fb5e90e",
+    "semantic_hash": "93b05afde72e728844db9c9f5fb5e90e"
+  },
+  "openapi/paths/flows/deleteFlows.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.0901053,
+    "ast_hash": "9d54d8ba5702748b14fe2964b00c3df6",
+    "semantic_hash": "9d54d8ba5702748b14fe2964b00c3df6"
+  },
+  "openapi/paths/flows/getFlows.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.090106,
+    "ast_hash": "0af2053b717870f9b13ce3b0874adf4b",
+    "semantic_hash": "0af2053b717870f9b13ce3b0874adf4b"
+  },
+  "openapi/paths/flows/index.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.090107,
+    "ast_hash": "9eb2003b8a694b37746848e621187169",
+    "semantic_hash": "9eb2003b8a694b37746848e621187169"
+  },
+  "openapi/paths/flows/singular/createFlow.yaml": {
+    "mtime": 1764445927.045309,
+    "seen": 1792327946.0901077,
+    "ast_hash": "5d925f4aa2d0b2b0222041583a6bd324",
+    "semantic_hash": "5d925f4aa2d0b2b0222041583a6bd324"
+  },
+  "openapi/paths/flows/singular/index.yaml": {
+    "mtime": 1764445927.045762,
+    "seen": 1792327946.0901086,
+    "ast_hash": "8fbbdc27103a5ae30ae844bf9ed7cd49",
+    "semantic_hash": "8fbbdc27103a5ae30ae844bf9ed7cd49"
+  },
+  "openapi/paths/flows/trigger/_id/index.yaml": {
+    "mtime": 1764445927.0458355,
+    "seen": 1792327946.0901093,
+    "ast_hash": "1c95cbaa47a2b57487779853d6e0bf7b",
+    "semantic_hash": "1c95cbaa47a2b57487779853d6e0bf7b"
+  },
+  "openapi/paths/flows/trigger/_id/triggerFlowGET.yaml": {
+    "mtime": 1764445927.0459123,
+    "seen": 1792327946.09011,
+    "ast_hash": "b69328f8259cd7d86a7f70a3253f9b92",
+    "semantic_hash": "b69328f8259cd7d86a7f70a3253f9b92"
+  },
+  "openapi/paths/flows/trigger/_id/triggerFlowPOST.yaml": {
+    "mtime": 1764445927.0459123,
+    "seen": 1792327946.0901108,
+    "ast_hash": "009e1f62520ba408af3e8121affd39f3",
+    "semantic_hash": "009e1f62520ba408af3e8121affd39f3"
+  },
+  "openapi/paths/flows/updateFlows.yaml": {
+    "mtime": 1764445927.0459123,
+    "seen": 1792327946.0901115,
+    "ast_hash": "8b7d8e015cf277075afd0155750e75e7",
+    "semantic_hash": "8b7d8e015cf277075afd0155750e75e7"
+  },
+  "openapi/paths/folders/_id/deleteFolder.yaml": {
+    "mtime": 1764445927.0461354,
+    "seen": 1792327946.0901122,
+    "ast_hash": "87702cc7514326936333904e3eb173a6",
+    "semantic_hash": "87702cc7514326936333904e3eb173a6"
+  },
+  "openapi/paths/folders/_id/getFolder.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.090113,
+    "ast_hash": "d3831788e2504b6a661f05b70a26646b",
+    "semantic_hash": "d3831788e2504b6a661f05b70a26646b"
+  },
+  "openapi/paths/folders/_id/index.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901139,
+    "ast_hash": "db790dcbb2d73d742349efff9e40f09a",
+    "semantic_hash": "db790dcbb2d73d742349efff9e40f09a"
+  },
+  "openapi/paths/folders/_id/updateFolder.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901146,
+    "ast_hash": "4ee5d2e9eefbac17ccfddaf9ee65bc12",
+    "semantic_hash": "4ee5d2e9eefbac17ccfddaf9ee65bc12"
+  },
+  "openapi/paths/folders/createFolders.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901153,
+    "ast_hash": "553ca701022a6350b7ba8db9b98b92d0",
+    "semantic_hash": "553ca701022a6350b7ba8db9b98b92d0"
+  },
+  "openapi/paths/folders/deleteFolders.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901163,
+    "ast_hash": "71ecaf69a39d6b81a1c0c73e85c53273",
+    "semantic_hash": "71ecaf69a39d6b81a1c0c73e85c53273"
+  },
+  "openapi/paths/folders/getFolders.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.090117,
+    "ast_hash": "de61e51fb4c5f126891050fb556dfe83",
+    "semantic_hash": "de61e51fb4c5f126891050fb556dfe83"
+  },
+  "openapi/paths/folders/index.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901177,
+    "ast_hash": "e2d9e8208e287f3fbb6627726a59451c",
+    "semantic_hash": "e2d9e8208e287f3fbb6627726a59451c"
+  },
+  "openapi/paths/folders/singular/createFolder.yaml": {
+    "mtime": 1764445927.0462162,
+    "seen": 1792327946.0901184,
+    "ast_hash": "6c5c427e280aae3a27654baaa4477ff4",
+    "semantic_hash": "6c5c427e280aae3a27654baaa4477ff4"
+  },
+  "openapi/paths/folders/singular/index.yaml": {
+    "mtime": 1764445927.046707,
+    "seen": 1792327946.0901191,
+    "ast_hash": "2018dbbdeb8b8e2906b5a05aa8a016c7",
+    "semantic_hash": "2018dbbdeb8b8e2906b5a05aa8a016c7"
+  },
+  "openapi/paths/folders/updateFolders.yaml": {
+    "mtime": 1764445927.046707,
+    "seen": 1792327946.0901198,
+    "ast_hash": "9bc3dabdaf5a64bf4d56d1a2baea1006",
+    "semantic_hash": "9bc3dabdaf5a64bf4d56d1a2baea1006"
+  },
+  "openapi/paths/items/_collection/_id/deleteItem.yaml": {
+    "mtime": 1764445927.0468385,
+    "seen": 1792327946.0901208,
+    "ast_hash": "6e6cf9f09f711f884138b4fff7db6fd8",
+    "semantic_hash": "6e6cf9f09f711f884138b4fff7db6fd8"
+  },
+  "openapi/paths/items/_collection/_id/getCollectionItem.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.0901215,
+    "ast_hash": "a08c7f55454680017ba9d3d267b2f0a6",
+    "semantic_hash": "a08c7f55454680017ba9d3d267b2f0a6"
+  },
+  "openapi/paths/items/_collection/_id/index.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.0901222,
+    "ast_hash": "f155399bca3a22d63cb75cb1c0090168",
+    "semantic_hash": "f155399bca3a22d63cb75cb1c0090168"
+  },
+  "openapi/paths/items/_collection/_id/updateItem.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.090123,
+    "ast_hash": "dc969bbfeeb1e6ada84676fd5e0515af",
+    "semantic_hash": "dc969bbfeeb1e6ada84676fd5e0515af"
+  },
+  "openapi/paths/items/_collection/createItems.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.090124,
+    "ast_hash": "78b4124f2ccc1f0b98527761725b9cd8",
+    "semantic_hash": "78b4124f2ccc1f0b98527761725b9cd8"
+  },
+  "openapi/paths/items/_collection/deleteItems.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.0901246,
+    "ast_hash": "bd413dfa534fc93d40f2363939b4c12d",
+    "semantic_hash": "bd413dfa534fc93d40f2363939b4c12d"
+  },
+  "openapi/paths/items/_collection/getCollectionItems.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.0901253,
+    "ast_hash": "c6becfea7d59b8c9e6ebe75b656b41d4",
+    "semantic_hash": "c6becfea7d59b8c9e6ebe75b656b41d4"
+  },
+  "openapi/paths/items/_collection/index.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.090126,
+    "ast_hash": "76bf8b5ad217117bcdc66d229ebd88c7",
+    "semantic_hash": "76bf8b5ad217117bcdc66d229ebd88c7"
+  },
+  "openapi/paths/items/_collection/singleton/getSingleton.yaml": {
+    "mtime": 1764445927.0469403,
+    "seen": 1792327946.0901268,
+    "ast_hash": "9c25d349e1cdeb7873b5676e3f91fffc",
+    "semantic_hash": "9c25d349e1cdeb7873b5676e3f91fffc"
+  },
+  "openapi/paths/items/_collection/singleton/index.yaml": {
+    "mtime": 1764445927.0474403,
+    "seen": 1792327946.0901277,
+    "ast_hash": "e6a4c4e5c74b0ed4adcdc7b863ece380",
+    "semantic_hash": "e6a4c4e5c74b0ed4adcdc7b863ece380"
+  },
+  "openapi/paths/items/_collection/singleton/updateSingleton.yaml": {
+    "mtime": 1764445927.0474913,
+    "seen": 1792327946.0901284,
+    "ast_hash": "3aa6a35ffa0f64ffc2add451b42c6c2d",
+    "semantic_hash": "3aa6a35ffa0f64ffc2add451b42c6c2d"
+  },
+  "openapi/paths/items/_collection/singular/createItem.yaml": {
+    "mtime": 1764445927.0474913,
+    "seen": 1792327946.0901291,
+    "ast_hash": "53ed3a057661e53cd3a47f97126accfc",
+    "semantic_hash": "53ed3a057661e53cd3a47f97126accfc"
+  },
+  "openapi/paths/items/_collection/singular/index.yaml": {
+    "mtime": 1764445927.0476398,
+    "seen": 1792327946.0901299,
+    "ast_hash": "aaddbc97a52123ecd3a0a58112ea2322",
+    "semantic_hash": "aaddbc97a52123ecd3a0a58112ea2322"
+  },
+  "openapi/paths/items/_collection/updateItems.yaml": {
+    "mtime": 1764445927.0476398,
+    "seen": 1792327946.0901308,
+    "ast_hash": "99fa3c368f4edbc30394863d6d0e13fd",
+    "semantic_hash": "99fa3c368f4edbc30394863d6d0e13fd"
+  },
+  "openapi/paths/metrics/getMetrics.yaml": {
+    "mtime": 1764445927.0476398,
+    "seen": 1792327946.0901315,
+    "ast_hash": "a01f0099230fbb10a1afe73364a31b09",
+    "semantic_hash": "a01f0099230fbb10a1afe73364a31b09"
+  },
+  "openapi/paths/metrics/index.yaml": {
+    "mtime": 1764445927.0478394,
+    "seen": 1792327946.0901322,
+    "ast_hash": "94c27c271b1d362437b53bdc55640b6b",
+    "semantic_hash": "94c27c271b1d362437b53bdc55640b6b"
+  },
+  "openapi/paths/notifications/_id/deleteNotification.yaml": {
+    "mtime": 1764445927.0479093,
+    "seen": 1792327946.090133,
+    "ast_hash": "a327597227bd5e82d870eca33ccb0156",
+    "semantic_hash": "a327597227bd5e82d870eca33ccb0156"
+  },
+  "openapi/paths/notifications/_id/getNotification.yaml": {
+    "mtime": 1764445927.0480013,
+    "seen": 1792327946.0901337,
+    "ast_hash": "fcf5296ef79137200a7722237ba092a3",
+    "semantic_hash": "fcf5296ef79137200a7722237ba092a3"
+  },
+  "openapi/paths/notifications/_id/index.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901346,
+    "ast_hash": "514a3db5e61c6a9fe742946359fef666",
+    "semantic_hash": "514a3db5e61c6a9fe742946359fef666"
+  },
+  "openapi/paths/notifications/_id/updateNotification.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901353,
+    "ast_hash": "1ff43eba5de076544e18fac3a654e045",
+    "semantic_hash": "1ff43eba5de076544e18fac3a654e045"
+  },
+  "openapi/paths/notifications/createNotifications.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.090136,
+    "ast_hash": "542ff48a3ea352ccc5c278fcb543dfb4",
+    "semantic_hash": "542ff48a3ea352ccc5c278fcb543dfb4"
+  },
+  "openapi/paths/notifications/deleteNotifications.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901368,
+    "ast_hash": "fb0224ac1673a7fa4c56225a5733a1e5",
+    "semantic_hash": "fb0224ac1673a7fa4c56225a5733a1e5"
+  },
+  "openapi/paths/notifications/getNotifications.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901375,
+    "ast_hash": "68ed73aa2aec4a770327a9421fd7f5ca",
+    "semantic_hash": "68ed73aa2aec4a770327a9421fd7f5ca"
+  },
+  "openapi/paths/notifications/index.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901384,
+    "ast_hash": "3b52b7f029474c76059c259be5ace8f4",
+    "semantic_hash": "3b52b7f029474c76059c259be5ace8f4"
+  },
+  "openapi/paths/notifications/singular/createNotification.yaml": {
+    "mtime": 1764445927.0480618,
+    "seen": 1792327946.0901392,
+    "ast_hash": "ef9450a95ac09e75cdf850474630d627",
+    "semantic_hash": "ef9450a95ac09e75cdf850474630d627"
+  },
+  "openapi/paths/notifications/singular/index.yaml": {
+    "mtime": 1764445927.048522,
+    "seen": 1792327946.0901399,
+    "ast_hash": "87e267cc1845f7f30ec0f5381a5bf8a7",
+    "semantic_hash": "87e267cc1845f7f30ec0f5381a5bf8a7"
+  },
+  "openapi/paths/notifications/updateNotifications.yaml": {
+    "mtime": 1764445927.048522,
+    "seen": 1792327946.0901406,
+    "ast_hash": "83fd86d92f398c4550a4389a7fff9956",
+    "semantic_hash": "83fd86d92f398c4550a4389a7fff9956"
+  },
+  "openapi/paths/operations/_id/deleteOperation.yaml": {
+    "mtime": 1764445927.0486588,
+    "seen": 1792327946.0901415,
+    "ast_hash": "669157da56dfda7bca39e7b0c3faf9cf",
+    "semantic_hash": "669157da56dfda7bca39e7b0c3faf9cf"
+  },
+  "openapi/paths/operations/_id/getOperation.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901423,
+    "ast_hash": "bd7a7ccc1d911836bc461967fc8ad1ae",
+    "semantic_hash": "bd7a7ccc1d911836bc461967fc8ad1ae"
+  },
+  "openapi/paths/operations/_id/index.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.090143,
+    "ast_hash": "3604dc44674533c5b1f7b77c273d06a4",
+    "semantic_hash": "3604dc44674533c5b1f7b77c273d06a4"
+  },
+  "openapi/paths/operations/_id/updateOperation.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901437,
+    "ast_hash": "919ac09db5e3de9f76820b1df11d436c",
+    "semantic_hash": "919ac09db5e3de9f76820b1df11d436c"
+  },
+  "openapi/paths/operations/createOperations.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901444,
+    "ast_hash": "bf7d311ef991ce588c080c5f80d77a63",
+    "semantic_hash": "bf7d311ef991ce588c080c5f80d77a63"
+  },
+  "openapi/paths/operations/deleteOperations.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901453,
+    "ast_hash": "7e0d82a6d6098ad0058f32850332661b",
+    "semantic_hash": "7e0d82a6d6098ad0058f32850332661b"
+  },
+  "openapi/paths/operations/getOperations.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.090146,
+    "ast_hash": "a2f2172da463267f1ab46218bd38453d",
+    "semantic_hash": "a2f2172da463267f1ab46218bd38453d"
+  },
+  "openapi/paths/operations/index.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901468,
+    "ast_hash": "fb9879a334c51790168d09cb834196dc",
+    "semantic_hash": "fb9879a334c51790168d09cb834196dc"
+  },
+  "openapi/paths/operations/singular/createOperation.yaml": {
+    "mtime": 1764445927.0487356,
+    "seen": 1792327946.0901473,
+    "ast_hash": "38af393c75913606603388201c9cd4dc",
+    "semantic_hash": "38af393c75913606603388201c9cd4dc"
+  },
+  "openapi/paths/operations/singular/index.yaml": {
+    "mtime": 1764445927.0492563,
+    "seen": 1792327946.0901482,
+    "ast_hash": "2b4cf2b33d90530bef6f42d9dcdf266a",
+    "semantic_hash": "2b4cf2b33d90530bef6f42d9dcdf266a"
+  },
+  "openapi/paths/operations/updateOperations.yaml": {
+    "mtime": 1764445927.0492563,
+    "seen": 1792327946.090149,
+    "ast_hash": "a7ed7cac8bc4c6a71d10e39b26bcb190",
+    "semantic_hash": "a7ed7cac8bc4c6a71d10e39b26bcb190"
+  },
+  "openapi/paths/panels/_id/deletePanel.yaml": {
+    "mtime": 1764445927.0493827,
+    "seen": 1792327946.0901496,
+    "ast_hash": "4be6a1ff317e9ca1454e2dd95e60b671",
+    "semantic_hash": "4be6a1ff317e9ca1454e2dd95e60b671"
+  },
+  "openapi/paths/panels/_id/getPanel.yaml": {
+    "mtime": 1764445927.0494604,
+    "seen": 1792327946.0901506,
+    "ast_hash": "995ccdc44513bc71b49d946b6b564278",
+    "semantic_hash": "995ccdc44513bc71b49d946b6b564278"
+  },
+  "openapi/paths/panels/_id/index.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.0901513,
+    "ast_hash": "2e82f78570de3d9a9b14a99925db8d29",
+    "semantic_hash": "2e82f78570de3d9a9b14a99925db8d29"
+  },
+  "openapi/paths/panels/_id/updatePanel.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.0901523,
+    "ast_hash": "7fc9d5b631530f11c6809d9566282b59",
+    "semantic_hash": "7fc9d5b631530f11c6809d9566282b59"
+  },
+  "openapi/paths/panels/createPanels.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.090153,
+    "ast_hash": "6f18a7ce36a1c7c4b66f75d0a6891c17",
+    "semantic_hash": "6f18a7ce36a1c7c4b66f75d0a6891c17"
+  },
+  "openapi/paths/panels/deletePanels.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.0901537,
+    "ast_hash": "365ac09a10699c9907ce9014819ceff5",
+    "semantic_hash": "365ac09a10699c9907ce9014819ceff5"
+  },
+  "openapi/paths/panels/getPanels.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.0901544,
+    "ast_hash": "2c2802a95393274481a7790d1b5d8f75",
+    "semantic_hash": "2c2802a95393274481a7790d1b5d8f75"
+  },
+  "openapi/paths/panels/index.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.0901554,
+    "ast_hash": "c06fc2ab4285da21664ca9e45309ca4a",
+    "semantic_hash": "c06fc2ab4285da21664ca9e45309ca4a"
+  },
+  "openapi/paths/panels/singular/createPanel.yaml": {
+    "mtime": 1764445927.049519,
+    "seen": 1792327946.090156,
+    "ast_hash": "54821e438517c5fe65a59ead148ded57",
+    "semantic_hash": "54821e438517c5fe65a59ead148ded57"
+  },
+  "openapi/paths/panels/singular/index.yaml": {
+    "mtime": 1764445927.0499563,
+    "seen": 1792327946.0901568,
+    "ast_hash": "c91fa6d2bf97361770cca970eb3ad658",
+    "semantic_hash": "c91fa6d2bf97361770cca970eb3ad658"
+  },
+  "openapi/paths/panels/updatePanels.yaml": {
+    "mtime": 1764445927.0499563,
+    "seen": 1792327946.0901573,
+    "ast_hash": "17ead630ee9969145699558539ba2b04",
+    "semantic_hash": "17ead630ee9969145699558539ba2b04"
+  },
+  "openapi/paths/permissions/_id/deletePermission.yaml": {
+    "mtime": 1764445927.0500867,
+    "seen": 1792327946.0901582,
+    "ast_hash": "15d71213fe0c0a2053738d340be3dc51",
+    "semantic_hash": "15d71213fe0c0a2053738d340be3dc51"
+  },
+  "openapi/paths/permissions/_id/getPermission.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.0901592,
+    "ast_hash": "18a01430cf18810b5e24e6a12ed6e2f7",
+    "semantic_hash": "18a01430cf18810b5e24e6a12ed6e2f7"
+  },
+  "openapi/paths/permissions/_id/index.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.09016,
+    "ast_hash": "0e6634a1300c504c8b2a81f2e928f918",
+    "semantic_hash": "0e6634a1300c504c8b2a81f2e928f918"
+  },
+  "openapi/paths/permissions/_id/updatePermission.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.0901606,
+    "ast_hash": "0fa3d57252f403ee8118c575cc2729a7",
+    "semantic_hash": "0fa3d57252f403ee8118c575cc2729a7"
+  },
+  "openapi/paths/permissions/createPermissions.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.0901613,
+    "ast_hash": "39cfb2c2227ec1b124b9b637db7ede27",
+    "semantic_hash": "39cfb2c2227ec1b124b9b637db7ede27"
+  },
+  "openapi/paths/permissions/deletePermissions.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.0901623,
+    "ast_hash": "46e9f10796ce48a754228f0a3d5fe775",
+    "semantic_hash": "46e9f10796ce48a754228f0a3d5fe775"
+  },
+  "openapi/paths/permissions/getPermissions.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.090163,
+    "ast_hash": "793cab11351576cf29c2511ff46477fb",
+    "semantic_hash": "793cab11351576cf29c2511ff46477fb"
+  },
+  "openapi/paths/permissions/index.yaml": {
+    "mtime": 1764445927.0501637,
+    "seen": 1792327946.0901637,
+    "ast_hash": "11ae7d4d5277d53b353eb70bee7c0449",
+    "semantic_hash": "11ae7d4d5277d53b353eb70bee7c0449"
+  },
+  "openapi/paths/permissions/me/_collection/_id/getItemPermissions.yaml": {
+    "mtime": 1764445927.050598,
+    "seen": 1792327946.0901644,
+    "ast_hash": "a65b6b5e387f5d3e9fc98ae40f8c85c6",
+    "semantic_hash": "a65b6b5e387f5d3e9fc98ae40f8c85c6"
+  },
+  "openapi/paths/permissions/me/_collection/_id/index.yaml": {
+    "mtime": 1764445927.0507023,
+    "seen": 1792327946.0901651,
+    "ast_hash": "9c73f854a66e085a79aa326bb3fae18d",
+    "semantic_hash": "9c73f854a66e085a79aa326bb3fae18d"
+  },
+  "openapi/paths/permissions/me/getUserPermissions.yaml": {
+    "mtime": 1764445927.0507023,
+    "seen": 1792327946.090166,
+    "ast_hash": "8592bf18e5886090ed360087d63ce363",
+    "semantic_hash": "8592bf18e5886090ed360087d63ce363"
+  },
+  "openapi/paths/permissions/me/index.yaml": {
+    "mtime": 1764445927.0507023,
+    "seen": 1792327946.0901668,
+    "ast_hash": "8d4b9a17f32bf52a9652b99c05f455ba",
+    "semantic_hash": "8d4b9a17f32bf52a9652b99c05f455ba"
+  },
+  "openapi/paths/permissions/singular/createPermission.yaml": {
+    "mtime": 1764445927.0507023,
+    "seen": 1792327946.0901675,
+    "ast_hash": "a8b7ed11ad1d35fc0527c7d42fa357f9",
+    "semantic_hash": "a8b7ed11ad1d35fc0527c7d42fa357f9"
+  },
+  "openapi/paths/permissions/singular/index.yaml": {
+    "mtime": 1764445927.0509758,
+    "seen": 1792327946.0901682,
+    "ast_hash": "f899b0e00aae6d4b425b4d3786188ee5",
+    "semantic_hash": "f899b0e00aae6d4b425b4d3786188ee5"
+  },
+  "openapi/paths/permissions/updatePermissions.yaml": {
+    "mtime": 1764445927.0509758,
+    "seen": 1792327946.0901692,
+    "ast_hash": "1b7690b2d141241ec97bedf0855ac653",
+    "semantic_hash": "1b7690b2d141241ec97bedf0855ac653"
+  },
+  "openapi/paths/policies/_id/deletePolicy.yaml": {
+    "mtime": 1764445927.0511062,
+    "seen": 1792327946.09017,
+    "ast_hash": "1231e66b0c26916ff95e48a38ed1923f",
+    "semantic_hash": "1231e66b0c26916ff95e48a38ed1923f"
+  },
+  "openapi/paths/policies/_id/getPolicy.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.0901709,
+    "ast_hash": "cced06a542d2c5dcf2523c0ddf0bf45a",
+    "semantic_hash": "cced06a542d2c5dcf2523c0ddf0bf45a"
+  },
+  "openapi/paths/policies/_id/index.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.0901713,
+    "ast_hash": "e3d61c7a388afbb25cf7fe56b23cdb1d",
+    "semantic_hash": "e3d61c7a388afbb25cf7fe56b23cdb1d"
+  },
+  "openapi/paths/policies/_id/updatePolicy.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.090172,
+    "ast_hash": "4e7bab844b6a0c4600a5173de8b894fc",
+    "semantic_hash": "4e7bab844b6a0c4600a5173de8b894fc"
+  },
+  "openapi/paths/policies/createPolicies.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.090173,
+    "ast_hash": "228fb0b90d75f6f2d7f93c32e45bd54c",
+    "semantic_hash": "228fb0b90d75f6f2d7f93c32e45bd54c"
+  },
+  "openapi/paths/policies/deletePolicies.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.0901737,
+    "ast_hash": "c48728aad674ef6923e493dabf95ffb8",
+    "semantic_hash": "c48728aad674ef6923e493dabf95ffb8"
+  },
+  "openapi/paths/policies/getPolicies.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.0901744,
+    "ast_hash": "fd423a1d67ecb3abe172435890b156fe",
+    "semantic_hash": "fd423a1d67ecb3abe172435890b156fe"
+  },
+  "openapi/paths/policies/index.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.0901752,
+    "ast_hash": "872a5cc3232b26001822255923fcf105",
+    "semantic_hash": "872a5cc3232b26001822255923fcf105"
+  },
+  "openapi/paths/policies/singular/createPolicy.yaml": {
+    "mtime": 1764445927.0511978,
+    "seen": 1792327946.090176,
+    "ast_hash": "43731d6e57d89f2b329906d00953c021",
+    "semantic_hash": "43731d6e57d89f2b329906d00953c021"
+  },
+  "openapi/paths/policies/singular/index.yaml": {
+    "mtime": 1764445927.051717,
+    "seen": 1792327946.0901768,
+    "ast_hash": "46008db03da2a8c986be2e264d4a0594",
+    "semantic_hash": "46008db03da2a8c986be2e264d4a0594"
+  },
+  "openapi/paths/policies/updatePolicies.yaml": {
+    "mtime": 1764445927.051717,
+    "seen": 1792327946.0901775,
+    "ast_hash": "9431e99fe10e6d3a573c90dcfbf4b7ee",
+    "semantic_hash": "9431e99fe10e6d3a573c90dcfbf4b7ee"
+  },
+  "openapi/paths/presets/_id/deletePreset.yaml": {
+    "mtime": 1764445927.0518498,
+    "seen": 1792327946.0901783,
+    "ast_hash": "2cfb785662a1cf1aa50989ceca1b9197",
+    "semantic_hash": "2cfb785662a1cf1aa50989ceca1b9197"
+  },
+  "openapi/paths/presets/_id/getPreset.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.090179,
+    "ast_hash": "789d1f08680e164aac3238248bc862e9",
+    "semantic_hash": "789d1f08680e164aac3238248bc862e9"
+  },
+  "openapi/paths/presets/_id/index.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.09018,
+    "ast_hash": "20cb054e3457aff1141e322fca41761f",
+    "semantic_hash": "20cb054e3457aff1141e322fca41761f"
+  },
+  "openapi/paths/presets/_id/updatePreset.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.0901806,
+    "ast_hash": "4cfdd8944c4e9511fb0c3a11b2bfd338",
+    "semantic_hash": "4cfdd8944c4e9511fb0c3a11b2bfd338"
+  },
+  "openapi/paths/presets/createPresets.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.0901814,
+    "ast_hash": "6411238a48ddf323f699c175c59b803b",
+    "semantic_hash": "6411238a48ddf323f699c175c59b803b"
+  },
+  "openapi/paths/presets/deletePresets.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.090182,
+    "ast_hash": "83732b6e2e6b6073c3606f09adacc9f0",
+    "semantic_hash": "83732b6e2e6b6073c3606f09adacc9f0"
+  },
+  "openapi/paths/presets/getPresets.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.090183,
+    "ast_hash": "dc8fce0bcc94f2f3b6b47eb23e1b9842",
+    "semantic_hash": "dc8fce0bcc94f2f3b6b47eb23e1b9842"
+  },
+  "openapi/paths/presets/index.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.0901837,
+    "ast_hash": "1889f14548478ffc6d6820a4c399949f",
+    "semantic_hash": "1889f14548478ffc6d6820a4c399949f"
+  },
+  "openapi/paths/presets/singular/createPreset.yaml": {
+    "mtime": 1764445927.051938,
+    "seen": 1792327946.0901845,
+    "ast_hash": "8e0b1ce7f8b7c5316637a802e22e9def",
+    "semantic_hash": "8e0b1ce7f8b7c5316637a802e22e9def"
+  },
+  "openapi/paths/presets/singular/index.yaml": {
+    "mtime": 1764445927.0524547,
+    "seen": 1792327946.0901852,
+    "ast_hash": "20532461a5e8bd283878f50d61e158ec",
+    "semantic_hash": "20532461a5e8bd283878f50d61e158ec"
+  },
+  "openapi/paths/presets/updatePresets.yaml": {
+    "mtime": 1764445927.0524547,
+    "seen": 1792327946.0901859,
+    "ast_hash": "e57f06bf428b6a0172b8e449de545c99",
+    "semantic_hash": "e57f06bf428b6a0172b8e449de545c99"
+  },
+  "openapi/paths/relations/_collection/getRelationByCollection.yaml": {
+    "mtime": 1764445927.0525942,
+    "seen": 1792327946.0901868,
+    "ast_hash": "89b91efd150424b09ce0c3cba82cee85",
+    "semantic_hash": "89b91efd150424b09ce0c3cba82cee85"
+  },
+  "openapi/paths/relations/_collection/index.yaml": {
+    "mtime": 1764445927.0526783,
+    "seen": 1792327946.0901875,
+    "ast_hash": "a6ff4fdb4a00212e1b9d8b53bc1271c8",
+    "semantic_hash": "a6ff4fdb4a00212e1b9d8b53bc1271c8"
+  },
+  "openapi/paths/relations/_id/deleteRelation.yaml": {
+    "mtime": 1764445927.0526783,
+    "seen": 1792327946.090188,
+    "ast_hash": "4120b0dad62b2991d1ca750d92038a01",
+    "semantic_hash": "4120b0dad62b2991d1ca750d92038a01"
+  },
+  "openapi/paths/relations/_id/getRelation.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901887,
+    "ast_hash": "3c7fbc6898df9faaa03ca65d8a96787a",
+    "semantic_hash": "3c7fbc6898df9faaa03ca65d8a96787a"
+  },
+  "openapi/paths/relations/_id/index.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901895,
+    "ast_hash": "e84d4c76b6846d2ecd3a4a3a23148f5b",
+    "semantic_hash": "e84d4c76b6846d2ecd3a4a3a23148f5b"
+  },
+  "openapi/paths/relations/_id/updateRelation.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901904,
+    "ast_hash": "39dfe0fede640411f4ade66c1fb7899b",
+    "semantic_hash": "39dfe0fede640411f4ade66c1fb7899b"
+  },
+  "openapi/paths/relations/createRelation.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901911,
+    "ast_hash": "3239c60bfa89878f436d72392ab71eca",
+    "semantic_hash": "3239c60bfa89878f436d72392ab71eca"
+  },
+  "openapi/paths/relations/getRelations.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901916,
+    "ast_hash": "f92b6c4704374634ee0218a7a56fc7f4",
+    "semantic_hash": "f92b6c4704374634ee0218a7a56fc7f4"
+  },
+  "openapi/paths/relations/index.yaml": {
+    "mtime": 1764445927.0528102,
+    "seen": 1792327946.0901923,
+    "ast_hash": "b4243493dffdcaeed124013465e91544",
+    "semantic_hash": "b4243493dffdcaeed124013465e91544"
+  },
+  "openapi/paths/revisions/_id/getRevision.yaml": {
+    "mtime": 1764445927.0532455,
+    "seen": 1792327946.090193,
+    "ast_hash": "b9f964457cacb1ec7095b12e4c55e43b",
+    "semantic_hash": "b9f964457cacb1ec7095b12e4c55e43b"
+  },
+  "openapi/paths/revisions/_id/index.yaml": {
+    "mtime": 1764445927.0533242,
+    "seen": 1792327946.0901942,
+    "ast_hash": "d93a55f14409ebbbd6d131ffc278b003",
+    "semantic_hash": "d93a55f14409ebbbd6d131ffc278b003"
+  },
+  "openapi/paths/revisions/getRevisions.yaml": {
+    "mtime": 1764445927.0533242,
+    "seen": 1792327946.090195,
+    "ast_hash": "9f31cf3565b1888b86e6316225113f28",
+    "semantic_hash": "9f31cf3565b1888b86e6316225113f28"
+  },
+  "openapi/paths/revisions/index.yaml": {
+    "mtime": 1764445927.0533242,
+    "seen": 1792327946.0901954,
+    "ast_hash": "9de9c932d14ef9420bcae85aed20e88a",
+    "semantic_hash": "9de9c932d14ef9420bcae85aed20e88a"
+  },
+  "openapi/paths/roles/_id/deleteRole.yaml": {
+    "mtime": 1764445927.0535026,
+    "seen": 1792327946.0901964,
+    "ast_hash": "ed5f2bd012f51060608ba0d666fc36e2",
+    "semantic_hash": "ed5f2bd012f51060608ba0d666fc36e2"
+  },
+  "openapi/paths/roles/_id/getRole.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.090197,
+    "ast_hash": "bbcf7d43a5292837520730b4b5b927ea",
+    "semantic_hash": "bbcf7d43a5292837520730b4b5b927ea"
+  },
+  "openapi/paths/roles/_id/index.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0901978,
+    "ast_hash": "76c6d09af89f1a0adaf9023a6370b1b2",
+    "semantic_hash": "76c6d09af89f1a0adaf9023a6370b1b2"
+  },
+  "openapi/paths/roles/_id/updateRole.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0901985,
+    "ast_hash": "1d2fe697abc16fdc1e183634132f560a",
+    "semantic_hash": "1d2fe697abc16fdc1e183634132f560a"
+  },
+  "openapi/paths/roles/createRoles.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0901992,
+    "ast_hash": "7131e705516e4f3825693cbb32a1cc46",
+    "semantic_hash": "7131e705516e4f3825693cbb32a1cc46"
+  },
+  "openapi/paths/roles/deleteRoles.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0902,
+    "ast_hash": "d922a72e8b49707744ffd3ced68a7173",
+    "semantic_hash": "d922a72e8b49707744ffd3ced68a7173"
+  },
+  "openapi/paths/roles/getRoles.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.090201,
+    "ast_hash": "c26286254f570471fb3846089f0ff46d",
+    "semantic_hash": "c26286254f570471fb3846089f0ff46d"
+  },
+  "openapi/paths/roles/index.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0902016,
+    "ast_hash": "f1406ef3b6f4dbaf977af8f8613748b1",
+    "semantic_hash": "f1406ef3b6f4dbaf977af8f8613748b1"
+  },
+  "openapi/paths/roles/singular/createRole.yaml": {
+    "mtime": 1764445927.053582,
+    "seen": 1792327946.0902023,
+    "ast_hash": "16352d5763fbf3381bf5a0a193c2da9a",
+    "semantic_hash": "16352d5763fbf3381bf5a0a193c2da9a"
+  },
+  "openapi/paths/roles/singular/index.yaml": {
+    "mtime": 1764445927.0541155,
+    "seen": 1792327946.0902028,
+    "ast_hash": "3d83c26f9a411de8141398d1b7ef1968",
+    "semantic_hash": "3d83c26f9a411de8141398d1b7ef1968"
+  },
+  "openapi/paths/roles/updateRoles.yaml": {
+    "mtime": 1764445927.0541155,
+    "seen": 1792327946.0902038,
+    "ast_hash": "20c90d4198dd24bf2612683fcf67c4ee",
+    "semantic_hash": "20c90d4198dd24bf2612683fcf67c4ee"
+  },
+  "openapi/paths/schema/apply/index.yaml": {
+    "mtime": 1764445927.054272,
+    "seen": 1792327946.0902045,
+    "ast_hash": "28fc6908937798aacd84f4fa1b6f69ee",
+    "semantic_hash": "28fc6908937798aacd84f4fa1b6f69ee"
+  },
+  "openapi/paths/schema/apply/schemaApply.yaml": {
+    "mtime": 1764445927.0543392,
+    "seen": 1792327946.0902052,
+    "ast_hash": "effba71d6990c1f421b5ebfded8a39b5",
+    "semantic_hash": "effba71d6990c1f421b5ebfded8a39b5"
+  },
+  "openapi/paths/schema/diff/index.yaml": {
+    "mtime": 1764445927.0543392,
+    "seen": 1792327946.090206,
+    "ast_hash": "c3557c16d6dd9287f9a32814c540222c",
+    "semantic_hash": "c3557c16d6dd9287f9a32814c540222c"
+  },
+  "openapi/paths/schema/diff/schemaDiff.yaml": {
+    "mtime": 1764445927.054503,
+    "seen": 1792327946.0902066,
+    "ast_hash": "47d0b61d75310d9941cfc7f7c5b41083",
+    "semantic_hash": "47d0b61d75310d9941cfc7f7c5b41083"
+  },
+  "openapi/paths/schema/snapshot/index.yaml": {
+    "mtime": 1764445927.054503,
+    "seen": 1792327946.0902076,
+    "ast_hash": "70f82792d96c46271e5e41d0bd25dcf0",
+    "semantic_hash": "70f82792d96c46271e5e41d0bd25dcf0"
+  },
+  "openapi/paths/schema/snapshot/schemaSnapshot.yaml": {
+    "mtime": 1764445927.0546422,
+    "seen": 1792327946.0902083,
+    "ast_hash": "9e3b5decea896d399f71ea6cbeaae43d",
+    "semantic_hash": "9e3b5decea896d399f71ea6cbeaae43d"
+  },
+  "openapi/paths/server/health/index.yaml": {
+    "mtime": 1764445927.054717,
+    "seen": 1792327946.0902088,
+    "ast_hash": "a8047def2833174111186a0be87ee54d",
+    "semantic_hash": "a8047def2833174111186a0be87ee54d"
+  },
+  "openapi/paths/server/health/serverHealth.yaml": {
+    "mtime": 1764445927.0547822,
+    "seen": 1792327946.0902095,
+    "ast_hash": "32e2c5e520369e4f46e2ca0685a32de4",
+    "semantic_hash": "32e2c5e520369e4f46e2ca0685a32de4"
+  },
+  "openapi/paths/server/info/index.yaml": {
+    "mtime": 1764445927.0547822,
+    "seen": 1792327946.0902102,
+    "ast_hash": "85f3b7ea6b3a59c145ea49cb6121d510",
+    "semantic_hash": "85f3b7ea6b3a59c145ea49cb6121d510"
+  },
+  "openapi/paths/server/info/serverInfo.yaml": {
+    "mtime": 1764445927.0549142,
+    "seen": 1792327946.0902112,
+    "ast_hash": "f5747f23d6194793de68c5ba1d82f2dc",
+    "semantic_hash": "f5747f23d6194793de68c5ba1d82f2dc"
+  },
+  "openapi/paths/server/ping/index.yaml": {
+    "mtime": 1764445927.0549142,
+    "seen": 1792327946.0902147,
+    "ast_hash": "c83c885dd5dc902096331c9f054f1d2e",
+    "semantic_hash": "c83c885dd5dc902096331c9f054f1d2e"
+  },
+  "openapi/paths/server/ping/ping.yaml": {
+    "mtime": 1764445927.0550458,
+    "seen": 1792327946.0902157,
+    "ast_hash": "4adc76363162fe3a77aeda934ed9cd79",
+    "semantic_hash": "4adc76363162fe3a77aeda934ed9cd79"
+  },
+  "openapi/paths/server/specs/graphql/index.yaml": {
+    "mtime": 1764445927.0551188,
+    "seen": 1792327946.0902164,
+    "ast_hash": "27161fe2fb5b41019845721ea80425a5",
+    "semantic_hash": "27161fe2fb5b41019845721ea80425a5"
+  },
+  "openapi/paths/server/specs/graphql/readGraphqlSdl.yaml": {
+    "mtime": 1764445927.0551887,
+    "seen": 1792327946.090217,
+    "ast_hash": "0856ad728ad02bbcf792d50b5625f005",
+    "semantic_hash": "0856ad728ad02bbcf792d50b5625f005"
+  },
+  "openapi/paths/server/specs/oas/index.yaml": {
+    "mtime": 1764445927.0551887,
+    "seen": 1792327946.0902178,
+    "ast_hash": "a3b993450632293b3efedffb4fe33883",
+    "semantic_hash": "a3b993450632293b3efedffb4fe33883"
+  },
+  "openapi/paths/server/specs/oas/readOpenApiSpec.yaml": {
+    "mtime": 1764445927.0553265,
+    "seen": 1792327946.0902185,
+    "ast_hash": "d4b5a83068d3ef4b984f93ced75ab0fb",
+    "semantic_hash": "d4b5a83068d3ef4b984f93ced75ab0fb"
+  },
+  "openapi/paths/settings/getSettings.yaml": {
+    "mtime": 1764445927.0553265,
+    "seen": 1792327946.0902193,
+    "ast_hash": "0a9f36208f8fa6344f7a9a99de926b00",
+    "semantic_hash": "0a9f36208f8fa6344f7a9a99de926b00"
+  },
+  "openapi/paths/settings/index.yaml": {
+    "mtime": 1764445927.0554712,
+    "seen": 1792327946.09022,
+    "ast_hash": "cd0f9dea6e2202da9d38181a437b8038",
+    "semantic_hash": "cd0f9dea6e2202da9d38181a437b8038"
+  },
+  "openapi/paths/settings/updateSettings.yaml": {
+    "mtime": 1764445927.0555305,
+    "seen": 1792327946.0902207,
+    "ast_hash": "0de8c9cf2d492398066ecd5cddad954e",
+    "semantic_hash": "0de8c9cf2d492398066ecd5cddad954e"
+  },
+  "openapi/paths/shares/_id/deleteShare.yaml": {
+    "mtime": 1764445927.055606,
+    "seen": 1792327946.0902216,
+    "ast_hash": "0db65d4c2ac84c8a72ba5d9c40e61a79",
+    "semantic_hash": "0db65d4c2ac84c8a72ba5d9c40e61a79"
+  },
+  "openapi/paths/shares/_id/getShare.yaml": {
+    "mtime": 1764445927.055685,
+    "seen": 1792327946.0902224,
+    "ast_hash": "f4afde35dc90f328b7d8d709b3465dfa",
+    "semantic_hash": "f4afde35dc90f328b7d8d709b3465dfa"
+  },
+  "openapi/paths/shares/_id/index.yaml": {
+    "mtime": 1764445927.055685,
+    "seen": 1792327946.090223,
+    "ast_hash": "5cb425d2245d552f9672361363d3451e",
+    "semantic_hash": "5cb425d2245d552f9672361363d3451e"
+  },
+  "openapi/paths/shares/_id/updateShare.yaml": {
+    "mtime": 1764445927.055685,
+    "seen": 1792327946.0902238,
+    "ast_hash": "4925e3e1d59c07b9efc20ada53ace9d2",
+    "semantic_hash": "4925e3e1d59c07b9efc20ada53ace9d2"
+  },
+  "openapi/paths/shares/_share/getPublicShareInfo.yaml": {
+    "mtime": 1764445927.055685,
+    "seen": 1792327946.0902247,
+    "ast_hash": "a5b09efbe891544cb4f2a6b62a93340e",
+    "semantic_hash": "a5b09efbe891544cb4f2a6b62a93340e"
+  },
+  "openapi/paths/shares/_share/index.yaml": {
+    "mtime": 1764445927.055945,
+    "seen": 1792327946.0902255,
+    "ast_hash": "fccace2dd54011630d02317c133ce249",
+    "semantic_hash": "fccace2dd54011630d02317c133ce249"
+  },
+  "openapi/paths/shares/auth/authenticateShare.yaml": {
+    "mtime": 1764445927.055945,
+    "seen": 1792327946.090226,
+    "ast_hash": "6ed94a74022bec494f2a571fa6d2e356",
+    "semantic_hash": "6ed94a74022bec494f2a571fa6d2e356"
+  },
+  "openapi/paths/shares/auth/index.yaml": {
+    "mtime": 1764445927.056085,
+    "seen": 1792327946.0902267,
+    "ast_hash": "13fb3ab5ab7ab34de272bf3d59cce738",
+    "semantic_hash": "13fb3ab5ab7ab34de272bf3d59cce738"
+  },
+  "openapi/paths/shares/createShares.yaml": {
+    "mtime": 1764445927.056085,
+    "seen": 1792327946.0902274,
+    "ast_hash": "5717c3ada2e1e20dd56342b24654a1d8",
+    "semantic_hash": "5717c3ada2e1e20dd56342b24654a1d8"
+  },
+  "openapi/paths/shares/deleteShares.yaml": {
+    "mtime": 1764445927.056085,
+    "seen": 1792327946.0902283,
+    "ast_hash": "744d275707749a8266ac790775c64982",
+    "semantic_hash": "744d275707749a8266ac790775c64982"
+  },
+  "openapi/paths/shares/getShares.yaml": {
+    "mtime": 1764445927.056085,
+    "seen": 1792327946.090229,
+    "ast_hash": "2a1806ed88a01b6a988e3a7cc3199b96",
+    "semantic_hash": "2a1806ed88a01b6a988e3a7cc3199b96"
+  },
+  "openapi/paths/shares/index.yaml": {
+    "mtime": 1764445927.056085,
+    "seen": 1792327946.0902295,
+    "ast_hash": "f07aa60e5cd683cf27aece5b62a69edc",
+    "semantic_hash": "f07aa60e5cd683cf27aece5b62a69edc"
+  },
+  "openapi/paths/shares/info/_id/getShareInfo.yaml": {
+    "mtime": 1764445927.056405,
+    "seen": 1792327946.0902302,
+    "ast_hash": "2c279ac9e4f915d8251d5814dbea294d",
+    "semantic_hash": "2c279ac9e4f915d8251d5814dbea294d"
+  },
+  "openapi/paths/shares/info/_id/index.yaml": {
+    "mtime": 1764445927.0564983,
+    "seen": 1792327946.090231,
+    "ast_hash": "632aa960da3735562fbb511a695fced4",
+    "semantic_hash": "632aa960da3735562fbb511a695fced4"
+  },
+  "openapi/paths/shares/invite/index.yaml": {
+    "mtime": 1764445927.0564983,
+    "seen": 1792327946.090232,
+    "ast_hash": "8f7b23c3dda9e2b005abc58aa3bdb496",
+    "semantic_hash": "8f7b23c3dda9e2b005abc58aa3bdb496"
+  },
+  "openapi/paths/shares/invite/inviteShare.yaml": {
+    "mtime": 1764445927.0566218,
+    "seen": 1792327946.0902326,
+    "ast_hash": "25bfcb64b3eccd60154a418f0d5e7c6e",
+    "semantic_hash": "25bfcb64b3eccd60154a418f0d5e7c6e"
+  },
+  "openapi/paths/shares/singular/createShare.yaml": {
+    "mtime": 1764445927.0566218,
+    "seen": 1792327946.0902333,
+    "ast_hash": "4b6b97c7275be7e823ae7744cb7af1ef",
+    "semantic_hash": "4b6b97c7275be7e823ae7744cb7af1ef"
+  },
+  "openapi/paths/shares/singular/index.yaml": {
+    "mtime": 1764445927.0567753,
+    "seen": 1792327946.090234,
+    "ast_hash": "f8afc8bcef6f6033bd85394522ec2577",
+    "semantic_hash": "f8afc8bcef6f6033bd85394522ec2577"
+  },
+  "openapi/paths/shares/updateShares.yaml": {
+    "mtime": 1764445927.0567753,
+    "seen": 1792327946.0902345,
+    "ast_hash": "28d2c74f15484b6c6061a8134affe9d3",
+    "semantic_hash": "28d2c74f15484b6c6061a8134affe9d3"
+  },
+  "openapi/paths/translations/_id/deleteTranslation.yaml": {
+    "mtime": 1764445927.056913,
+    "seen": 1792327946.0902357,
+    "ast_hash": "7f38626a4006c64607987fbe1da0e880",
+    "semantic_hash": "7f38626a4006c64607987fbe1da0e880"
+  },
+  "openapi/paths/translations/_id/getTranslation.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902364,
+    "ast_hash": "32ddd8244f0912a79f0264e8a1dd55ab",
+    "semantic_hash": "32ddd8244f0912a79f0264e8a1dd55ab"
+  },
+  "openapi/paths/translations/_id/index.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.090237,
+    "ast_hash": "88376ebd057856f2a3fcb04bb31ffdbf",
+    "semantic_hash": "88376ebd057856f2a3fcb04bb31ffdbf"
+  },
+  "openapi/paths/translations/_id/updateTranslation.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902376,
+    "ast_hash": "63895e3c480e797b8dd814ef2b2be2ec",
+    "semantic_hash": "63895e3c480e797b8dd814ef2b2be2ec"
+  },
+  "openapi/paths/translations/createTranslations.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902386,
+    "ast_hash": "a1128f93b01f4d155c247c9c055e0cd2",
+    "semantic_hash": "a1128f93b01f4d155c247c9c055e0cd2"
+  },
+  "openapi/paths/translations/deleteTranslations.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902393,
+    "ast_hash": "f32128f59739b791c444b48dcf6fb1dc",
+    "semantic_hash": "f32128f59739b791c444b48dcf6fb1dc"
+  },
+  "openapi/paths/translations/getTranslations.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902398,
+    "ast_hash": "71ada79889a9e039fec8b9c3b3a19dae",
+    "semantic_hash": "71ada79889a9e039fec8b9c3b3a19dae"
+  },
+  "openapi/paths/translations/index.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902405,
+    "ast_hash": "06fb63c33c6ab5b3854a511b07c533bf",
+    "semantic_hash": "06fb63c33c6ab5b3854a511b07c533bf"
+  },
+  "openapi/paths/translations/singular/createTranslation.yaml": {
+    "mtime": 1764445927.057002,
+    "seen": 1792327946.0902412,
+    "ast_hash": "8dea39d97a7492975a589944b5e82a98",
+    "semantic_hash": "8dea39d97a7492975a589944b5e82a98"
+  },
+  "openapi/paths/translations/singular/index.yaml": {
+    "mtime": 1764445927.0574903,
+    "seen": 1792327946.0902421,
+    "ast_hash": "28768b23fa05c08cbcecc7f8c1eff9ec",
+    "semantic_hash": "28768b23fa05c08cbcecc7f8c1eff9ec"
+  },
+  "openapi/paths/translations/updateTranslations.yaml": {
+    "mtime": 1764445927.0574903,
+    "seen": 1792327946.0902429,
+    "ast_hash": "b49ba2c4519ee6a9560cdfaaf91b3fb1",
+    "semantic_hash": "b49ba2c4519ee6a9560cdfaaf91b3fb1"
+  },
+  "openapi/paths/users/_id/deleteUser.yaml": {
+    "mtime": 1764445927.0576136,
+    "seen": 1792327946.0902433,
+    "ast_hash": "6e6bda6f3a7c989a8e4dfa31db13202c",
+    "semantic_hash": "6e6bda6f3a7c989a8e4dfa31db13202c"
+  },
+  "openapi/paths/users/_id/getUser.yaml": {
+    "mtime": 1764445927.057688,
+    "seen": 1792327946.090244,
+    "ast_hash": "623796e2a8cc4a0ffdf2ae9af9b75152",
+    "semantic_hash": "623796e2a8cc4a0ffdf2ae9af9b75152"
+  },
+  "openapi/paths/users/_id/index.yaml": {
+    "mtime": 1764445927.057688,
+    "seen": 1792327946.0902448,
+    "ast_hash": "2b9e35ade3dd11ab8562a5275c1563ea",
+    "semantic_hash": "2b9e35ade3dd11ab8562a5275c1563ea"
+  },
+  "openapi/paths/users/_id/updateUser.yaml": {
+    "mtime": 1764445927.057688,
+    "seen": 1792327946.0902457,
+    "ast_hash": "fce56bffad0b3e75a46da9e3043047cc",
+    "semantic_hash": "fce56bffad0b3e75a46da9e3043047cc"
+  },
+  "openapi/paths/users/createUsers.yaml": {
+    "mtime": 1764445927.057688,
+    "seen": 1792327946.0902464,
+    "ast_hash": "6cf77dceb24ec151d65b5dcb2ee32978",
+    "semantic_hash": "6cf77dceb24ec151d65b5dcb2ee32978"
+  },
+  "openapi/paths/users/deleteUsers.yaml": {
+    "mtime": 1764445927.057979,
+    "seen": 1792327946.0902472,
+    "ast_hash": "4059c7390b7531309d06d051f1905666",
+    "semantic_hash": "4059c7390b7531309d06d051f1905666"
+  },
+  "openapi/paths/users/getUsers.yaml": {
+    "mtime": 1764445927.057979,
+    "seen": 1792327946.0902479,
+    "ast_hash": "55ebe1a2ad3488b87228a29b3f7efc2e",
+    "semantic_hash": "55ebe1a2ad3488b87228a29b3f7efc2e"
+  },
+  "openapi/paths/users/index.yaml": {
+    "mtime": 1764445927.057979,
+    "seen": 1792327946.0902488,
+    "ast_hash": "c2c3771944a8afe52d175e7022dbaf3d",
+    "semantic_hash": "c2c3771944a8afe52d175e7022dbaf3d"
+  },
+  "openapi/paths/users/invite/accept/acceptInvite.yaml": {
+    "mtime": 1764445927.0581627,
+    "seen": 1792327946.0902493,
+    "ast_hash": "f5a24f00b605749c2a2a89f7d3b9cc70",
+    "semantic_hash": "f5a24f00b605749c2a2a89f7d3b9cc70"
+  },
+  "openapi/paths/users/invite/accept/index.yaml": {
+    "mtime": 1764445927.0582411,
+    "seen": 1792327946.09025,
+    "ast_hash": "86907e5e6150ab255c10b32c286725df",
+    "semantic_hash": "86907e5e6150ab255c10b32c286725df"
+  },
+  "openapi/paths/users/invite/index.yaml": {
+    "mtime": 1764445927.0582411,
+    "seen": 1792327946.0902507,
+    "ast_hash": "c1c9a253d192141299159e3d1c136afc",
+    "semantic_hash": "c1c9a253d192141299159e3d1c136afc"
+  },
+  "openapi/paths/users/invite/invite.yaml": {
+    "mtime": 1764445927.0583425,
+    "seen": 1792327946.0902514,
+    "ast_hash": "7a5af2f5e972f688ca6c1b0718913eb7",
+    "semantic_hash": "7a5af2f5e972f688ca6c1b0718913eb7"
+  },
+  "openapi/paths/users/me/getMe.yaml": {
+    "mtime": 1764445927.0583425,
+    "seen": 1792327946.0902524,
+    "ast_hash": "0cdf69512981d2a8528c5ab5cd09b946",
+    "semantic_hash": "0cdf69512981d2a8528c5ab5cd09b946"
+  },
+  "openapi/paths/users/me/index.yaml": {
+    "mtime": 1764445927.0584824,
+    "seen": 1792327946.090253,
+    "ast_hash": "50d4f69043c7a9f7250160c9c8ab4481",
+    "semantic_hash": "50d4f69043c7a9f7250160c9c8ab4481"
+  },
+  "openapi/paths/users/me/tfa/disable/index.yaml": {
+    "mtime": 1764445927.0585306,
+    "seen": 1792327946.0902536,
+    "ast_hash": "e00edba635bb5fbd1a5659ada1f7a450",
+    "semantic_hash": "e00edba635bb5fbd1a5659ada1f7a450"
+  },
+  "openapi/paths/users/me/tfa/disable/meTfaDisable.yaml": {
+    "mtime": 1764445927.0586092,
+    "seen": 1792327946.0902543,
+    "ast_hash": "6bf1cb755d67065870fa6c581c734133",
+    "semantic_hash": "6bf1cb755d67065870fa6c581c734133"
+  },
+  "openapi/paths/users/me/tfa/enable/index.yaml": {
+    "mtime": 1764445927.0586092,
+    "seen": 1792327946.090255,
+    "ast_hash": "b467e45523764a7d7bd987c5717b3ecb",
+    "semantic_hash": "b467e45523764a7d7bd987c5717b3ecb"
+  },
+  "openapi/paths/users/me/tfa/enable/meTfaEnable.yaml": {
+    "mtime": 1764445927.0587292,
+    "seen": 1792327946.090256,
+    "ast_hash": "6d07d14635b41a5a649b3c6da7d026b0",
+    "semantic_hash": "6d07d14635b41a5a649b3c6da7d026b0"
+  },
+  "openapi/paths/users/me/tfa/generate/generateTwoFactorSecret.yaml": {
+    "mtime": 1764445927.0587292,
+    "seen": 1792327946.0902567,
+    "ast_hash": "1a6d910ec536b62fe327e7d9331e2347",
+    "semantic_hash": "1a6d910ec536b62fe327e7d9331e2347"
+  },
+  "openapi/paths/users/me/tfa/generate/index.yaml": {
+    "mtime": 1764445927.0588825,
+    "seen": 1792327946.0902574,
+    "ast_hash": "63744dcc9357eec95d6d8c91d2651124",
+    "semantic_hash": "63744dcc9357eec95d6d8c91d2651124"
+  },
+  "openapi/paths/users/me/track/page/index.yaml": {
+    "mtime": 1764445927.0589485,
+    "seen": 1792327946.0902581,
+    "ast_hash": "97e372bb0b82c79d3e465174e0b7f9a6",
+    "semantic_hash": "97e372bb0b82c79d3e465174e0b7f9a6"
+  },
+  "openapi/paths/users/me/track/page/updateLastUsedPageMe.yaml": {
+    "mtime": 1764445927.059015,
+    "seen": 1792327946.0902588,
+    "ast_hash": "10165f72d5ae90dbe1de6a1305f4044c",
+    "semantic_hash": "10165f72d5ae90dbe1de6a1305f4044c"
+  },
+  "openapi/paths/users/me/updateMe.yaml": {
+    "mtime": 1764445927.059015,
+    "seen": 1792327946.0902598,
+    "ast_hash": "f93723e55eedd61f8e467076cf46b107",
+    "semantic_hash": "f93723e55eedd61f8e467076cf46b107"
+  },
+  "openapi/paths/users/register/index.yaml": {
+    "mtime": 1764445927.059015,
+    "seen": 1792327946.0902603,
+    "ast_hash": "fb7dc4000241e27c4e4e172b17cb1470",
+    "semantic_hash": "fb7dc4000241e27c4e4e172b17cb1470"
+  },
+  "openapi/paths/users/register/registerUser.yaml": {
+    "mtime": 1764445927.0592022,
+    "seen": 1792327946.090261,
+    "ast_hash": "a10460e80a5abcb652bde0a0504ad065",
+    "semantic_hash": "a10460e80a5abcb652bde0a0504ad065"
+  },
+  "openapi/paths/users/register/verify-email/_token/index.yaml": {
+    "mtime": 1764445927.059266,
+    "seen": 1792327946.0902617,
+    "ast_hash": "961543fd47c0d0a25e27936e8d428a2d",
+    "semantic_hash": "961543fd47c0d0a25e27936e8d428a2d"
+  },
+  "openapi/paths/users/register/verify-email/_token/registerUserVerify.yaml": {
+    "mtime": 1764445927.0593474,
+    "seen": 1792327946.0902624,
+    "ast_hash": "c63e9eb9ec79e30618c374e89b500778",
+    "semantic_hash": "c63e9eb9ec79e30618c374e89b500778"
+  },
+  "openapi/paths/users/singular/createUser.yaml": {
+    "mtime": 1764445927.0593474,
+    "seen": 1792327946.0902634,
+    "ast_hash": "e5e6605e5e3b562d96b1d28ed0dbe7a5",
+    "semantic_hash": "e5e6605e5e3b562d96b1d28ed0dbe7a5"
+  },
+  "openapi/paths/users/singular/index.yaml": {
+    "mtime": 1764445927.0595071,
+    "seen": 1792327946.090264,
+    "ast_hash": "926c6aebc52b19e03b4e5b4c16da2dd0",
+    "semantic_hash": "926c6aebc52b19e03b4e5b4c16da2dd0"
+  },
+  "openapi/paths/users/updateUsers.yaml": {
+    "mtime": 1764445927.0595071,
+    "seen": 1792327946.0902648,
+    "ast_hash": "43091581ea4c49c1e856a87d60409723",
+    "semantic_hash": "43091581ea4c49c1e856a87d60409723"
+  },
+  "openapi/paths/utils/cache/clear/clear-cache.yaml": {
+    "mtime": 1764445927.0596454,
+    "seen": 1792327946.0902655,
+    "ast_hash": "73511c28d1fb59ae4c1239a87235661e",
+    "semantic_hash": "73511c28d1fb59ae4c1239a87235661e"
+  },
+  "openapi/paths/utils/cache/clear/index.yaml": {
+    "mtime": 1764445927.05974,
+    "seen": 1792327946.0902665,
+    "ast_hash": "b74c3ca2a8dccc8d628172b56d5f9436",
+    "semantic_hash": "b74c3ca2a8dccc8d628172b56d5f9436"
+  },
+  "openapi/paths/utils/export/_collection/export.yaml": {
+    "mtime": 1764445927.0598094,
+    "seen": 1792327946.090267,
+    "ast_hash": "54b0f40634265f47f16327ff0f8d5027",
+    "semantic_hash": "54b0f40634265f47f16327ff0f8d5027"
+  },
+  "openapi/paths/utils/export/_collection/index.yaml": {
+    "mtime": 1764445927.0598943,
+    "seen": 1792327946.090268,
+    "ast_hash": "264d16048ed39575237a3b2dbad58619",
+    "semantic_hash": "264d16048ed39575237a3b2dbad58619"
+  },
+  "openapi/paths/utils/hash/generate/hash-generate.yaml": {
+    "mtime": 1764445927.0599616,
+    "seen": 1792327946.0902686,
+    "ast_hash": "ac0ec70040a6d6ad26f87c8e12bf70dd",
+    "semantic_hash": "ac0ec70040a6d6ad26f87c8e12bf70dd"
+  },
+  "openapi/paths/utils/hash/generate/index.yaml": {
+    "mtime": 1764445927.0600386,
+    "seen": 1792327946.0902693,
+    "ast_hash": "84700323efc0b1fca5f7b852d6c00dfa",
+    "semantic_hash": "84700323efc0b1fca5f7b852d6c00dfa"
+  },
+  "openapi/paths/utils/hash/verify/hash-verify.yaml": {
+    "mtime": 1764445927.0600386,
+    "seen": 1792327946.0902703,
+    "ast_hash": "9b256bd0a80c127bb8ae6fe56aa4c44a",
+    "semantic_hash": "9b256bd0a80c127bb8ae6fe56aa4c44a"
+  },
+  "openapi/paths/utils/hash/verify/index.yaml": {
+    "mtime": 1764445927.0601707,
+    "seen": 1792327946.090271,
+    "ast_hash": "d51fdd79f85f9cac87ec7136447770d1",
+    "semantic_hash": "d51fdd79f85f9cac87ec7136447770d1"
+  },
+  "openapi/paths/utils/import/_collection/import.yaml": {
+    "mtime": 1764445927.0602345,
+    "seen": 1792327946.0902717,
+    "ast_hash": "1766dea100c3a27737eba4fd32f07706",
+    "semantic_hash": "1766dea100c3a27737eba4fd32f07706"
+  },
+  "openapi/paths/utils/import/_collection/index.yaml": {
+    "mtime": 1764445927.060317,
+    "seen": 1792327946.0902724,
+    "ast_hash": "ab6a8cf39dab6334becde4d245dd48b6",
+    "semantic_hash": "ab6a8cf39dab6334becde4d245dd48b6"
+  },
+  "openapi/paths/utils/random/string/index.yaml": {
+    "mtime": 1764445927.0603874,
+    "seen": 1792327946.0902731,
+    "ast_hash": "29823b6f4bcb31a7189a2a2de0f84758",
+    "semantic_hash": "29823b6f4bcb31a7189a2a2de0f84758"
+  },
+  "openapi/paths/utils/random/string/random.yaml": {
+    "mtime": 1764445927.0604637,
+    "seen": 1792327946.0902739,
+    "ast_hash": "e1fe0836592582ace0e49819b5b3d692",
+    "semantic_hash": "e1fe0836592582ace0e49819b5b3d692"
+  },
+  "openapi/paths/utils/sort/_collection/index.yaml": {
+    "mtime": 1764445927.060544,
+    "seen": 1792327946.0902746,
+    "ast_hash": "84e5515e573eaf81a387758a90cefc0d",
+    "semantic_hash": "84e5515e573eaf81a387758a90cefc0d"
+  },
+  "openapi/paths/utils/sort/_collection/sort.yaml": {
+    "mtime": 1764445927.0606143,
+    "seen": 1792327946.0902755,
+    "ast_hash": "3a520341768cac6ff33d12fe8fdd3341",
+    "semantic_hash": "3a520341768cac6ff33d12fe8fdd3341"
+  },
+  "openapi/paths/versions/_id/compare/compareContentVersion.yaml": {
+    "mtime": 1764445927.060693,
+    "seen": 1792327946.0902762,
+    "ast_hash": "a1d9c61995dfa7a1e80796c75142f320",
+    "semantic_hash": "a1d9c61995dfa7a1e80796c75142f320"
+  },
+  "openapi/paths/versions/_id/compare/index.yaml": {
+    "mtime": 1764445927.0607946,
+    "seen": 1792327946.090277,
+    "ast_hash": "436a48a251c0f339cd7cbb1875f7ce3e",
+    "semantic_hash": "436a48a251c0f339cd7cbb1875f7ce3e"
+  },
+  "openapi/paths/versions/_id/deleteContentVersion.yaml": {
+    "mtime": 1764445927.0607946,
+    "seen": 1792327946.0902777,
+    "ast_hash": "17e6dde0fa469e8920f5857a607f49ef",
+    "semantic_hash": "17e6dde0fa469e8920f5857a607f49ef"
+  },
+  "openapi/paths/versions/_id/getContentVersion.yaml": {
+    "mtime": 1764445927.0607946,
+    "seen": 1792327946.0902784,
+    "ast_hash": "f9d9baa2ee7e4fe2ab097fa47641275a",
+    "semantic_hash": "f9d9baa2ee7e4fe2ab097fa47641275a"
+  },
+  "openapi/paths/versions/_id/index.yaml": {
+    "mtime": 1764445927.0607946,
+    "seen": 1792327946.090279,
+    "ast_hash": "8af4a214268f55ca71a352ed76f25d1e",
+    "semantic_hash": "8af4a214268f55ca71a352ed76f25d1e"
+  },
+  "openapi/paths/versions/_id/promote/index.yaml": {
+    "mtime": 1764445927.0607946,
+    "seen": 1792327946.0902798,
+    "ast_hash": "3c77356896dfdb16345943d86817c287",
+    "semantic_hash": "3c77356896dfdb16345943d86817c287"
+  },
+  "openapi/paths/versions/_id/promote/promoteContentVersion.yaml": {
+    "mtime": 1764445927.0610905,
+    "seen": 1792327946.0902808,
+    "ast_hash": "f8509e8ad51c5660cb9083b027f2d812",
+    "semantic_hash": "f8509e8ad51c5660cb9083b027f2d812"
+  },
+  "openapi/paths/versions/_id/save/index.yaml": {
+    "mtime": 1764445927.0610905,
+    "seen": 1792327946.0902815,
+    "ast_hash": "1af5187c1963bdd3268e8a12bdc3aa63",
+    "semantic_hash": "1af5187c1963bdd3268e8a12bdc3aa63"
+  },
+  "openapi/paths/versions/_id/save/saveContentVersion.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.0902822,
+    "ast_hash": "96f228cfc8040a909637e578242243df",
+    "semantic_hash": "96f228cfc8040a909637e578242243df"
+  },
+  "openapi/paths/versions/_id/updateContentVersion.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.090283,
+    "ast_hash": "306aa59b57acd1809fe7206f501bb7d8",
+    "semantic_hash": "306aa59b57acd1809fe7206f501bb7d8"
+  },
+  "openapi/paths/versions/createContentVersions.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.0902839,
+    "ast_hash": "5e977eac2e0ae2cc567970ef1bc7f6d8",
+    "semantic_hash": "5e977eac2e0ae2cc567970ef1bc7f6d8"
+  },
+  "openapi/paths/versions/deleteContentVersions.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.0902843,
+    "ast_hash": "5404731065d9dc59bade78d1b0da1298",
+    "semantic_hash": "5404731065d9dc59bade78d1b0da1298"
+  },
+  "openapi/paths/versions/getContentVersions.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.090285,
+    "ast_hash": "82e069434529639bf8d09332525be6e3",
+    "semantic_hash": "82e069434529639bf8d09332525be6e3"
+  },
+  "openapi/paths/versions/index.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.0902858,
+    "ast_hash": "1af418602d5726c57aceaae7e454ea66",
+    "semantic_hash": "1af418602d5726c57aceaae7e454ea66"
+  },
+  "openapi/paths/versions/singular/createContentVersion.yaml": {
+    "mtime": 1764445927.0612483,
+    "seen": 1792327946.0902865,
+    "ast_hash": "8153d440eb3ef3edc50319ceabff7104",
+    "semantic_hash": "8153d440eb3ef3edc50319ceabff7104"
+  },
+  "openapi/paths/versions/singular/index.yaml": {
+    "mtime": 1764445927.0617852,
+    "seen": 1792327946.0902874,
+    "ast_hash": "c0d80ec2dfa611300e6f63bc960892be",
+    "semantic_hash": "c0d80ec2dfa611300e6f63bc960892be"
+  },
+  "openapi/paths/versions/updateContentVersions.yaml": {
+    "mtime": 1764445927.0617852,
+    "seen": 1792327946.0902882,
+    "ast_hash": "97634256607cad075bddb612e85812aa",
+    "semantic_hash": "97634256607cad075bddb612e85812aa"
+  },
+  "pubspec.yaml": {
+    "mtime": 1764522349.5695827,
+    "seen": 1792327946.0902889,
+    "ast_hash": "265179da504529d58b5855298520145d",
+    "semantic_hash": "265179da504529d58b5855298520145d"
+  }
+}
