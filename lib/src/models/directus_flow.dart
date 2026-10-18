@@ -19,7 +19,7 @@ import 'directus_operation.dart';
 ///   ..icon.set('bolt')
 ///   ..color.set('#112233')
 ///   ..accountability.set('\$trigger');
-/// await client.flows.createFlow(flow.toMap());
+/// await client.flows.createOne(flow);
 ///
 /// // Déclencher un flow
 /// final result = await client.flows.triggerFlow('flow-id', {

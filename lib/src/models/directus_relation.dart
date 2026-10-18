@@ -1,57 +1,77 @@
 import 'directus_model.dart';
+import 'directus_property.dart';
 
-/// Représente une relation Directus.
+/// Représente une relation Directus (`/relations`).
 ///
-/// Les relations définissent les connexions entre les collections
-/// dans Directus (One-to-Many, Many-to-One, Many-to-Many, etc.).
+/// Format API :
+/// ```json
+/// {
+///   "collection": "articles",          // collection portant la clé étrangère
+///   "field": "author",                 // champ clé étrangère
+///   "related_collection": "directus_users",
+///   "meta": { "one_field": "articles", "junction_field": null, ... },
+///   "schema": { "on_delete": "SET NULL", ... }
+/// }
+/// ```
 ///
-/// Exemple d'utilisation :
+/// Les propriétés `manyCollection`, `oneField`, `junctionField`... lisent
+/// l'objet `meta`.
+///
 /// ```dart
-/// // Récupérer toutes les relations
-/// final relations = await client.relations.getRelations();
-///
-/// // Récupérer les relations d'une collection
-/// final articleRelations = await client.relations.getRelationsByCollection('articles');
-///
-/// // Créer une relation Many-to-One
-/// final relation = DirectusRelation.empty()
-///   ..manyCollection.set('articles')
-///   ..manyField.set('author')
-///   ..oneCollection.set('users');
-/// await client.relations.createRelation(relation.toMap());
+/// final relation = await client.relations.readOne('articles', 'author');
+/// print(relation.relatedCollection.value); // directus_users
+/// print(relation.relationType);            // Many-to-One
 /// ```
 class DirectusRelation extends DirectusModel {
-  /// Collection qui a le champ contenant la clé étrangère (côté "many")
-  late final manyCollection = stringValue('many_collection');
+  /// Collection qui porte la clé étrangère
+  late final collection = stringValue('collection');
 
-  /// Champ de clé étrangère qui contient la clé primaire de la collection liée
-  late final manyField = stringValue('many_field');
+  /// Champ clé étrangère
+  late final field = stringValue('field');
 
-  /// Collection du côté "one" de la relation
-  late final oneCollection = stringValue('one_collection');
+  /// Collection référencée (null pour une relation Many-to-Any)
+  late final relatedCollection = stringValue('related_collection');
 
-  /// Colonne alias qui sert de côté "one" de la relation
-  late final oneField = stringValue('one_field');
+  /// Métadonnées Directus de la relation (Map)
+  late final meta = jsonValue('meta');
 
-  /// Champ de collection one
-  late final oneCollectionField = stringValue('one_collection_field');
-
-  /// Collections autorisées pour le côté "one"
-  late final oneAllowedCollections = listValue<String>(
-    'one_allowed_collections',
-  );
-
-  /// Champ sur la table de jonction qui contient le champ "many" de la relation liée
-  late final junctionField = stringValue('junction_field');
-
-  /// Champ de tri
-  late final sortField = stringValue('sort_field');
-
-  /// Action de désélection du côté "one"
-  late final oneDeselectAction = stringValue('one_deselect_action');
+  /// Contraintes de base de données (`on_delete`, `on_update`, ...)
+  late final schema = jsonValue('schema');
 
   DirectusRelation(super.data);
   DirectusRelation.empty() : super.empty();
+
+  /// Vue typée de l'objet `meta`.
+  DirectusRelationMeta get metaModel =>
+      DirectusRelationMeta(meta.asMapOrEmpty());
+
+  /// Collection « many » (meta.many_collection)
+  StringProperty get manyCollection => metaModel.manyCollection;
+
+  /// Champ « many » (meta.many_field)
+  StringProperty get manyField => metaModel.manyField;
+
+  /// Collection « one » (meta.one_collection)
+  StringProperty get oneCollection => metaModel.oneCollection;
+
+  /// Alias O2M côté « one » (meta.one_field)
+  StringProperty get oneField => metaModel.oneField;
+
+  /// Champ stockant la collection pour un Many-to-Any (meta.one_collection_field)
+  StringProperty get oneCollectionField => metaModel.oneCollectionField;
+
+  /// Collections autorisées pour un Many-to-Any (meta.one_allowed_collections)
+  ListProperty<String> get oneAllowedCollections =>
+      metaModel.oneAllowedCollections;
+
+  /// Champ de jonction pour un Many-to-Many (meta.junction_field)
+  StringProperty get junctionField => metaModel.junctionField;
+
+  /// Champ de tri (meta.sort_field)
+  StringProperty get sortField => metaModel.sortField;
+
+  /// Action à la désélection (meta.one_deselect_action : `nullify` / `delete`)
+  StringProperty get oneDeselectAction => metaModel.oneDeselectAction;
 
   @override
   String get itemName => 'directus_relations';
@@ -60,42 +80,60 @@ class DirectusRelation extends DirectusModel {
   static DirectusRelation factory(Map<String, dynamic> data) =>
       DirectusRelation(data);
 
-  /// Vérifie si c'est une relation Many-to-One simple
-  bool get isManyToOne =>
-      manyCollection.isNotEmpty &&
-      manyField.isNotEmpty &&
-      oneCollection.isNotEmpty &&
-      junctionField.valueOrNull == null;
-
-  /// Vérifie si c'est une relation One-to-Many
-  bool get isOneToMany =>
-      oneCollection.isNotEmpty &&
-      oneField.isNotEmpty &&
-      junctionField.valueOrNull == null;
-
-  /// Vérifie si c'est une relation Many-to-Many (avec table de jonction)
+  /// Vrai pour une relation Many-to-Many (présence d'un champ de jonction)
   bool get isManyToMany => junctionField.isNotEmpty;
+
+  /// Vrai pour une relation Many-to-Any (pas de collection liée fixe)
+  bool get isManyToAny =>
+      relatedCollection.valueOrNull == null && oneCollectionField.isNotEmpty;
+
+  /// Vrai si la relation expose un alias One-to-Many côté « one »
+  bool get isOneToMany => oneField.isNotEmpty && !isManyToMany;
+
+  /// Vrai pour une relation Many-to-One simple
+  bool get isManyToOne =>
+      relatedCollection.isNotEmpty && !isManyToMany && !isManyToAny;
 
   /// Vérifie si la relation a un champ de tri
   bool get hasSortField => sortField.isNotEmpty;
 
-  /// Vérifie si la relation a des collections autorisées
+  /// Vérifie si la relation a des collections autorisées (M2A)
   bool get hasAllowedCollections => oneAllowedCollections.isNotEmpty;
 
-  /// Obtient le type de relation
+  /// Type de relation lisible
   String get relationType {
     if (isManyToMany) return 'Many-to-Many';
+    if (isManyToAny) return 'Many-to-Any';
     if (isOneToMany) return 'One-to-Many';
     if (isManyToOne) return 'Many-to-One';
     return 'Unknown';
   }
 
-  /// Obtient un résumé de la relation
+  /// Résumé lisible de la relation
   String get summary {
-    final type = relationType;
-    final many = manyCollection.valueOrNull ?? 'collection inconnue';
-    final manyF = manyField.valueOrNull ?? 'champ inconnu';
-    final one = oneCollection.valueOrNull ?? 'collection inconnue';
-    return '$type: $many.$manyF -> $one';
+    final many = collection.valueOrNull ?? 'collection inconnue';
+    final manyF = field.valueOrNull ?? 'champ inconnu';
+    final one = relatedCollection.valueOrNull ?? 'collection inconnue';
+    return '$relationType: $many.$manyF -> $one';
   }
+}
+
+/// Objet `meta` d'une relation Directus.
+class DirectusRelationMeta extends DirectusModel {
+  late final manyCollection = stringValue('many_collection');
+  late final manyField = stringValue('many_field');
+  late final oneCollection = stringValue('one_collection');
+  late final oneField = stringValue('one_field');
+  late final oneCollectionField = stringValue('one_collection_field');
+  late final oneAllowedCollections = listValue<String>(
+    'one_allowed_collections',
+  );
+  late final junctionField = stringValue('junction_field');
+  late final sortField = stringValue('sort_field');
+  late final oneDeselectAction = stringValue('one_deselect_action');
+
+  DirectusRelationMeta(super.data);
+
+  @override
+  String get itemName => 'directus_relations';
 }

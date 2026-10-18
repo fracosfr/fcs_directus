@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_notification.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les notifications dans Directus.
 ///
@@ -22,11 +24,16 @@ import 'items_service.dart';
 ///   {'status': 'archived'},
 /// );
 /// ```
-class NotificationsService {
+class NotificationsService extends DirectusSystemService<DirectusNotification> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  NotificationsService(this._httpClient) {
+  NotificationsService(this._httpClient)
+    : super(
+        _httpClient,
+        'directus_notifications',
+        DirectusNotification.factory,
+      ) {
     _itemsService = ItemsService(_httpClient, 'directus_notifications');
   }
 

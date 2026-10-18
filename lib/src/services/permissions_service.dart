@@ -199,13 +199,29 @@ class PermissionsService {
     return await getPermissions(query: mergedQuery);
   }
 
-  /// Récupère les permissions de l'utilisateur actuel
-  Future<dynamic> getMyPermissions() async {
-    return await _httpClient.get('/permissions/me');
+  /// Permissions effectives de l'utilisateur courant (`GET /permissions/me`).
+  ///
+  /// Structure : `{collection: {action: {access, fields, presets}}}` où
+  /// `access` vaut `none`, `partial` ou `full`.
+  Future<Map<String, dynamic>> getMyPermissions() async {
+    final response = await _httpClient.get('/permissions/me');
+    return Map<String, dynamic>.from(response.data['data'] as Map);
   }
 
-  /// Récupère les permissions de l'utilisateur actuel pour un item spécifique
-  Future<dynamic> getItemPermissions(String collection, String itemId) async {
-    return await _httpClient.get('/permissions/me/$collection/$itemId');
+  /// Droits de l'utilisateur courant sur un item
+  /// (`GET /permissions/me/{collection}/{id}`).
+  ///
+  /// Retourne `{update: {access, presets, fields}, delete: {access}, share: {access}}`.
+  /// Pour un singleton, omettre [itemId].
+  Future<Map<String, dynamic>> getItemPermissions(
+    String collection, [
+    String? itemId,
+  ]) async {
+    final response = await _httpClient.get(
+      itemId == null
+          ? '/permissions/me/$collection'
+          : '/permissions/me/$collection/$itemId',
+    );
+    return Map<String, dynamic>.from(response.data['data'] as Map);
   }
 }

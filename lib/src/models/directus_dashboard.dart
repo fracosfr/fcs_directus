@@ -15,7 +15,7 @@ import 'directus_panel.dart';
 ///   ..icon.set('space_dashboard')
 ///   ..color.set('#6644FF')
 ///   ..note.set('Test');
-/// await client.dashboards.createDashboard(dashboard.toMap());
+/// await client.dashboards.createOne(dashboard);
 ///
 /// // Récupérer un dashboard avec ses panels
 /// final dashboard = await client.dashboards.getDashboard(

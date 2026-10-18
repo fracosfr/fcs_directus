@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../core/directus_http_client.dart';
 import '../models/directus_user.dart';
 import '../models/directus_model.dart';
@@ -454,8 +455,18 @@ class UsersService {
   /// Vérifie l'email d'un utilisateur enregistré
   ///
   /// [token] Token de vérification reçu par email
+  ///
+  /// `GET /users/register/verify-email?token=...` : Directus active le compte
+  /// puis répond par une redirection vers l'application d'administration.
   Future<void> verifyEmail(String token) async {
-    await _httpClient.get('/users/register/verify-email/$token');
+    await _httpClient.get(
+      '/users/register/verify-email',
+      queryParameters: {'token': token},
+      options: Options(
+        followRedirects: false,
+        validateStatus: (s) => s != null && s < 400,
+      ),
+    );
   }
 
   // ========================================
@@ -579,6 +590,12 @@ class UsersService {
       // En cas d'erreur (mauvais OTP, réseau, etc.), retourner false
       return false;
     }
+  }
+
+  /// Désactive la 2FA d'un autre utilisateur (admin uniquement,
+  /// `POST /users/{id}/tfa/disable`).
+  Future<void> disableTwoFactorForUser(String userId) async {
+    await _httpClient.post('/users/$userId/tfa/disable');
   }
 
   // ========================================

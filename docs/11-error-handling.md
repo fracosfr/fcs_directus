@@ -202,56 +202,32 @@ try {
 
 ## Codes d'erreur Directus
 
-L'enum `DirectusErrorCode` contient tous les codes d'erreur officiels :
+`DirectusException.fromJson` convertit le code `extensions.code` renvoyé par Directus en exception typée. Le code HTTP est conservé dans `statusCode`. L'enum `DirectusErrorCode` liste tous les codes de Directus 12 (`DirectusErrorCode.collectionInactive.code == 'COLLECTION_INACTIVE'`).
+
+| Code(s) | Exception |
+|---------|-----------|
+| `INVALID_CREDENTIALS`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `INVALID_OTP`, `USER_SUSPENDED` | `DirectusAuthException` |
+| `INVALID_PAYLOAD`, `INVALID_QUERY`, `UNPROCESSABLE_CONTENT`, `CONTAINS_NULL_VALUES`, `NOT_NULL_VIOLATION`, `VALUE_OUT_OF_RANGE`, `VALUE_TOO_LONG`, `INVALID_INVITE`, `INVALID_PATH_PARAMETER`, `IMPORT_CYCLICAL_RELATION`, `VERSION_HASH_MISMATCH` | `DirectusValidationException` |
+| `FORBIDDEN`, `COLLECTION_INACTIVE` (12.4), `RESOURCE_RESTRICTED` | `DirectusPermissionException` |
+| `ROUTE_NOT_FOUND` | `DirectusNotFoundException` |
+| `INTERNAL_SERVER_ERROR`, `SERVICE_UNAVAILABLE`, `OUT_OF_DATE`, `OUT_OF_TIME`, `UNEXPECTED_RESPONSE` | `DirectusServerException` |
+| `CONTENT_TOO_LARGE`, `UNSUPPORTED_MEDIA_TYPE`, `ILLEGAL_ASSET_TRANSFORMATION` | `DirectusFileException` |
+| `REQUESTS_EXCEEDED`, `EMAIL_LIMIT_EXCEEDED`, `LIMIT_EXCEEDED` | `DirectusRateLimitException` |
+| `METHOD_NOT_ALLOWED` | `DirectusMethodNotAllowedException` |
+| `INVALID_FOREIGN_KEY`, `RECORD_NOT_UNIQUE` | `DirectusDatabaseException` |
+| `RANGE_NOT_SATISFIABLE` | `DirectusRangeException` |
+| `INVALID_IP`, `INVALID_PROVIDER`, `INVALID_PROVIDER_CONFIG`, `LICENSE_INVALID`, `ADDON_*` | `DirectusConfigException` |
+
+Sans code Directus, l'exception est déduite du statut HTTP (400, 401, 403, 404, 5xx) ou de l'erreur réseau (`DirectusNetworkException`).
 
 ```dart
-enum DirectusErrorCode {
-  // Authentification
-  invalidCredentials,
-  invalidToken,
-  tokenExpired,
-  invalidOtp,
-  userSuspended,
-  
-  // Validation
-  invalidPayload,
-  invalidQuery,
-  unprocessableContent,
-  failedValidation,
-  
-  // Permission
-  forbidden,
-  
-  // Ressources
-  routeNotFound,
-  recordNotUnique,
-  
-  // Rate limiting
-  requestsExceeded,
-  limitExceeded,
-  
-  // Serveur
-  internalServerError,
-  serviceUnavailable,
-  
-  // Contenu
-  illegalAssetTransformation,
-  contentTooLarge,
-  unsupportedMediaType,
-  rangeNotSatisfiable,
-  
-  // Autres
-  methodNotAllowed,
-  notAcceptable,
-  unknown,
+try {
+  await client.items('archived_posts').readMany();
+} on DirectusPermissionException catch (e) {
+  if (e.errorCode == DirectusErrorCode.collectionInactive.code) {
+    print('Collection désactivée (HTTP ${e.statusCode})');
+  }
 }
-```
-
-### Convertir depuis une string
-
-```dart
-final code = DirectusErrorCode.fromString('INVALID_CREDENTIALS');
-// DirectusErrorCode.invalidCredentials
 ```
 
 ## Pattern de gestion complète

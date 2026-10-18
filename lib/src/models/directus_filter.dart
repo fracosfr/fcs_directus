@@ -222,7 +222,7 @@ class OperatorFilter extends Filter {
   OperatorFilter(this._fieldName, this._operator, this._value);
 
   dynamic get _serializedValue =>
-      _value is DateTime ? (_value as DateTime).toIso8601String() : _value;
+      _value is DateTime ? (_value).toIso8601String() : _value;
 
   @override
   Map<String, dynamic> toJson() {

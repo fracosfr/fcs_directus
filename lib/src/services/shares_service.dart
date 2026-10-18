@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_share.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les partages (shares) dans Directus.
 ///
@@ -24,11 +26,12 @@ import 'items_service.dart';
 /// // Supprimer un partage
 /// await client.shares.deleteShare(share-id);
 /// ```
-class SharesService {
+class SharesService extends DirectusSystemService<DirectusShare> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  SharesService(this._httpClient) {
+  SharesService(this._httpClient)
+    : super(_httpClient, 'directus_shares', DirectusShare.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_shares');
   }
 
@@ -167,5 +170,43 @@ class SharesService {
       search: query?.search,
     );
     return await getShares(query: mergedQuery);
+  }
+
+  /// Authentifie un visiteur sur un partage (`POST /shares/auth`).
+  ///
+  /// Retourne `{access_token, refresh_token, expires}` (mode json). Pour agir
+  /// avec ce jeton, utiliser `client.auth.loginWithToken(accessToken)`.
+  Future<Map<String, dynamic>> authenticate({
+    required String shareId,
+    String? password,
+    String mode = 'json',
+  }) async {
+    final response = await _httpClient.post(
+      '/shares/auth',
+      data: {
+        'share': shareId,
+        if (password != null) 'password': password,
+        'mode': mode,
+      },
+    );
+    return Map<String, dynamic>.from(response.data?['data'] as Map? ?? {});
+  }
+
+  /// Envoie le lien de partage par email (`POST /shares/invite`).
+  Future<void> invite({
+    required String shareId,
+    required List<String> emails,
+  }) async {
+    await _httpClient.post(
+      '/shares/invite',
+      data: {'share': shareId, 'emails': emails},
+    );
+  }
+
+  /// Informations publiques d'un partage, sans authentification
+  /// (`GET /shares/info/{id}`).
+  Future<DirectusShare> info(String shareId) async {
+    final response = await _httpClient.get('/shares/info/$shareId');
+    return DirectusShare(response.data['data'] as Map<String, dynamic>);
   }
 }

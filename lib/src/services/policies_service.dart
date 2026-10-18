@@ -244,6 +244,13 @@ class PoliciesService {
     await _httpClient.delete('/policies', data: ids);
   }
 
+  /// Droits globaux effectifs de l'utilisateur courant
+  /// (`GET /policies/me/globals`) : `{admin_access, app_access, enforce_tfa}`.
+  Future<Map<String, dynamic>> getMyGlobals() async {
+    final response = await _httpClient.get('/policies/me/globals');
+    return Map<String, dynamic>.from(response.data['data'] as Map);
+  }
+
   // ========================================
   // Méthodes utilitaires
   // ========================================

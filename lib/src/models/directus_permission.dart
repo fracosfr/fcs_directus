@@ -14,7 +14,7 @@ import 'directus_policy.dart';
 ///   ..action.set('read')
 ///   ..policy.set('policy-id')
 ///   ..fields.set(['*']);
-/// await client.permissions.createPermission(permission.toMap());
+/// await client.permissions.createPermission(permission);
 ///
 /// // Récupérer les permissions d'une policy
 /// final permissions = await client.permissions.getPermissions(

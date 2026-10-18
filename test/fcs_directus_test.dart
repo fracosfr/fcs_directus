@@ -211,7 +211,7 @@ void main() {
   });
 
   group('DirectusWebSocketMessage', () {
-    test('convertit de/vers JSON', () {
+    test('sérialise à plat (protocole Directus)', () {
       final message = DirectusWebSocketMessage(
         type: 'subscribe',
         data: {'collection': 'articles'},
@@ -221,15 +221,43 @@ void main() {
 
       final json = message.toJson();
       expect(json['type'], equals('subscribe'));
-      expect(json['data'], equals({'collection': 'articles'}));
+      expect(json['collection'], equals('articles'));
+      expect(json.containsKey('data'), isFalse);
       expect(json['uid'], equals('sub_1'));
       expect(json['event'], equals('create'));
+    });
 
-      final parsed = DirectusWebSocketMessage.fromJson(json);
-      expect(parsed.type, equals(message.type));
-      expect(parsed.data, equals(message.data));
-      expect(parsed.uid, equals(message.uid));
-      expect(parsed.event, equals(message.event));
+    test('auth envoie access_token à la racine', () {
+      final json = DirectusWebSocketMessage(
+        type: 'auth',
+        data: {'access_token': 'tok'},
+      ).toJson();
+      expect(json, equals({'type': 'auth', 'access_token': 'tok'}));
+    });
+
+    test('parse un événement de souscription (data = liste)', () {
+      final parsed = DirectusWebSocketMessage.fromJson({
+        'type': 'subscription',
+        'event': 'create',
+        'data': [
+          {'id': 1, 'title': 'Hello'},
+        ],
+        'uid': 'sub_1',
+      });
+      expect(parsed.type, equals('subscription'));
+      expect(parsed.event, equals(DirectusItemEvent.create));
+      expect(parsed.uid, equals('sub_1'));
+      expect((parsed.data as List).first['title'], equals('Hello'));
+    });
+
+    test('expose status et error des réponses', () {
+      final parsed = DirectusWebSocketMessage.fromJson({
+        'type': 'auth',
+        'status': 'error',
+        'error': {'code': 'TOKEN_EXPIRED', 'message': 'expired'},
+      });
+      expect(parsed.isError, isTrue);
+      expect(parsed.error?['code'], equals('TOKEN_EXPIRED'));
     });
 
     test('gère les champs optionnels', () {

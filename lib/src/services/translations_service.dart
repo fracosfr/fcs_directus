@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_translation.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les traductions dans Directus.
 ///
@@ -22,11 +24,12 @@ import 'items_service.dart';
 /// // Récupérer les traductions pour une langue
 /// final frTranslations = await client.translations.getLanguageTranslations('fr-FR');
 /// ```
-class TranslationsService {
+class TranslationsService extends DirectusSystemService<DirectusTranslation> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  TranslationsService(this._httpClient) {
+  TranslationsService(this._httpClient)
+    : super(_httpClient, 'directus_translations', DirectusTranslation.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_translations');
   }
 

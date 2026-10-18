@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:logging/logging.dart';
+
+import '../services/items_service.dart';
 import '../core/directus_config.dart';
 
 /// Types d'événements WebSocket
@@ -46,33 +48,89 @@ enum DirectusItemEvent {
   }
 }
 
-/// Message WebSocket Directus
+/// Message WebSocket Directus.
+///
+/// Le protocole Directus est « à plat » : les champs d'un message sortant
+/// (`collection`, `query`, `access_token`, ...) sont au même niveau que `type`.
+/// Pour les messages sortants, [data] contient ces champs et est fusionné à la
+/// racine lors de la sérialisation. Pour les messages entrants, [data] contient
+/// la valeur de la clé `data` (liste d'items pour une souscription, item pour
+/// une réponse `items`, ...) et [raw] le message complet.
+///
+/// ```json
+/// {"type": "subscribe", "collection": "articles", "uid": "sub_0"}
+/// {"type": "subscription", "event": "create", "data": [{"id": 1}], "uid": "sub_0"}
+/// ```
 class DirectusWebSocketMessage {
   final String type;
-  final Map<String, dynamic>? data;
+
+  /// Sortant : champs fusionnés à la racine. Entrant : valeur de `data`.
+  final dynamic data;
   final String? uid;
   final DirectusItemEvent? event;
+
+  /// Message brut reçu (vide pour un message sortant).
+  final Map<String, dynamic> raw;
 
   DirectusWebSocketMessage({
     required this.type,
     this.data,
     this.uid,
     this.event,
+    this.raw = const {},
   });
 
   factory DirectusWebSocketMessage.fromJson(Map<String, dynamic> json) {
     return DirectusWebSocketMessage(
       type: json['type'] as String,
-      data: json['data'] as Map<String, dynamic>?,
-      uid: json['uid'] as String?,
+      data: json['data'],
+      uid: json['uid']?.toString(),
       event: DirectusItemEvent.fromString(json['event'] as String?),
+      raw: json,
     );
   }
+
+  /// Vrai pour un événement de souscription (`type: subscription`).
+  bool get isSubscriptionEvent => type == 'subscription';
+
+  /// Vrai pour le message `init` envoyé à l'ouverture d'une souscription.
+  bool get isInit => raw['event'] == 'init';
+
+  /// Items reçus (`create` / `update` / `init`, réponse `items`).
+  List<Map<String, dynamic>> get items {
+    final value = data;
+    if (value is List) {
+      return value.whereType<Map>().map(Map<String, dynamic>.from).toList();
+    }
+    if (value is Map) return [Map<String, dynamic>.from(value)];
+    return const [];
+  }
+
+  /// Clés primaires reçues pour un événement `delete`.
+  List<Object> get ids {
+    final value = data;
+    if (value is List) {
+      return value
+          .map((e) => e is Map ? e['id'] : e)
+          .whereType<Object>()
+          .toList();
+    }
+    return value == null ? const [] : [value as Object];
+  }
+
+  /// Statut d'une réponse (`ok` / `error`) pour `auth`, `items`, ...
+  String? get status => raw['status'] as String?;
+
+  /// Vrai si le serveur a répondu en erreur.
+  bool get isError => status == 'error';
+
+  /// Erreur renvoyée par le serveur (`{code, message}`).
+  Map<String, dynamic>? get error => raw['error'] as Map<String, dynamic>?;
 
   Map<String, dynamic> toJson() {
     return {
       'type': type,
-      if (data != null) 'data': data,
+      if (data is Map) ...(data as Map).cast<String, dynamic>(),
       if (uid != null) 'uid': uid,
       if (event != null) 'event': event!.toApiString(),
     };
@@ -232,12 +290,14 @@ class DirectusWebSocketClient {
   ///
   /// [collection] Nom de la collection
   /// [event] Type d'événement (create, update, delete) ou null pour tous
-  /// [query] Paramètres de requête pour filtrer
+  /// [query] Requête (`QueryParameters` ou `Map` au format Directus)
+  /// [item] Restreint la souscription à un item (clé primaire)
   /// [onMessage] Callback appelé lors de la réception d'un message
   Future<String> subscribe({
     required String collection,
     DirectusItemEvent? event,
-    Map<String, dynamic>? query,
+    Object? query,
+    Object? item,
     required Function(DirectusWebSocketMessage) onMessage,
   }) async {
     if (!_isConnected) {
@@ -248,7 +308,7 @@ class DirectusWebSocketClient {
 
     // Créer la souscription locale
     final subscription = messages
-        .where((msg) => msg.uid == uid || msg.data?['collection'] == collection)
+        .where((msg) => msg.uid == uid)
         .listen(onMessage);
 
     _subscriptions[uid] = subscription;
@@ -260,7 +320,9 @@ class DirectusWebSocketClient {
       data: {
         'collection': collection,
         if (event != null) 'event': event.toApiString(),
-        if (query != null) 'query': query,
+        if (item != null) 'item': item,
+        if (query != null)
+          'query': query is QueryParameters ? query.toJsonBody() : query,
       },
     );
 
@@ -288,6 +350,61 @@ class DirectusWebSocketClient {
 
     _send(message);
     _logger.info('Désinscription de uid=$uid');
+  }
+
+  /// Exécute une opération CRUD via WebSocket (message `items`).
+  ///
+  /// [action] `create`, `read`, `update` ou `delete`.
+  /// [data] Données à créer / modifier (Map ou List).
+  /// [id] / [ids] Cible(s) pour `read`, `update`, `delete`.
+  /// [query] Requête Directus (fields, filter, ...).
+  ///
+  /// Retourne la réponse du serveur ; lève une [Exception] si `status` = `error`.
+  ///
+  /// ```dart
+  /// final res = await client.websocket.items(
+  ///   collection: 'articles',
+  ///   action: 'create',
+  ///   data: {'title': 'Créé en temps réel'},
+  /// );
+  /// print(res.data);
+  /// ```
+  Future<DirectusWebSocketMessage> items({
+    required String collection,
+    required String action,
+    dynamic data,
+    Object? id,
+    List<Object>? ids,
+    Map<String, dynamic>? query,
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    if (!_isConnected) {
+      throw Exception('Non connecté au WebSocket');
+    }
+
+    final uid = 'req_${_messageId++}';
+    final response = messages.firstWhere((msg) => msg.uid == uid);
+
+    _send(
+      DirectusWebSocketMessage(
+        type: 'items',
+        uid: uid,
+        data: {
+          'collection': collection,
+          'action': action,
+          if (data != null) 'data': data,
+          if (id != null) 'id': id,
+          if (ids != null) 'ids': ids,
+          if (query != null) 'query': query,
+        },
+      ),
+    );
+
+    final message = await response.timeout(timeout);
+    if (message.isError) {
+      throw Exception('WebSocket items error: ${message.error}');
+    }
+    return message;
   }
 
   /// Envoie un message au serveur

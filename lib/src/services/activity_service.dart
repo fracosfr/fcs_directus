@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_activity.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour consulter les activités Directus (lecture seule).
 ///
@@ -36,10 +38,11 @@ import 'items_service.dart';
 /// // Récupérer une activité par son ID
 /// final single = await activity.getActivity('activity-id');
 /// ```
-class ActivityService {
+class ActivityService extends DirectusReadOnlySystemService<DirectusActivity> {
   final DirectusHttpClient _httpClient;
 
-  ActivityService(this._httpClient);
+  ActivityService(this._httpClient)
+    : super(_httpClient, 'directus_activity', DirectusActivity.factory);
 
   // ========================================
   // Opérations de lecture

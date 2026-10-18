@@ -17,7 +17,7 @@ import 'directus_role.dart';
 ///   ..search.set('published')
 ///   ..layout.set('tabular')
 ///   ..layoutQuery.set({'sort': ['-published_on']});
-/// await client.presets.createPreset(preset.toMap());
+/// await client.presets.createOne(preset);
 ///
 /// // Récupérer les signets d'un utilisateur
 /// final bookmarks = await client.presets.getBookmarks('user-id');

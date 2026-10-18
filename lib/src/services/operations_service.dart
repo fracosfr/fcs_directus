@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_operation.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les opérations dans Directus.
 ///
@@ -22,11 +24,12 @@ import 'items_service.dart';
 /// // Récupérer les opérations d'un flow
 /// final flowOps = await client.operations.getFlowOperations(flow-id);
 /// ```
-class OperationsService {
+class OperationsService extends DirectusSystemService<DirectusOperation> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  OperationsService(this._httpClient) {
+  OperationsService(this._httpClient)
+    : super(_httpClient, 'directus_operations', DirectusOperation.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_operations');
   }
 

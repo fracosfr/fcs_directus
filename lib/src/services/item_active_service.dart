@@ -10,10 +10,13 @@ class ItemActiveService<T extends DirectusModel> {
 
   ItemActiveService(this._httpClient, this.collection);
 
+  /// Chemin REST de la collection (`/items/<collection>` ou endpoint système).
+  String get path => directusCollectionPath(collection);
+
   /// Récupère plusieurs items sous forme de modèle typé T
   Future<DirectusResponse<T>> readMany({QueryParameters? query}) async {
     final response = await _httpClient.get(
-      '/items/$collection',
+      path,
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -32,7 +35,7 @@ class ItemActiveService<T extends DirectusModel> {
   /// Récupère un item par son ID et le retourne en modèle typé T
   Future<T> readOne(String id, {QueryParameters? query}) async {
     final response = await _httpClient.get(
-      '/items/$collection/$id',
+      '$path/$id',
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -43,10 +46,7 @@ class ItemActiveService<T extends DirectusModel> {
 
   /// Crée un nouvel item et retourne un modèle typé T
   Future<T?> createOne(T model) async {
-    final response = await _httpClient.post(
-      '/items/$collection',
-      data: model.toJson(),
-    );
+    final response = await _httpClient.post(path, data: model.toJson());
 
     // Directus peut retourner 204 No Content sans body
     if (response.data == null || !response.data!.containsKey('data')) {
@@ -61,7 +61,7 @@ class ItemActiveService<T extends DirectusModel> {
   /// Crée plusieurs nouveaux items et les retourne en modèles typés T
   Future<List<T>> createMany(List<T> models) async {
     final response = await _httpClient.post(
-      '/items/$collection',
+      path,
       data: models.map((m) => m.toJson()).toList(),
     );
 
@@ -77,7 +77,7 @@ class ItemActiveService<T extends DirectusModel> {
       throw ArgumentError('The model must have an ID to be updated.');
     }
     final response = await _httpClient.patch(
-      '/items/$collection/${model.id}',
+      '$path/${model.id}',
       data: model.toJsonDirty(),
     );
 
@@ -141,7 +141,7 @@ class ItemActiveService<T extends DirectusModel> {
       body['query'] = {'filter': filterJson};
     }
 
-    final response = await _httpClient.patch('/items/$collection', data: body);
+    final response = await _httpClient.patch(path, data: body);
 
     // Directus peut retourner 204 No Content sans body
     if (response.data == null || !response.data!.containsKey('data')) {
@@ -189,7 +189,7 @@ class ItemActiveService<T extends DirectusModel> {
     if (model.id == null) {
       throw ArgumentError('The model must have an ID to be deleted.');
     }
-    await _httpClient.delete('/items/$collection/${model.id}');
+    await _httpClient.delete('$path/${model.id}');
   }
 
   /// Supprime plusieurs items en utilisant leurs modèles
@@ -207,7 +207,7 @@ class ItemActiveService<T extends DirectusModel> {
       return;
     }
 
-    await _httpClient.delete('/items/$collection', data: ids);
+    await _httpClient.delete(path, data: ids);
   }
 
   /// Supprime plusieurs items
@@ -237,7 +237,7 @@ class ItemActiveService<T extends DirectusModel> {
   }) async {
     // Si keys est fourni directement (format simple)
     if (keys != null && keys.isNotEmpty && filter == null && query == null) {
-      await _httpClient.delete('/items/$collection', data: keys);
+      await _httpClient.delete(path, data: keys);
       return;
     }
 
@@ -258,16 +258,13 @@ class ItemActiveService<T extends DirectusModel> {
       body['query'] = {'filter': filterJson};
     }
 
-    await _httpClient.delete(
-      '/items/$collection',
-      data: body.isEmpty ? null : body,
-    );
+    await _httpClient.delete(path, data: body.isEmpty ? null : body);
   }
 
   /// Récupère le singleton sous forme de modèle typé T
   Future<T> readSingleton({QueryParameters? query}) async {
     final response = await _httpClient.get(
-      '/items/$collection',
+      path,
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -278,10 +275,7 @@ class ItemActiveService<T extends DirectusModel> {
 
   /// Met à jour le singleton et retourne un modèle typé T
   Future<T> updateSingleton(T model) async {
-    final response = await _httpClient.patch(
-      '/items/$collection',
-      data: model.toJsonDirty(),
-    );
+    final response = await _httpClient.patch(path, data: model.toJsonDirty());
 
     final responseData = response.data['data'] as Map<String, dynamic>;
     final T Function(Map<String, dynamic>) resolvedFactory = _getModelFactory();

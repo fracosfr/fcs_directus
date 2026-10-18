@@ -53,4 +53,13 @@ class CollectionsService {
   Future<void> deleteCollection(String collection) async {
     await _httpClient.delete('/collections/$collection');
   }
+
+  /// Met à jour plusieurs collections en une requête (`PATCH /collections`).
+  /// Chaque entrée doit contenir `collection` (et typiquement `meta`).
+  Future<List<Map<String, dynamic>>> updateCollections(
+    List<Map<String, dynamic>> collections,
+  ) async {
+    final response = await _httpClient.patch('/collections', data: collections);
+    return List<Map<String, dynamic>>.from(response.data['data'] as List);
+  }
 }

@@ -1,88 +1,201 @@
-import '../core/directus_http_client.dart';
+import 'package:dio/dio.dart';
 
-/// Service pour les utilitaires Directus.
+import '../core/directus_http_client.dart';
+import 'items_service.dart';
+
+/// Format de fichier pour l'import / export de données.
+enum DirectusExportFormat {
+  json('application/json'),
+  csv('text/csv'),
+  csvUtf8('text/csv'),
+  xml('text/xml'),
+  yaml('text/yaml');
+
+  const DirectusExportFormat(this.mimeType);
+
+  /// Type MIME utilisé pour l'import.
+  final String mimeType;
+
+  /// Valeur attendue par l'API (`json`, `csv`, `csv_utf8`, `xml`, `yaml`).
+  String get apiValue => this == csvUtf8 ? 'csv_utf8' : name;
+}
+
+/// Mode d'import par lot (`POST /utils/import`).
+enum DirectusImportMode {
+  /// Crée les items (échec sur clé primaire existante).
+  add,
+
+  /// Crée ou met à jour les items selon leur clé primaire.
+  merge,
+}
+
+/// Service pour les utilitaires Directus (`/utils/*`).
 ///
-/// Ce service fournit des fonctions utilitaires diverses pour:
-/// - Générer des hashs
-/// - Générer des valeurs aléatoires
-/// - Trier des items
-/// - Gérer le cache
-/// - Importer/Exporter des données
+/// - [random] : chaînes aléatoires
+/// - [cache] : vidage du cache
+/// - [sort] : réordonnancement manuel
+/// - [export], [import], [importBatch] : échanges de données
+/// - [revert] : restauration d'une révision
 ///
 /// Exemple d'utilisation:
 /// ```dart
-/// // Générer un hash
-/// final hash = await client.utilities.hash.generate('password123');
-/// print('Hash: $hash');
+/// final token = await client.utilities.random.string(length: 32);
+/// await client.utilities.cache.clear(system: true);
 ///
-/// // Vérifier un hash
-/// final isValid = await client.utilities.hash.verify('password123', hash);
+/// // Exporter vers un fichier de la médiathèque (traitement asynchrone)
+/// await client.utilities.export(
+///   'articles',
+///   format: DirectusExportFormat.csv,
+///   query: QueryParameters(filter: Filter.field('status').equals('published')),
+///   file: {'title': 'Export articles'},
+/// );
 ///
-/// // Générer une chaîne aléatoire
-/// final random = await client.utilities.random.string(length: 32);
+/// // Importer un fichier CSV
+/// await client.utilities.import(
+///   'articles',
+///   bytes: csvBytes,
+///   format: DirectusExportFormat.csv,
+/// );
 ///
-/// // Vider le cache
-/// await client.utilities.cache.clear();
-///
-/// // Exporter des données
-/// final export = await client.utilities.export('articles', format: 'json');
-///
-/// // Importer des données
-/// await client.utilities.import('articles', data);
+/// // Restaurer une révision
+/// await client.utilities.revert(42);
 /// ```
 class UtilitiesService {
   final DirectusHttpClient _httpClient;
+
+  /// Les endpoints `/utils/hash/*` ont été supprimés dans Directus 12.1.
+  @Deprecated('Endpoints /utils/hash/* supprimés dans Directus 12.1.')
   late final HashUtility hash;
   late final RandomUtility random;
   late final CacheUtility cache;
   late final SortUtility sort;
 
   UtilitiesService(this._httpClient) {
+    // ignore: deprecated_member_use_from_same_package
     hash = HashUtility(_httpClient);
     random = RandomUtility(_httpClient);
     cache = CacheUtility(_httpClient);
     sort = SortUtility(_httpClient);
   }
 
-  /// Exporte des données d'une collection
+  /// Exporte les données d'une collection dans un fichier de la médiathèque
+  /// (`POST /utils/export/{collection}`).
   ///
-  /// [collection] Nom de la collection à exporter
-  /// [format] Format d'export: 'json', 'csv', 'xml' (défaut: 'json')
-  /// [query] Paramètres de requête optionnels pour filtrer les données
+  /// Le traitement est asynchrone côté serveur : la requête retourne
+  /// immédiatement et l'utilisateur reçoit une notification à la fin.
   ///
-  /// Retourne les données exportées dans le format demandé
-  Future<dynamic> export(
+  /// [format] Format du fichier généré
+  /// [query] Requête de sélection (par défaut `limit: -1`, toutes les lignes)
+  /// [file] Métadonnées du fichier créé (`title`, `folder`, ...)
+  Future<void> export(
     String collection, {
-    String format = 'json',
-    Map<String, dynamic>? query,
+    DirectusExportFormat format = DirectusExportFormat.json,
+    QueryParameters? query,
+    Map<String, dynamic>? file,
   }) async {
-    return await _httpClient.get(
+    await _httpClient.post(
       '/utils/export/$collection',
-      queryParameters: {'format': format, if (query != null) ...query},
+      data: {
+        'format': format.apiValue,
+        'query': _queryToBody(query) ?? {'limit': -1},
+        if (file != null) 'file': file,
+      },
     );
   }
 
-  /// Importe des données dans une collection
+  /// Importe un fichier (JSON, CSV...) dans une collection
+  /// (`POST /utils/import/{collection}`, multipart).
   ///
-  /// [collection] Nom de la collection cible
-  /// [data] Données à importer
-  /// [format] Format des données: 'json', 'csv', 'xml' (défaut: 'json')
-  ///
-  /// Retourne le résultat de l'import avec le nombre d'items créés
-  Future<dynamic> import(
-    String collection,
-    dynamic data, {
-    String format = 'json',
+  /// [bytes] Contenu du fichier
+  /// [format] Format du fichier (détermine le type MIME envoyé)
+  /// [background] Traitement en tâche de fond (réponse immédiate)
+  Future<void> import(
+    String collection, {
+    required List<int> bytes,
+    DirectusExportFormat format = DirectusExportFormat.json,
+    String? filename,
+    bool background = false,
   }) async {
-    return await _httpClient.post(
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename:
+            filename ??
+            'import.${format == DirectusExportFormat.csvUtf8 ? 'csv' : format.name}',
+        contentType: DioMediaType.parse(format.mimeType),
+      ),
+    });
+    await _httpClient.post(
       '/utils/import/$collection',
-      data: data,
-      queryParameters: {'format': format},
+      data: formData,
+      queryParameters: background ? {'background': true} : null,
     );
+  }
+
+  /// Importe des items dans plusieurs collections en une requête
+  /// (`POST /utils/import`).
+  ///
+  /// [batch] Map `collection → liste d'items`
+  /// [mode] [DirectusImportMode.add] ou [DirectusImportMode.merge]
+  /// [dryRun] Valide sans écrire
+  /// [dangerouslyAllowDelete] Autorise la suppression des items absents (merge)
+  ///
+  /// Retourne le rapport d'import renvoyé par Directus.
+  Future<dynamic> importBatch(
+    Map<String, List<Map<String, dynamic>>> batch, {
+    DirectusImportMode mode = DirectusImportMode.add,
+    bool dryRun = false,
+    bool dangerouslyAllowDelete = false,
+  }) async {
+    final response = await _httpClient.post(
+      '/utils/import',
+      data: [
+        for (final entry in batch.entries)
+          {'collection': entry.key, 'items': entry.value},
+      ],
+      queryParameters: {
+        'mode': mode.name,
+        if (dryRun) 'dryRun': true,
+        if (dangerouslyAllowDelete) 'dangerouslyAllowDelete': true,
+      },
+    );
+    return response.data?['data'];
+  }
+
+  /// Restaure l'item dans l'état d'une révision (`POST /utils/revert/{revision}`).
+  Future<void> revert(Object revisionId) async {
+    await _httpClient.post('/utils/revert/$revisionId');
+  }
+
+  /// Génère/complète des traductions par IA (`POST /utils/translations/generate`,
+  /// admin uniquement). [payload] est transmis tel quel à Directus.
+  Future<dynamic> generateTranslations(Map<String, dynamic> payload) async {
+    final response = await _httpClient.post(
+      '/utils/translations/generate',
+      data: payload,
+    );
+    return response.data?['data'];
+  }
+
+  /// Valide et résout une URL de redirection post-login
+  /// (`POST /utils/resolve-redirect`). Retourne l'URL acceptée par le serveur.
+  Future<String> resolveRedirect(String redirect, {String? provider}) async {
+    final response = await _httpClient.post(
+      '/utils/resolve-redirect',
+      data: {'redirect': redirect, if (provider != null) 'provider': provider},
+    );
+    return response.data['data'].toString();
+  }
+
+  /// Convertit [QueryParameters] en objet `query` pour un body JSON.
+  static Map<String, dynamic>? _queryToBody(QueryParameters? query) {
+    if (query == null) return null;
+    return query.toJsonBody();
   }
 }
 
-/// Utilitaires pour la génération et vérification de hashs
+/// Utilitaires de hash (endpoints supprimés dans Directus 12.1).
+@Deprecated('Endpoints /utils/hash/* supprimés dans Directus 12.1.')
 class HashUtility {
   final DirectusHttpClient _httpClient;
 
@@ -142,20 +255,20 @@ class CacheUtility {
 
   CacheUtility(this._httpClient);
 
-  /// Vide tout le cache
-  Future<void> clear() async {
-    await _httpClient.post('/utils/cache/clear');
-  }
-
-  /// Vide le cache d'une collection spécifique
+  /// Vide le cache des données (`POST /utils/cache/clear`).
   ///
-  /// [collection] Nom de la collection
-  Future<void> clearCollection(String collection) async {
+  /// [system] Vide aussi le cache du schéma et des permissions.
+  Future<void> clear({bool system = false}) async {
     await _httpClient.post(
       '/utils/cache/clear',
-      data: {'collection': collection},
+      queryParameters: system ? {'system': true} : null,
     );
   }
+
+  /// Directus ne permet pas de vider le cache d'une seule collection :
+  /// cette méthode vide tout le cache des données.
+  @Deprecated('Directus vide le cache globalement : utiliser clear().')
+  Future<void> clearCollection(String collection) => clear();
 }
 
 /// Utilitaires pour le tri des items
@@ -164,15 +277,12 @@ class SortUtility {
 
   SortUtility(this._httpClient);
 
-  /// Réordonne les items d'une collection
+  /// Réordonne les items d'une collection ayant un champ de tri
+  /// (`POST /utils/sort/{collection}`).
   ///
-  /// [collection] Nom de la collection
-  /// [itemId] ID de l'item à déplacer
-  /// [to] Nouvelle position (index)
-  ///
-  /// Cet endpoint est utile pour les collections ayant un champ 'sort'
-  /// qui définit l'ordre d'affichage.
-  Future<void> reorder(String collection, String itemId, int to) async {
+  /// [itemId] Clé primaire de l'item à déplacer
+  /// [to] Clé primaire de l'item dont il prend la place (pas un index)
+  Future<void> reorder(String collection, Object itemId, Object to) async {
     await _httpClient.post(
       '/utils/sort/$collection',
       data: {'item': itemId, 'to': to},

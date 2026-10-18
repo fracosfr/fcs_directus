@@ -1,16 +1,18 @@
-import 'dart:io' as io;
 import 'package:dio/dio.dart';
 import '../core/directus_http_client.dart';
+import '../models/directus_file.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les fichiers dans Directus.
 ///
 /// Permet d'uploader, télécharger et gérer des fichiers.
-class FilesService {
+class FilesService extends DirectusSystemService<DirectusFile> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  FilesService(this._httpClient) {
+  FilesService(this._httpClient)
+    : super(_httpClient, 'directus_files', DirectusFile.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_files');
   }
 
@@ -39,14 +41,14 @@ class FilesService {
     String? folder,
     Map<String, dynamic>? metadata,
   }) async {
-    final file = io.File(filePath);
-    final fileName = file.path.split('/').last;
+    final fileName = filePath.split(RegExp(r'[/\\]')).last;
 
+    // Directus ignore les champs envoyés après le fichier : métadonnées d'abord.
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(filePath, filename: fileName),
       if (title != null) 'title': title,
       if (folder != null) 'folder': folder,
       if (metadata != null) ...metadata,
+      'file': await MultipartFile.fromFile(filePath, filename: fileName),
     });
 
     final response = await _httpClient.post('/files', data: formData);
@@ -68,11 +70,12 @@ class FilesService {
     String? folder,
     Map<String, dynamic>? metadata,
   }) async {
+    // Directus ignore les champs envoyés après le fichier : métadonnées d'abord.
     final formData = FormData.fromMap({
-      'file': MultipartFile.fromBytes(bytes, filename: filename),
       if (title != null) 'title': title,
       if (folder != null) 'folder': folder,
       if (metadata != null) ...metadata,
+      'file': MultipartFile.fromBytes(bytes, filename: filename),
     });
 
     final response = await _httpClient.post('/files', data: formData);
@@ -94,12 +97,66 @@ class FilesService {
       '/files/import',
       data: {
         'url': url,
-        if (title != null) 'data': {'title': title},
-        if (folder != null) 'data': {'folder': folder},
+        if (title != null || folder != null)
+          'data': {
+            if (title != null) 'title': title,
+            if (folder != null) 'folder': folder,
+          },
       },
     );
 
     return response.data['data'] as Map<String, dynamic>;
+  }
+
+  /// Envoie un fichier et retourne le [DirectusFile] créé (`POST /files`).
+  ///
+  /// [file] Métadonnées optionnelles (titre, dossier, description...).
+  ///
+  /// ```dart
+  /// final file = await client.files.upload(
+  ///   bytes: imageBytes,
+  ///   filename: 'photo.jpg',
+  ///   file: DirectusFile.empty()..title.set('Photo')..folder.set(folderId),
+  /// );
+  /// print(file.id);
+  /// ```
+  Future<DirectusFile> upload({
+    required List<int> bytes,
+    required String filename,
+    DirectusFile? file,
+  }) async {
+    final data = await uploadFileFromBytes(
+      bytes: bytes,
+      filename: filename,
+      metadata: file?.toJson(),
+    );
+    return DirectusFile(data);
+  }
+
+  /// Remplace le contenu binaire d'un fichier existant
+  /// (`PATCH /files/{id}` en multipart), en conservant son identifiant.
+  Future<DirectusFile> replace(
+    String id, {
+    required List<int> bytes,
+    required String filename,
+    DirectusFile? file,
+  }) async {
+    final formData = FormData.fromMap({
+      if (file != null) ...file.toJsonDirty(),
+      'file': MultipartFile.fromBytes(bytes, filename: filename),
+    });
+    final response = await _httpClient.patch('/files/$id', data: formData);
+    return DirectusFile(response.data['data'] as Map<String, dynamic>);
+  }
+
+  /// Importe un fichier depuis une URL et retourne le [DirectusFile] créé
+  /// (`POST /files/import`).
+  Future<DirectusFile> importFromUrl(String url, {DirectusFile? file}) async {
+    final response = await _httpClient.post(
+      '/files/import',
+      data: {'url': url, if (file != null) 'data': file.toJson()},
+    );
+    return DirectusFile(response.data['data'] as Map<String, dynamic>);
   }
 
   /// Met à jour les métadonnées d'un fichier

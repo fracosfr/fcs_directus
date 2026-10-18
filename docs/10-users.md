@@ -423,6 +423,39 @@ await client.permissions.updatePermission('permission-uuid', {
 await client.permissions.deletePermission('permission-uuid');
 ```
 
+## Droits de l'utilisateur courant
+
+```dart
+final myRoles = await client.roles.getMyRoles();          // GET /roles/me (rôles parents inclus)
+final globals = await client.policies.getMyGlobals();     // {admin_access, app_access, enforce_tfa}
+final perms = await client.permissions.getMyPermissions(); // {collection: {action: {access, fields}}}
+final canEdit = await client.permissions.getItemPermissions('articles', '15');
+print(canEdit['update']?['access']); // none | partial | full
+```
+
+## Attribution des policies (`/access`)
+
+Une policy est attribuée à un rôle ou à un utilisateur via la collection `directus_access` :
+
+```dart
+await client.access.assignToRole(roleId: 'role-id', policyId: 'policy-id');
+await client.access.assignToUser(userId: 'user-id', policyId: 'policy-id');
+
+final links = await client.access.readMany(
+  query: QueryParameters(filter: Filter.field('user').equals('user-id')),
+);
+await client.access.deleteOne(links.data.first);
+```
+
+## Administration 2FA
+
+```dart
+// Désactiver la 2FA d'un autre utilisateur (admin)
+await client.users.disableTwoFactorForUser('user-id');
+```
+
+Depuis Directus 12.5, l'obligation de 2FA tient compte de toutes les policies effectives (rôles parents, restrictions IP).
+
 ## Exemple complet : Système d'utilisateurs
 
 ```dart

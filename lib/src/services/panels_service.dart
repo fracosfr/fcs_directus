@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_panel.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les panneaux dans Directus.
 ///
@@ -24,11 +26,12 @@ import 'items_service.dart';
 /// // Récupérer les panneaux d'un dashboard
 /// final dashboardPanels = await client.panels.getDashboardPanels(dashboard-id);
 /// ```
-class PanelsService {
+class PanelsService extends DirectusSystemService<DirectusPanel> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  PanelsService(this._httpClient) {
+  PanelsService(this._httpClient)
+    : super(_httpClient, 'directus_panels', DirectusPanel.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_panels');
   }
 

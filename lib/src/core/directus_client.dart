@@ -31,6 +31,13 @@ import '../services/shares_service.dart';
 import '../services/translations_service.dart';
 import '../services/utilities_service.dart';
 import '../services/versions_service.dart';
+import '../services/access_service.dart';
+import '../services/license_service.dart';
+import '../services/deployments_service.dart';
+import '../models/directus_user.dart';
+import '../models/directus_role.dart';
+import '../models/directus_policy.dart';
+import '../models/directus_permission.dart';
 import '../models/directus_model.dart';
 import '../websocket/directus_websocket_client.dart';
 
@@ -111,6 +118,9 @@ class DirectusClient {
   late final TranslationsService translations;
   late final UtilitiesService utilities;
   late final VersionsService versions;
+  late final AccessService access;
+  late final LicenseService license;
+  late final DeploymentsService deployments;
 
   /// Crée un nouveau client Directus
   DirectusClient(this.config) {
@@ -146,6 +156,25 @@ class DirectusClient {
     translations = TranslationsService(_httpClient);
     utilities = UtilitiesService(_httpClient);
     versions = VersionsService(_httpClient);
+    access = AccessService(_httpClient);
+    license = LicenseService(_httpClient);
+    deployments = DeploymentsService(_httpClient);
+
+    // Les services système enregistrent leur modèle ; on complète pour que
+    // `itemsOf<DirectusUser>()` etc. fonctionnent sans configuration.
+    // Une factory déjà enregistrée (sous-classe personnalisée) est conservée.
+    _registerDefault<DirectusUser>(DirectusUser.factory);
+    _registerDefault<DirectusRole>(DirectusRole.factory);
+    _registerDefault<DirectusPolicy>(DirectusPolicy.factory);
+    _registerDefault<DirectusPermission>(DirectusPermission.factory);
+  }
+
+  static void _registerDefault<T extends DirectusModel>(
+    T Function(Map<String, dynamic>) factory,
+  ) {
+    if (DirectusModel.getFactory<T>() == null) {
+      DirectusModel.registerFactory<T>(factory);
+    }
   }
 
   /// Crée un service générique (`ItemsService`) pour accéder aux items d'une collection.

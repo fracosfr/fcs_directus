@@ -4,7 +4,7 @@ Ce guide couvre toutes les opérations de lecture et d'écriture sur les collect
 
 ## Accéder aux items
 
-Le client fournit deux méthodes pour accéder aux items :
+Le client fournit deux méthodes pour accéder aux items d'une collection utilisateur (`/items/{collection}`) :
 
 ```dart
 // Méthode générique (retourne Map<String, dynamic>)
@@ -251,13 +251,36 @@ Pour connaître le nombre total d'items :
 final response = await client.items('articles').readMany(
   query: QueryParameters(
     limit: 1,
-    meta: '*', // Demande les métadonnées
+    meta: ['total_count', 'filter_count'], // ou ['*']
   ),
 );
 
-final total = response.meta?.totalCount ?? 0;
+final total = response.meta?.totalCount ?? 0;      // toute la collection
+final filtered = response.meta?.filterCount ?? 0;  // après filtre/recherche
 print('Total: $total articles');
 ```
+
+Sans `meta`, Directus ne renvoie aucune métadonnée (`response.meta == null`).
+
+## Autres paramètres de requête
+
+| Paramètre | Rôle |
+|-----------|------|
+| `alias: {'auteur': 'author'}` | Renomme un champ dans la réponse |
+| `version: 'draft'` | Lit l'item dans une version de contenu (`published` = version publiée) |
+| `versionRaw: true` | Renvoie le delta brut de la version |
+| `backlink: false` | Exclut les relations inverses des wildcards `*.*` |
+
+```dart
+final draft = await client.items('articles').readOne(
+  '15',
+  query: QueryParameters(version: 'draft', fields: ['*', 'author.*']),
+);
+```
+
+## Collections système
+
+`items()` et `itemsOf<T>()` acceptent aussi les collections système : `client.items('directus_comments')` appelle `/comments`, car Directus refuse `/items/directus_*`. Pour un usage orienté objet, préférer les services dédiés (`client.comments`, `client.files`...) décrits dans [Services système](12-system-services.md).
 
 ## Sélection de champs
 

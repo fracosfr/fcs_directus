@@ -1,5 +1,7 @@
 import '../core/directus_http_client.dart';
+import '../models/directus_comment.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les commentaires dans Directus.
 ///
@@ -21,11 +23,12 @@ import 'items_service.dart';
 /// // Récupérer un commentaire spécifique
 /// final comment = await client.comments.getComment('comment-id');
 /// ```
-class CommentsService {
+class CommentsService extends DirectusSystemService<DirectusComment> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  CommentsService(this._httpClient) {
+  CommentsService(this._httpClient)
+    : super(_httpClient, 'directus_comments', DirectusComment.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_comments');
   }
 

@@ -5,6 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-10-18
+
+Mise en conformité avec l'API Directus 12.5. Détail route par route : `docs/13-api-coverage.md`.
+
+### Fixed
+
+- **Collections système** : `ItemsService` et `ItemActiveService` appelaient `/items/directus_*`, que Directus refuse (403). Les collections `directus_*` sont maintenant routées vers leur endpoint (`/comments`, `/files`, `/flows`...) via `directusCollectionPath()`. Cela corrige comments, dashboards, panels, flows, operations, folders, notifications, presets, shares, translations, versions, revisions, files (lecture/maj), permissions et `itemsOf<DirectusXxx>()`.
+- **WebSocket** : les messages sortants sont désormais à plat (`{"type":"auth","access_token":…}`) comme l'exige Directus ; les événements de souscription (`data` = liste) ne font plus échouer le parsing.
+- **Relations** : routes `/relations/{collection}/{field}` (il n'y a pas d'identifiant numérique) ; `DirectusRelation` lit `related_collection` et l'objet `meta`.
+- **Versions** : `compare`, `save` et `promote` utilisent `/versions/{id}/…`.
+- **Extensions** : mise à jour via `PATCH /extensions/{uuid}`.
+- **Utilitaires** : `export` en `POST` avec `query`/`format`, `import` en multipart, `cache.clear(system:)`, `sort.reorder` attend des clés primaires.
+- **Fichiers** : métadonnées envoyées avant le binaire (elles étaient ignorées) ; `importFile` n'écrase plus `title` avec `folder` ; suppression de `dart:io` (compatibilité Flutter Web).
+- **Auth** : providers via `GET /auth`, URL SSO `/auth/login/{provider}`, refresh en mode cookie sans token local, réponse du mode session sans token.
+- **Serveur / métriques / permissions** : `server.health/info/specs`, `metrics.getMetrics` et `permissions.getMyPermissions/getItemPermissions` retournent les données au lieu de l'objet `Response` ; `/metrics` est lu en texte Prometheus.
+- **Utilisateurs** : `verifyEmail` utilise `?token=`.
+- **Erreurs** : `statusCode` conservé pour les exceptions issues d'un code Directus ; ajout des codes 12.x (`COLLECTION_INACTIVE`, `LICENSE_INVALID`, `RESOURCE_RESTRICTED`, `VERSION_HASH_MISMATCH`…).
+- L'intercepteur n'écrase plus un en-tête `Authorization` explicite.
+
+### Added
+
+- Classes de base `DirectusReadOnlySystemService<T>` / `DirectusSystemService<T>` : API objet (`readMany`, `readOne`, `createOne`, `updateOne`, `deleteOne`…) sur les services système.
+- Modèles `DirectusFile`, `DirectusShare`, `DirectusTranslation`, `DirectusVersion`, `DirectusAccess`, `DirectusSettings`, `DirectusRelationMeta` ; champ `DirectusFolder.type`.
+- Services `access`, `license`, `deployments`.
+- `auth.loginWithProvider()` (LDAP), `users.disableTwoFactorForUser()`, `roles.getMyRoles()`, `policies.getMyGlobals()`, `settings.read/update/setOwner`, `shares.authenticate/invite/info`, `collections.updateCollections`, `fields.updateFields`, `files.upload/replace/importFromUrl`, `assets.download/downloadFolderZip/downloadFilesZip`, `server.graphqlSdl/setup`, `utilities.importBatch/revert/generateTranslations/resolveRedirect`, registre d'extensions, `websocket.items()`.
+- `QueryParameters` : `meta`, `alias`, `version`, `versionRaw`, `backlink` ; `toJsonBody()`.
+- Factories des modèles système enregistrées par défaut (`itemsOf<DirectusUser>()` fonctionne sans configuration).
+
+### Deprecated
+
+- `utilities.hash` (endpoints supprimés en 12.1), `cache.clearCollection`, `auth.loginWithOAuth` (lève `UnsupportedError`), anciennes méthodes de `RelationsService` basées sur un id, `versions.promoteVersion/saveItemAsVersion/compareVersions`, `extensions.updateExtensionInBundle`.
+
+### Changed
+
+- Signatures corrigées (l'ancien comportement ne fonctionnait pas) : `utilities.export` (`DirectusExportFormat`, `QueryParameters`), `utilities.import` (octets), types de retour de `ServerService`, `MetricsService`, `getMyPermissions`, `getItemPermissions`.
+- `DirectusWebSocketMessage.data` est `dynamic` (liste ou objet selon le message) ; ajout de `items`, `ids`, `status`, `error`, `raw`.
+
 ## [Unreleased]
 
 ### Added

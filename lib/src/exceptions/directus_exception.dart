@@ -1,36 +1,48 @@
 /// Codes d'erreur Directus officiels
 /// Source: https://github.com/directus/directus/blob/main/packages/errors/src/codes.ts
 enum DirectusErrorCode {
+  addonNotAvailable('ADDON_NOT_AVAILABLE'),
+  addonNotFound('ADDON_NOT_FOUND'),
+  addonQuantityOutOfRange('ADDON_QUANTITY_OUT_OF_RANGE'),
+  collectionInactive('COLLECTION_INACTIVE'),
   containsNullValues('CONTAINS_NULL_VALUES'),
   contentTooLarge('CONTENT_TOO_LARGE'),
   emailLimitExceeded('EMAIL_LIMIT_EXCEEDED'),
   forbidden('FORBIDDEN'),
   illegalAssetTransformation('ILLEGAL_ASSET_TRANSFORMATION'),
+  importCyclicalRelation('IMPORT_CYCLICAL_RELATION'),
   internal('INTERNAL_SERVER_ERROR'),
   invalidCredentials('INVALID_CREDENTIALS'),
   invalidForeignKey('INVALID_FOREIGN_KEY'),
+  invalidInvite('INVALID_INVITE'),
   invalidIp('INVALID_IP'),
   invalidOtp('INVALID_OTP'),
   invalidPayload('INVALID_PAYLOAD'),
+  invalidPathParameter('INVALID_PATH_PARAMETER'),
   invalidProvider('INVALID_PROVIDER'),
   invalidProviderConfig('INVALID_PROVIDER_CONFIG'),
   invalidQuery('INVALID_QUERY'),
   invalidToken('INVALID_TOKEN'),
+  licenseInvalid('LICENSE_INVALID'),
   limitExceeded('LIMIT_EXCEEDED'),
   methodNotAllowed('METHOD_NOT_ALLOWED'),
   notNullViolation('NOT_NULL_VIOLATION'),
   outOfDate('OUT_OF_DATE'),
+  outOfTime('OUT_OF_TIME'),
   rangeNotSatisfiable('RANGE_NOT_SATISFIABLE'),
   recordNotUnique('RECORD_NOT_UNIQUE'),
   requestsExceeded('REQUESTS_EXCEEDED'),
+  resourceRestricted('RESOURCE_RESTRICTED'),
   routeNotFound('ROUTE_NOT_FOUND'),
   serviceUnavailable('SERVICE_UNAVAILABLE'),
   tokenExpired('TOKEN_EXPIRED'),
+  unexpectedResponse('UNEXPECTED_RESPONSE'),
   unprocessableContent('UNPROCESSABLE_CONTENT'),
   unsupportedMediaType('UNSUPPORTED_MEDIA_TYPE'),
   userSuspended('USER_SUSPENDED'),
   valueOutOfRange('VALUE_OUT_OF_RANGE'),
-  valueTooLong('VALUE_TOO_LONG');
+  valueTooLong('VALUE_TOO_LONG'),
+  versionHashMismatch('VERSION_HASH_MISMATCH');
 
   const DirectusErrorCode(this.code);
   final String code;
@@ -61,7 +73,10 @@ class DirectusException implements Exception {
   });
 
   /// Crée une exception à partir d'une réponse d'erreur Directus
-  factory DirectusException.fromJson(Map<String, dynamic> json) {
+  factory DirectusException.fromJson(
+    Map<String, dynamic> json, {
+    int? statusCode,
+  }) {
     final message = json['message'] as String? ?? 'Unknown error';
     final extensions = json['extensions'] as Map<String, dynamic>?;
     final errorCode = extensions?['code'] as String?;
@@ -76,6 +91,7 @@ class DirectusException implements Exception {
         case 'USER_SUSPENDED':
           return DirectusAuthException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -87,8 +103,13 @@ class DirectusException implements Exception {
         case 'NOT_NULL_VIOLATION':
         case 'VALUE_OUT_OF_RANGE':
         case 'VALUE_TOO_LONG':
+        case 'INVALID_INVITE':
+        case 'INVALID_PATH_PARAMETER':
+        case 'IMPORT_CYCLICAL_RELATION':
+        case 'VERSION_HASH_MISMATCH':
           return DirectusValidationException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -96,13 +117,17 @@ class DirectusException implements Exception {
         case 'ROUTE_NOT_FOUND':
           return DirectusNotFoundException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
 
         case 'FORBIDDEN':
+        case 'COLLECTION_INACTIVE':
+        case 'RESOURCE_RESTRICTED':
           return DirectusPermissionException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -110,8 +135,11 @@ class DirectusException implements Exception {
         case 'INTERNAL_SERVER_ERROR':
         case 'SERVICE_UNAVAILABLE':
         case 'OUT_OF_DATE':
+        case 'OUT_OF_TIME':
+        case 'UNEXPECTED_RESPONSE':
           return DirectusServerException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -121,6 +149,7 @@ class DirectusException implements Exception {
         case 'ILLEGAL_ASSET_TRANSFORMATION':
           return DirectusFileException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -130,6 +159,7 @@ class DirectusException implements Exception {
         case 'LIMIT_EXCEEDED':
           return DirectusRateLimitException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -137,6 +167,7 @@ class DirectusException implements Exception {
         case 'METHOD_NOT_ALLOWED':
           return DirectusMethodNotAllowedException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -145,6 +176,7 @@ class DirectusException implements Exception {
         case 'RECORD_NOT_UNIQUE':
           return DirectusDatabaseException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -152,6 +184,7 @@ class DirectusException implements Exception {
         case 'RANGE_NOT_SATISFIABLE':
           return DirectusRangeException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -159,8 +192,13 @@ class DirectusException implements Exception {
         case 'INVALID_IP':
         case 'INVALID_PROVIDER':
         case 'INVALID_PROVIDER_CONFIG':
+        case 'LICENSE_INVALID':
+        case 'ADDON_NOT_AVAILABLE':
+        case 'ADDON_NOT_FOUND':
+        case 'ADDON_QUANTITY_OUT_OF_RANGE':
           return DirectusConfigException(
             message: message,
+            statusCode: statusCode,
             errorCode: errorCode,
             extensions: extensions,
           );
@@ -169,6 +207,7 @@ class DirectusException implements Exception {
 
     return DirectusException(
       message: message,
+      statusCode: statusCode,
       errorCode: errorCode,
       extensions: extensions,
     );

@@ -14,7 +14,7 @@ import 'directus_user.dart';
 ///   ..collection.set('articles')
 ///   ..item.set('15')
 ///   ..comment.set('This is a comment on an article');
-/// await client.comments.createComment(comment.toMap());
+/// await client.comments.createOne(comment);
 ///
 /// // Récupérer les commentaires d'un item
 /// final comments = await client.comments.getCommentsForItem(
@@ -22,10 +22,10 @@ import 'directus_user.dart';
 ///   itemId: '15',
 /// );
 ///
-/// // Mettre à jour un commentaire
-/// final updatedComment = DirectusComment.empty()
-///   ..comment.set('Updated comment text');
-/// await client.comments.updateComment('comment-id', updatedComment.toMap());
+/// // Mettre à jour un commentaire (seuls les champs modifiés sont envoyés)
+/// final existing = await client.comments.readOne('comment-id');
+/// existing.comment.set('Updated comment text');
+/// await client.comments.updateOne(existing);
 /// ```
 class DirectusComment extends DirectusModel {
   /// Collection dans laquelle l'item réside

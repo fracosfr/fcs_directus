@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'dart:convert';
 import '../core/directus_http_client.dart';
 import '../models/asset_transforms.dart';
@@ -355,5 +356,38 @@ class AssetsService {
     );
 
     return getAssetUrl(fileId, transforms: [transform]);
+  }
+
+  /// Télécharge le binaire d'un asset (`GET /assets/{id}`), avec
+  /// transformations optionnelles.
+  Future<List<int>> download(
+    String fileId, {
+    String? key,
+    List<AssetTransform>? transforms,
+  }) async {
+    final response = await _httpClient.get<List<int>>(
+      getAssetUrl(fileId, key: key, transforms: transforms),
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return response.data ?? const [];
+  }
+
+  /// Télécharge un dossier complet en archive ZIP (`GET /assets/folder/{id}`).
+  Future<List<int>> downloadFolderZip(String folderId) async {
+    final response = await _httpClient.get<List<int>>(
+      '/assets/folder/$folderId',
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return response.data ?? const [];
+  }
+
+  /// Télécharge plusieurs fichiers en archive ZIP (`POST /assets/files`).
+  Future<List<int>> downloadFilesZip(List<String> fileIds) async {
+    final response = await _httpClient.post<List<int>>(
+      '/assets/files',
+      data: {'ids': fileIds},
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return response.data ?? const [];
   }
 }

@@ -11,13 +11,13 @@ import 'directus_model.dart';
 /// // Créer un dossier racine
 /// final folder = DirectusFolder.empty()
 ///   ..name.set('New York');
-/// await client.folders.createFolder(folder.toMap());
+/// await client.folders.createOne(folder);
 ///
 /// // Créer un sous-dossier
 /// final subfolder = DirectusFolder.empty()
 ///   ..name.set('Photos')
 ///   ..parent.set('parent-folder-id');
-/// await client.folders.createFolder(subfolder.toMap());
+/// await client.folders.createOne(subfolder);
 ///
 /// // Récupérer les dossiers racines
 /// final rootFolders = await client.folders.getRootFolders();
@@ -34,6 +34,10 @@ class DirectusFolder extends DirectusModel {
   /// Null si c'est un dossier racine
   late final parent = stringValue('parent');
 
+  /// Type de dossier (Directus 12.4+) : `files` (médiathèque) ou `flows`
+  /// (dossiers de flows). Les non-admins ne reçoivent que les dossiers `files`.
+  late final type = stringValue('type');
+
   DirectusFolder(super.data);
   DirectusFolder.empty() : super.empty();
 
@@ -46,6 +50,9 @@ class DirectusFolder extends DirectusModel {
 
   /// Vérifie si le dossier est un dossier racine (sans parent)
   bool get isRootFolder => parent.valueOrNull == null;
+
+  /// Vrai si le dossier appartient à la médiathèque (et non aux flows)
+  bool get isFileFolder => type.valueOrNull == null || type.value == 'files';
 
   /// Vérifie si le dossier a un parent
   bool get hasParent => parent.isNotEmpty;

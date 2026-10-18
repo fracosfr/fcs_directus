@@ -1,5 +1,7 @@
 import '../core/directus_http_client.dart';
+import '../models/directus_folder.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les dossiers (folders) dans Directus.
 ///
@@ -20,11 +22,12 @@ import 'items_service.dart';
 /// // Récupérer un dossier spécifique
 /// final folder = await client.folders.getFolder('folder-id');
 /// ```
-class FoldersService {
+class FoldersService extends DirectusSystemService<DirectusFolder> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  FoldersService(this._httpClient) {
+  FoldersService(this._httpClient)
+    : super(_httpClient, 'directus_folders', DirectusFolder.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_folders');
   }
 

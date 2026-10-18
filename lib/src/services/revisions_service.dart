@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_revision.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les révisions dans Directus.
 ///
@@ -22,11 +24,12 @@ import 'items_service.dart';
 /// // Récupérer une révision spécifique
 /// final revision = await client.revisions.getRevision(revision-id);
 /// ```
-class RevisionsService {
+class RevisionsService extends DirectusReadOnlySystemService<DirectusRevision> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  RevisionsService(this._httpClient) {
+  RevisionsService(this._httpClient)
+    : super(_httpClient, 'directus_revisions', DirectusRevision.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_revisions');
   }
 

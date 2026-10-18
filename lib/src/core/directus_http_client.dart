@@ -60,9 +60,13 @@ class DirectusHttpClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Ajouter le token d'authentification si disponible
+          // Ajouter le token d'authentification si disponible, sans écraser
+          // un en-tête explicite (ex: jeton METRICS_TOKENS)
           if (_accessToken != null) {
-            options.headers['Authorization'] = 'Bearer $_accessToken';
+            options.headers.putIfAbsent(
+              'Authorization',
+              () => 'Bearer $_accessToken',
+            );
           }
 
           if (_config.enableLogging) {
@@ -518,7 +522,7 @@ class DirectusHttpClient {
       return DirectusException.fromJson({
         'message': message,
         'extensions': extensions,
-      });
+      }, statusCode: statusCode);
     }
 
     // Sinon, mapper selon le code HTTP

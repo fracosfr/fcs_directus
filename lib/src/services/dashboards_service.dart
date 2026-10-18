@@ -1,5 +1,7 @@
 import '../core/directus_http_client.dart';
+import '../models/directus_dashboard.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les dashboards (tableaux de bord) dans Directus.
 ///
@@ -22,11 +24,12 @@ import 'items_service.dart';
 /// // Récupérer un dashboard spécifique
 /// final dashboard = await client.dashboards.getDashboard('dashboard-id');
 /// ```
-class DashboardsService {
+class DashboardsService extends DirectusSystemService<DirectusDashboard> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  DashboardsService(this._httpClient) {
+  DashboardsService(this._httpClient)
+    : super(_httpClient, 'directus_dashboards', DirectusDashboard.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_dashboards');
   }
 

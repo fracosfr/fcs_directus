@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_version.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les versions de contenu dans Directus.
 ///
@@ -25,11 +27,12 @@ import 'items_service.dart';
 /// // Promouvoir une version (la rendre principale)
 /// await client.versions.promoteVersion(version-id);
 /// ```
-class VersionsService {
+class VersionsService extends DirectusSystemService<DirectusVersion> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  VersionsService(this._httpClient) {
+  VersionsService(this._httpClient)
+    : super(_httpClient, 'directus_versions', DirectusVersion.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_versions');
   }
 
@@ -148,49 +151,78 @@ class VersionsService {
     return await getVersions(query: mergedQuery);
   }
 
-  /// Promouvoir une version (endpoint spécial)
+  /// Compare une version avec l'item principal (`GET /versions/{id}/compare`).
   ///
-  /// Rend une version comme version principale de l'item.
-  /// Cette opération applique les modifications (delta) de la version
-  /// sur l'item principal.
-  ///
-  /// Note: Cet endpoint pourrait nécessiter une route spéciale selon
-  /// la version de Directus. Vérifiez la documentation de votre version.
-  Future<dynamic> promoteVersion(String versionId) async {
-    return await _httpClient.post('/versions/$versionId/promote');
+  /// Retourne `outdated` (l'item principal a changé depuis la création),
+  /// `mainHash` (à passer à [promote]), `current` (delta de la version) et
+  /// `main` (état actuel de l'item).
+  Future<Map<String, dynamic>> compare(String versionId) async {
+    final response = await _httpClient.get('/versions/$versionId/compare');
+    return Map<String, dynamic>.from(response.data['data'] as Map);
   }
 
-  /// Sauvegarde l'état actuel d'un item comme nouvelle version
+  /// Enregistre des modifications dans une version
+  /// (`POST /versions/{id}/save`). [data] est fusionné au delta existant.
   ///
-  /// [collection] Collection de l'item
-  /// [itemId] ID de l'item
-  /// [name] Nom de la version (optionnel)
+  /// Retourne l'item tel qu'il apparaît avec la version appliquée.
+  Future<Map<String, dynamic>?> save(
+    String versionId,
+    Map<String, dynamic> data,
+  ) async {
+    final response = await _httpClient.post(
+      '/versions/$versionId/save',
+      data: data,
+    );
+    final result = response.data?['data'];
+    return result == null ? null : Map<String, dynamic>.from(result as Map);
+  }
+
+  /// Applique une version à l'item principal (`POST /versions/{id}/promote`).
+  ///
+  /// [mainHash] Hash retourné par [compare] (détection de conflit)
+  /// [fields] Ne promouvoir que ces champs
+  ///
+  /// Retourne la clé primaire de l'item mis à jour.
+  Future<dynamic> promote(
+    String versionId, {
+    String? mainHash,
+    List<String>? fields,
+  }) async {
+    final response = await _httpClient.post(
+      '/versions/$versionId/promote',
+      data: {
+        if (mainHash != null) 'mainHash': mainHash,
+        if (fields != null) 'fields': fields,
+      },
+    );
+    return response.data?['data'];
+  }
+
+  /// Ancien nom de [promote].
+  @Deprecated('Utiliser promote(versionId, mainHash: ...).')
+  Future<dynamic> promoteVersion(String versionId) => promote(versionId);
+
+  /// Créait une version via une route inexistante (`/versions/save`).
+  @Deprecated(
+    'Créer la version avec createOne(DirectusVersion) puis save(id, data).',
+  )
   Future<dynamic> saveItemAsVersion(
     String collection,
     String itemId, {
     String? name,
   }) async {
-    final response = await _httpClient.post(
-      '/versions/save',
-      data: {
-        'collection': collection,
-        'item': itemId,
-        if (name != null) 'name': name,
-      },
+    final version = await createOne(
+      DirectusVersion.empty()
+        ..collection.set(collection)
+        ..item.set(itemId)
+        ..key.set(name ?? 'draft')
+        ..name.set(name ?? 'Draft'),
     );
-    return response.data['data'];
+    return version?.toMap();
   }
 
-  /// Compare deux versions
-  ///
-  /// [versionId1] ID de la première version
-  /// [versionId2] ID de la deuxième version
-  ///
-  /// Retourne les différences entre les deux versions
-  Future<dynamic> compareVersions(String versionId1, String versionId2) async {
-    return await _httpClient.get(
-      '/versions/compare',
-      queryParameters: {'version1': versionId1, 'version2': versionId2},
-    );
-  }
+  /// Directus compare une version à l'item principal, pas deux versions.
+  @Deprecated('Utiliser compare(versionId).')
+  Future<dynamic> compareVersions(String versionId1, String versionId2) =>
+      compare(versionId1);
 }

@@ -1,5 +1,7 @@
 import '../core/directus_http_client.dart';
+import '../models/directus_flow.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les flows (flux) dans Directus.
 ///
@@ -22,11 +24,12 @@ import 'items_service.dart';
 /// // Déclencher un flow avec webhook
 /// await client.flows.triggerFlow('flow-id', {'data': 'payload'});
 /// ```
-class FlowsService {
+class FlowsService extends DirectusSystemService<DirectusFlow> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  FlowsService(this._httpClient) {
+  FlowsService(this._httpClient)
+    : super(_httpClient, 'directus_flows', DirectusFlow.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_flows');
   }
 

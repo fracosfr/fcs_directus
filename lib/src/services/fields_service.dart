@@ -190,4 +190,17 @@ class FieldsService {
         .where((field) => field['meta']?['interface'] == interfaceType)
         .toList();
   }
+
+  /// Met à jour plusieurs champs d'une collection en une requête
+  /// (`PATCH /fields/{collection}`). Chaque entrée doit contenir `field`.
+  Future<List<Map<String, dynamic>>> updateFields(
+    String collection,
+    List<Map<String, dynamic>> fields,
+  ) async {
+    final response = await _httpClient.patch(
+      '/fields/$collection',
+      data: fields,
+    );
+    return List<Map<String, dynamic>>.from(response.data['data'] as List);
+  }
 }

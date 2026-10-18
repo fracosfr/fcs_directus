@@ -42,32 +42,48 @@ class AuthResponse {
 
   factory AuthResponse.fromJson(Map<String, dynamic> json) {
     return AuthResponse(
-      accessToken: json['access_token'] as String,
-      expiresIn: json['expires'] as int,
+      // En mode `session`, Directus ne renvoie pas de token (il est en cookie).
+      accessToken: json['access_token'] as String? ?? '',
+      expiresIn: json['expires'] as int? ?? 0,
       refreshToken: json['refresh_token'] as String?,
     );
   }
 }
 
-/// Fournisseur OAuth disponible sur le serveur Directus.
+/// Fournisseur d'authentification configuré sur le serveur (`GET /auth`).
+///
+/// Couvre les drivers SSO (`oauth2`, `openid`, `saml`) et `ldap`.
 class OAuthProvider {
-  /// Nom du fournisseur (ex: 'google', 'github', 'facebook').
+  /// Nom du fournisseur (ex: 'google', 'github', 'keycloak').
   final String name;
+
+  /// Driver Directus (`oauth2`, `openid`, `saml`, `ldap`).
+  final String? driver;
+
+  /// Libellé affiché sur le bouton de connexion.
+  final String? label;
 
   /// Icône du fournisseur (SVG ou URL).
   final String? icon;
 
-  OAuthProvider({required this.name, this.icon});
+  OAuthProvider({required this.name, this.driver, this.label, this.icon});
 
   factory OAuthProvider.fromJson(Map<String, dynamic> json) {
     return OAuthProvider(
       name: json['name'] as String,
+      driver: json['driver'] as String?,
+      label: json['label'] as String?,
       icon: json['icon'] as String?,
     );
   }
 
+  /// Vrai pour un fournisseur à redirection navigateur (OAuth2/OpenID/SAML).
+  bool get isSso => driver != 'ldap';
+
   Map<String, dynamic> toJson() => {
     'name': name,
+    if (driver != null) 'driver': driver,
+    if (label != null) 'label': label,
     if (icon != null) 'icon': icon,
   };
 }
@@ -126,16 +142,49 @@ class AuthService {
       },
     );
 
-    final authResponse = AuthResponse.fromJson(
-      response.data['data'] as Map<String, dynamic>,
-    );
+    return _storeTokens(response.data['data'] as Map<String, dynamic>);
+  }
 
-    // Stocker les tokens dans le client HTTP
-    _httpClient.setTokens(
-      accessToken: authResponse.accessToken,
-      refreshToken: authResponse.refreshToken,
+  /// Connexion via un fournisseur d'authentification nommé
+  /// (`POST /auth/login/{provider}`), typiquement LDAP.
+  ///
+  /// [identifier] Identifiant LDAP (ou email selon le driver)
+  ///
+  /// ```dart
+  /// await client.auth.loginWithProvider(
+  ///   provider: 'ldap',
+  ///   identifier: 'jdoe',
+  ///   password: 'secret',
+  /// );
+  /// ```
+  Future<AuthResponse> loginWithProvider({
+    required String provider,
+    required String identifier,
+    required String password,
+    String? otp,
+    AuthMode mode = AuthMode.json,
+  }) async {
+    final response = await _httpClient.post(
+      '/auth/login/$provider',
+      data: {
+        'identifier': identifier,
+        'password': password,
+        if (otp != null) 'otp': otp,
+        'mode': mode.toApiValue(),
+      },
     );
+    return _storeTokens(response.data['data'] as Map<String, dynamic>);
+  }
 
+  /// Convertit la réponse d'auth et mémorise les tokens (s'il y en a).
+  AuthResponse _storeTokens(Map<String, dynamic> data) {
+    final authResponse = AuthResponse.fromJson(data);
+    if (authResponse.accessToken.isNotEmpty) {
+      _httpClient.setTokens(
+        accessToken: authResponse.accessToken,
+        refreshToken: authResponse.refreshToken,
+      );
+    }
     return authResponse;
   }
 
@@ -204,7 +253,8 @@ class AuthService {
   }) async {
     final token = refreshToken ?? _httpClient.refreshToken;
 
-    if (token == null) {
+    // En mode cookie/session le refresh token est lu dans le cookie httpOnly.
+    if (token == null && mode == AuthMode.json) {
       throw Exception('Aucun refresh token disponible');
     }
 
@@ -235,7 +285,10 @@ class AuthService {
     try {
       response = await tempDio.post<Map<String, dynamic>>(
         '/auth/refresh',
-        data: {'refresh_token': token, 'mode': mode.toApiValue()},
+        data: {
+          if (token != null) 'refresh_token': token,
+          'mode': mode.toApiValue(),
+        },
       );
     } on DioException catch (e) {
       throw _httpClient.handleDioError(e);
@@ -252,11 +305,13 @@ class AuthService {
       response.data!['data'] as Map<String, dynamic>,
     );
 
-    // Mettre à jour les tokens
-    _httpClient.setTokens(
-      accessToken: authResponse.accessToken,
-      refreshToken: authResponse.refreshToken ?? token,
-    );
+    // Mettre à jour les tokens (aucun token en mode session)
+    if (authResponse.accessToken.isNotEmpty) {
+      _httpClient.setTokens(
+        accessToken: authResponse.accessToken,
+        refreshToken: authResponse.refreshToken ?? token,
+      );
+    }
 
     return authResponse;
   }
@@ -369,19 +424,21 @@ class AuthService {
     );
   }
 
-  /// Liste tous les fournisseurs OAuth disponibles
-  ///
-  /// Retourne la liste des providers OAuth configurés sur le serveur Directus
-  /// (ex: Google, GitHub, Facebook, etc.)
+  /// Liste les fournisseurs d'authentification configurés (`GET /auth`).
   ///
   /// ```dart
   /// final providers = await client.auth.listOAuthProviders();
-  /// for (var provider in providers) {
-  ///   print('Provider: ${provider.name}');
+  /// for (final p in providers.where((p) => p.isSso)) {
+  ///   print('${p.label ?? p.name} (${p.driver})');
   /// }
   /// ```
-  Future<List<OAuthProvider>> listOAuthProviders() async {
-    final response = await _httpClient.get('/auth/oauth');
+  Future<List<OAuthProvider>> listOAuthProviders({
+    bool sessionOnly = false,
+  }) async {
+    final response = await _httpClient.get(
+      '/auth',
+      queryParameters: sessionOnly ? {'sessionOnly': true} : null,
+    );
 
     final data = response.data['data'] as List;
     return data
@@ -389,84 +446,55 @@ class AuthService {
         .toList();
   }
 
-  /// Génère l'URL de connexion OAuth pour un fournisseur
+  /// Génère l'URL de connexion SSO d'un fournisseur
+  /// (`GET /auth/login/{provider}`).
   ///
-  /// [provider] Nom du fournisseur OAuth (ex: 'google', 'github', 'facebook')
-  /// [redirect] URL de redirection après authentification (optionnel)
+  /// Flux SSO Directus (OAuth2 / OpenID / SAML) :
+  /// 1. ouvrir cette URL dans un navigateur (ou une WebView) ;
+  /// 2. Directus redirige vers le fournisseur puis vers [redirect] ;
+  /// 3. le refresh token est déposé en cookie `httpOnly` sur le domaine Directus
+  ///    (ou un cookie de session si `mode=session` est géré côté serveur) ;
+  /// 4. appeler [refresh] avec `mode: AuthMode.cookie` depuis un contexte qui
+  ///    partage ces cookies (Flutter Web, WebView), ou récupérer le token
+  ///    côté serveur et utiliser [restoreSession].
   ///
-  /// Retourne l'URL complète vers laquelle rediriger l'utilisateur pour
-  /// initier le flow OAuth.
+  /// [redirect] doit être autorisé par `AUTH_<PROVIDER>_REDIRECT_ALLOW_LIST`.
   ///
   /// ```dart
-  /// // URL OAuth simple
-  /// final url = client.auth.getOAuthUrl('google');
-  ///
-  /// // Avec redirection personnalisée
   /// final url = client.auth.getOAuthUrl(
-  ///   'github',
+  ///   'google',
   ///   redirect: 'https://myapp.com/auth/callback',
   /// );
-  ///
-  /// // Ouvrir dans un navigateur
   /// await launchUrl(Uri.parse(url));
   /// ```
   String getOAuthUrl(String provider, {String? redirect}) {
-    final baseUrl = _httpClient.config.baseUrl;
-    var url = '$baseUrl/auth/oauth/$provider';
-
-    if (redirect != null) {
-      url += '?redirect=$redirect';
-    }
-
-    return url;
+    final uri = Uri.parse('${_httpClient.config.baseUrl}/auth/login/$provider');
+    return uri
+        .replace(
+          queryParameters: redirect != null ? {'redirect': redirect} : null,
+        )
+        .toString();
   }
 
-  /// Connexion OAuth (à utiliser après la redirection OAuth)
+  /// Ancien échange de code OAuth.
   ///
-  /// Cette méthode doit être appelée après que l'utilisateur a été redirigé
-  /// depuis le fournisseur OAuth vers votre application avec les paramètres
-  /// d'authentification.
-  ///
-  /// [provider] Nom du fournisseur OAuth
-  /// [code] Code d'autorisation OAuth reçu dans la redirection
-  /// [state] État OAuth pour la sécurité (optionnel)
-  /// [mode] Mode d'authentification (json, cookie, ou session). Par défaut: json
-  ///
-  /// Retourne une [AuthResponse] avec les tokens
-  ///
-  /// ```dart
-  /// // Après redirection OAuth avec code dans l'URL
-  /// final response = await client.auth.loginWithOAuth(
-  ///   provider: 'google',
-  ///   code: 'code-from-oauth-redirect',
-  /// );
-  /// ```
+  /// Directus n'expose aucun endpoint JSON d'échange de code : le callback est
+  /// traité côté serveur et la session est déposée en cookie. Utiliser
+  /// [getOAuthUrl] puis [refresh] (`mode: AuthMode.cookie`).
+  @Deprecated(
+    'Directus ne fournit pas d\'échange de code OAuth en JSON. '
+    'Utiliser getOAuthUrl() puis refresh(mode: AuthMode.cookie).',
+  )
   Future<AuthResponse> loginWithOAuth({
     required String provider,
     required String code,
     String? state,
     AuthMode mode = AuthMode.json,
   }) async {
-    final response = await _httpClient.post(
-      '/auth/oauth/$provider/callback',
-      data: {
-        'code': code,
-        if (state != null) 'state': state,
-        'mode': mode.toApiValue(),
-      },
+    throw UnsupportedError(
+      'Directus ne fournit pas d\'échange de code OAuth en JSON. '
+      'Utiliser getOAuthUrl() puis refresh(mode: AuthMode.cookie).',
     );
-
-    final authResponse = AuthResponse.fromJson(
-      response.data['data'] as Map<String, dynamic>,
-    );
-
-    // Stocker les tokens dans le client HTTP
-    _httpClient.setTokens(
-      accessToken: authResponse.accessToken,
-      refreshToken: authResponse.refreshToken,
-    );
-
-    return authResponse;
   }
 
   /// Vérifie si l'utilisateur est authentifié

@@ -4,134 +4,119 @@ Ce guide explique comment gérer les fichiers et transformer les images avec Dir
 
 ## Fichiers (Files)
 
-### Lister les fichiers
+`client.files` manipule des `DirectusFile` (voir [Services système](12-system-services.md)).
+
+### Lister et lire
 
 ```dart
-final files = await client.files.getFiles();
-
-for (final file in files) {
-  print('${file['filename_download']} (${file['type']})');
-}
-```
-
-### Avec filtres et pagination
-
-```dart
-final images = await client.files.getFiles(
+final page = await client.files.readMany(
   query: QueryParameters(
-    filter: Filter.field('type').contains('image'),
+    filter: Filter.field('type').startsWith('image/'),
     sort: ['-uploaded_on'],
     limit: 20,
+    meta: ['filter_count'],
   ),
 );
+
+for (final file in page.data) {
+  print('${file.filenameDownload.value} — ${file.filesize.value} octets');
+  print('${file.width.value}x${file.height.value}, image: ${file.isImage}');
+}
+
+final file = await client.files.readOne('file-uuid');
 ```
 
-### Obtenir un fichier
+### Upload (objet)
 
 ```dart
-final file = await client.files.getFile('file-uuid');
+final bytes = await File('/path/to/photo.jpg').readAsBytes();
 
-print('Nom: ${file['filename_download']}');
-print('Type: ${file['type']}');
-print('Taille: ${file['filesize']} bytes');
-print('Dimensions: ${file['width']}x${file['height']}');
-```
-
-### Upload depuis un chemin
-
-```dart
-final file = await client.files.uploadFile(
-  filePath: '/path/to/image.jpg',
-  title: 'Mon image',
-  description: 'Description optionnelle',
-  folder: 'folder-uuid',  // Optionnel
-  tags: ['photo', 'nature'],
-);
-
-print('Fichier uploadé: ${file['id']}');
-```
-
-### Upload depuis des bytes
-
-```dart
-import 'dart:io';
-
-final bytes = await File('/path/to/file.pdf').readAsBytes();
-
-final file = await client.files.uploadFileFromBytes(
+final file = await client.files.upload(
   bytes: bytes,
-  filename: 'document.pdf',
-  title: 'Mon document',
-  contentType: 'application/pdf',
+  filename: 'photo.jpg',
+  file: DirectusFile.empty()
+    ..title.set('Ma photo')
+    ..description.set('Prise en montagne')
+    ..folder.set('folder-uuid')
+    ..tags.set(['photo', 'nature']),
 );
+print('Fichier envoyé : ${file.id}');
+```
+
+Les métadonnées sont envoyées **avant** le binaire dans le multipart : Directus ignore les champs placés après le fichier.
+
+Variantes acceptant des `Map` : `uploadFile(filePath: ...)` (VM uniquement, pas Flutter Web) et `uploadFileFromBytes(bytes: ..., filename: ...)`. Elles prennent `title`, `folder` et `metadata`.
+
+> Depuis Directus 12.5, `storage` doit correspondre à un emplacement de `STORAGE_LOCATIONS`. Sinon Directus renvoie `INVALID_PAYLOAD`.
+
+### Remplacer le contenu d'un fichier
+
+```dart
+await client.files.replace('file-uuid', bytes: newBytes, filename: 'photo-v2.jpg');
 ```
 
 ### Import depuis une URL
 
 ```dart
-final file = await client.files.importFile(
-  url: 'https://example.com/image.jpg',
-  title: 'Image importée',
-  folder: 'folder-uuid',
+final imported = await client.files.importFromUrl(
+  'https://example.com/image.jpg',
+  file: DirectusFile.empty()..title.set('Image importée')..folder.set('folder-uuid'),
 );
 ```
 
 ### Mettre à jour les métadonnées
 
 ```dart
-await client.files.updateFile('file-uuid', {
-  'title': 'Nouveau titre',
-  'description': 'Nouvelle description',
-  'tags': ['updated', 'photo'],
-});
+final file = await client.files.readOne('file-uuid');
+file.title.set('Nouveau titre');
+file.tags.set(['updated']);
+await client.files.updateOne(file); // seuls les champs modifiés sont envoyés
 ```
 
-### Supprimer un fichier
+### Supprimer
 
 ```dart
-await client.files.deleteFile('file-uuid');
+await client.files.deleteOne(file);
+await client.files.deleteMany(keys: ['uuid-1', 'uuid-2']);
 ```
 
-### Supprimer plusieurs fichiers
+### Télécharger
 
 ```dart
-await client.files.deleteFiles(['uuid-1', 'uuid-2', 'uuid-3']);
+final bytes = await client.assets.download('file-uuid');
+final zip = await client.assets.downloadFilesZip(['uuid-1', 'uuid-2']);
+final folderZip = await client.assets.downloadFolderZip('folder-uuid');
 ```
 
 ## Dossiers (Folders)
 
-### Lister les dossiers
+`client.folders` manipule des `DirectusFolder`.
 
 ```dart
-final folders = await client.folders.getFolders();
-
-for (final folder in folders) {
-  print('${folder['name']} (${folder['id']})');
+// Lister (depuis Directus 12.4, les admins voient aussi les dossiers de flows)
+final page = await client.folders.readMany(
+  query: QueryParameters(filter: Filter.field('type').equals('files')),
+);
+for (final folder in page.data) {
+  print('${folder.name.value} (${folder.id}) racine: ${folder.isRootFolder}');
 }
+
+// Créer
+final photos = await client.folders.createOne(
+  DirectusFolder.empty()
+    ..name.set('Photos 2026')
+    ..parent.set('parent-folder-uuid'), // optionnel
+);
+
+// Renommer
+photos!.name.set('Photos');
+await client.folders.updateOne(photos);
+
+// Supprimer
+await client.folders.deleteOne(photos);
 ```
 
-### Créer un dossier
-
-```dart
-final folder = await client.folders.createFolder({
-  'name': 'Photos 2024',
-  'parent': 'parent-folder-uuid',  // Optionnel
-});
-```
-
-### Mettre à jour un dossier
-
-```dart
-await client.folders.updateFolder('folder-uuid', {
-  'name': 'Nouveau nom',
-});
-```
-
-### Supprimer un dossier
-
-```dart
-await client.folders.deleteFolder('folder-uuid');
-```
+Helpers : `getRootFolders()`, `getSubFolders(parentId)`, `moveFolder()`, `renameFolder()`.
 
 ## Assets (Transformation d'images)
 

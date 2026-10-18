@@ -1,6 +1,8 @@
 import '../core/directus_http_client.dart';
 import '../models/directus_filter.dart';
+import '../models/directus_preset.dart';
 import 'items_service.dart';
+import 'system_items_service.dart';
 
 /// Service pour gérer les presets (signets et préférences) dans Directus.
 ///
@@ -20,11 +22,12 @@ import 'items_service.dart';
 /// // Récupérer les signets d'un utilisateur
 /// final bookmarks = await client.presets.getBookmarks('user-id');
 /// ```
-class PresetsService {
+class PresetsService extends DirectusSystemService<DirectusPreset> {
   final DirectusHttpClient _httpClient;
   late final ItemsService<Map<String, dynamic>> _itemsService;
 
-  PresetsService(this._httpClient) {
+  PresetsService(this._httpClient)
+    : super(_httpClient, 'directus_presets', DirectusPreset.factory) {
     _itemsService = ItemsService(_httpClient, 'directus_presets');
   }
 

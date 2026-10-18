@@ -92,48 +92,57 @@ final users = await client.users.getUsers();
 
 ## OAuth / SSO
 
-### Lister les providers disponibles
+Directus gère le flux SSO (OAuth2, OpenID, SAML) **côté serveur** : il n'existe pas d'endpoint JSON d'échange de code. Le refresh token est déposé dans un cookie `httpOnly` sur le domaine Directus à la fin du flux.
+
+### Lister les fournisseurs
 
 ```dart
-final providers = await client.auth.listOAuthProviders();
+final providers = await client.auth.listOAuthProviders(); // GET /auth
 
-for (final provider in providers) {
-  print('Provider: ${provider.name}');
-  print('Icon: ${provider.icon}');
+for (final provider in providers.where((p) => p.isSso)) {
+  print('${provider.label ?? provider.name} (${provider.driver})');
 }
-// Exemple: google, github, microsoft, etc.
 ```
 
-### Obtenir l'URL d'authentification
+### Lancer la connexion
 
 ```dart
-final authUrl = client.auth.getOAuthUrl(
-  'google',
-  redirect: 'myapp://oauth-callback', // URI de callback de votre app
+final url = client.auth.getOAuthUrl(
+  'google',                                  // nom du provider
+  redirect: 'https://myapp.com/auth/callback', // doit figurer dans AUTH_GOOGLE_REDIRECT_ALLOW_LIST
 );
-
-// Ouvrir dans un navigateur ou WebView
-await launchUrl(authUrl);
+// → https://directus.example.com/auth/login/google?redirect=...
+await launchUrl(Uri.parse(url));
 ```
 
-### Gérer le callback OAuth
+### Récupérer la session
+
+Après la redirection vers `redirect`, le refresh token est dans le cookie du domaine Directus :
+
+- **Flutter Web / WebView partageant les cookies** : échanger le cookie contre un access token.
+
+  ```dart
+  final auth = await client.auth.refresh(mode: AuthMode.cookie);
+  ```
+
+- **Application mobile native** : les cookies du navigateur système ne sont pas accessibles. Faire transiter la session par un backend (ou une page de callback qui appelle `/auth/refresh` en mode `json`) puis appeler `client.auth.restoreSession(refreshToken)`.
+
+> `loginWithOAuth()` est dépréciée et lève `UnsupportedError` : elle ciblait une route qui n'existe pas dans Directus.
+
+## LDAP et fournisseurs à identifiant
 
 ```dart
-// Dans votre handler de deep link / callback
-void handleOAuthCallback(Uri uri) async {
-  // L'URI contient les tokens dans les paramètres
-  final accessToken = uri.queryParameters['access_token'];
-  final refreshToken = uri.queryParameters['refresh_token'];
-  
-  if (accessToken != null) {
-    // Configurer manuellement les tokens
-    client.auth.setTokens(
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-    );
-  }
-}
+await client.auth.loginWithProvider(
+  provider: 'ldap',        // POST /auth/login/ldap
+  identifier: 'jdoe',
+  password: 'secret',
+  otp: '123456',           // si 2FA
+);
 ```
+
+## Mode session
+
+En `AuthMode.session`, Directus ne renvoie aucun token : la session est portée par un cookie. `AuthResponse.accessToken` est alors vide et aucun token n'est stocké dans le client.
 
 ## Gestion de session
 

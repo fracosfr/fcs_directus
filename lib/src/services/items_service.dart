@@ -5,6 +5,20 @@ import '../models/directus_filter.dart';
 import '../models/directus_deep.dart';
 import '../models/directus_aggregate.dart';
 
+/// Retourne le chemin REST de base d'une collection.
+///
+/// Directus refuse l'accès aux collections système (`directus_*`) via
+/// `/items/...` (403 FORBIDDEN) : chacune possède son propre endpoint
+/// (`directus_comments` → `/comments`, `directus_users` → `/users`, ...).
+/// Les collections utilisateur passent par `/items/<collection>`.
+String directusCollectionPath(String collection) {
+  const prefix = 'directus_';
+  if (collection.startsWith(prefix)) {
+    return '/${collection.substring(prefix.length)}';
+  }
+  return '/items/$collection';
+}
+
 /// Paramètres de requête pour filtrer, trier et paginer les données
 class QueryParameters {
   /// Filtres à appliquer (objet Filter ou Map pour compatibilité)
@@ -44,6 +58,27 @@ class QueryParameters {
   /// Regroupement des résultats (objet GroupBy, `List<String>` ou Map pour compatibilité)
   final dynamic groupBy;
 
+  /// Métadonnées à retourner dans `meta` : `total_count`, `filter_count` ou `*`.
+  ///
+  /// Sans ce paramètre Directus ne renvoie aucune métadonnée
+  /// (`DirectusResponse.meta` est alors `null`).
+  final List<String>? meta;
+
+  /// Alias de champs : `{'alias': 'champ_reel'}`.
+  final Map<String, String>? alias;
+
+  /// Clé de la version de contenu à lire (ex: `draft`).
+  ///
+  /// `published` désigne la version publiée (anciennement `main`).
+  final String? version;
+
+  /// Retourne les données brutes de la version (delta) sans fusion avec l'item.
+  final bool? versionRaw;
+
+  /// Inclut (`true`, défaut serveur) ou exclut (`false`) les relations
+  /// inverses lors de l'utilisation de wildcards (`*.*`).
+  final bool? backlink;
+
   QueryParameters({
     this.filter,
     this.fields,
@@ -55,7 +90,27 @@ class QueryParameters {
     this.deep,
     this.aggregate,
     this.groupBy,
+    this.meta,
+    this.alias,
+    this.version,
+    this.versionRaw,
+    this.backlink,
   });
+
+  /// Convertit les paramètres en objet `query` pour un body JSON
+  /// (export, update/delete par requête, souscription WebSocket...).
+  Map<String, dynamic> toJsonBody() {
+    final params = toQueryParameters();
+    if (filter is Filter) {
+      params['filter'] = (filter as Filter).toJson();
+    } else if (filter is Map<String, dynamic>) {
+      params['filter'] = filter;
+    }
+    if (alias != null && alias!.isNotEmpty) params['alias'] = alias;
+    if (fields != null && fields!.isNotEmpty) params['fields'] = fields;
+    if (sort != null && sort!.isNotEmpty) params['sort'] = sort;
+    return params;
+  }
 
   /// Convertit les paramètres en Map pour les query parameters
   Map<String, dynamic> toQueryParameters() {
@@ -116,6 +171,21 @@ class QueryParameters {
         params['groupBy'] = groupBy;
       }
     }
+    if (meta != null && meta!.isNotEmpty) {
+      params['meta'] = meta!.join(',');
+    }
+    if (alias != null && alias!.isNotEmpty) {
+      params['alias'] = jsonEncode(alias);
+    }
+    if (version != null) {
+      params['version'] = version;
+    }
+    if (versionRaw != null) {
+      params['versionRaw'] = versionRaw;
+    }
+    if (backlink != null) {
+      params['backlink'] = backlink;
+    }
 
     return params;
   }
@@ -172,6 +242,9 @@ class ItemsService<T> {
 
   ItemsService(this._httpClient, this.collection);
 
+  /// Chemin REST de la collection (`/items/<collection>` ou endpoint système).
+  String get path => directusCollectionPath(collection);
+
   /// Récupère plusieurs items
   ///
   /// [query] Paramètres de requête pour filtrer et paginer
@@ -181,7 +254,7 @@ class ItemsService<T> {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final response = await _httpClient.get(
-      '/items/$collection',
+      path,
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -208,7 +281,7 @@ class ItemsService<T> {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final response = await _httpClient.get(
-      '/items/$collection/$id',
+      '$path/$id',
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -224,7 +297,7 @@ class ItemsService<T> {
     Map<String, dynamic> data, {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.post('/items/$collection', data: data);
+    final response = await _httpClient.post(path, data: data);
 
     // Directus peut retourner 204 No Content sans body
     if (response.data == null || !response.data!.containsKey('data')) {
@@ -243,7 +316,7 @@ class ItemsService<T> {
     List<Map<String, dynamic>> items, {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.post('/items/$collection', data: items);
+    final response = await _httpClient.post(path, data: items);
 
     final data = response.data!['data'] as List;
     return fromJson != null
@@ -261,10 +334,7 @@ class ItemsService<T> {
     Map<String, dynamic> data, {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.patch(
-      '/items/$collection/$id',
-      data: data,
-    );
+    final response = await _httpClient.patch('$path/$id', data: data);
 
     // Directus peut retourner 204 No Content sans body
     if (response.data == null || !response.data!.containsKey('data')) {
@@ -327,7 +397,7 @@ class ItemsService<T> {
       body['query'] = {'filter': filterJson};
     }
 
-    final response = await _httpClient.patch('/items/$collection', data: body);
+    final response = await _httpClient.patch(path, data: body);
 
     // Directus peut retourner 204 No Content sans body
     if (response.data == null || !response.data!.containsKey('data')) {
@@ -346,7 +416,7 @@ class ItemsService<T> {
   ///
   /// [id] Identifiant de l'item à supprimer
   Future<void> deleteOne(String id) async {
-    await _httpClient.delete('/items/$collection/$id');
+    await _httpClient.delete('$path/$id');
   }
 
   /// Supprime plusieurs items
@@ -376,7 +446,7 @@ class ItemsService<T> {
   }) async {
     // Si keys est fourni directement (format simple)
     if (keys != null && keys.isNotEmpty && filter == null && query == null) {
-      await _httpClient.delete('/items/$collection', data: keys);
+      await _httpClient.delete(path, data: keys);
       return;
     }
 
@@ -397,10 +467,7 @@ class ItemsService<T> {
       body['query'] = {'filter': filterJson};
     }
 
-    await _httpClient.delete(
-      '/items/$collection',
-      data: body.isEmpty ? null : body,
-    );
+    await _httpClient.delete(path, data: body.isEmpty ? null : body);
   }
 
   // ========================================================================
@@ -425,7 +492,7 @@ class ItemsService<T> {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
     final response = await _httpClient.get(
-      '/items/$collection',
+      path,
       queryParameters: query?.toQueryParameters(),
     );
 
@@ -453,7 +520,7 @@ class ItemsService<T> {
     Map<String, dynamic> data, {
     T Function(Map<String, dynamic>)? fromJson,
   }) async {
-    final response = await _httpClient.patch('/items/$collection', data: data);
+    final response = await _httpClient.patch(path, data: data);
 
     final responseData = response.data!['data'] as Map<String, dynamic>;
     return fromJson != null ? fromJson(responseData) : responseData;

@@ -243,6 +243,20 @@ class RolesService {
     await _httpClient.delete('/roles', data: ids);
   }
 
+  /// Rôles de l'utilisateur courant, rôles parents inclus (`GET /roles/me`).
+  Future<List<T>> getMyRoles<T extends DirectusRole>({
+    QueryParameters? query,
+  }) async {
+    final response = await _httpClient.get(
+      '/roles/me',
+      queryParameters: query?.toQueryParameters(),
+    );
+    final baseFactory = DirectusModel.getFactory<T>() ?? DirectusRole.factory;
+    return (response.data['data'] as List? ?? [])
+        .map<T>((item) => baseFactory(item as Map<String, dynamic>) as T)
+        .toList();
+  }
+
   // ========================================
   // Méthodes utilitaires
   // ========================================

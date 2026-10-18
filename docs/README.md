@@ -15,7 +15,7 @@ Bienvenue dans la documentation complète de la librairie fcs_directus.
 2. **[Authentification](02-authentication.md)**
    - Login email/password
    - Token statique
-   - OAuth/SSO
+   - OAuth/SSO, LDAP
    - Gestion de session
    - Two-Factor Authentication
 
@@ -76,6 +76,16 @@ Bienvenue dans la documentation complète de la librairie fcs_directus.
     - Patterns de gestion
     - Bonnes pratiques
 
+12. **[Services système orientés objet](12-system-services.md)**
+    - Routage des collections `directus_*`
+    - Classes de base typées
+    - Modèles système (fichiers, commentaires, versions, accès...)
+
+13. **[Couverture de l'API](13-api-coverage.md)**
+    - Correspondance route Directus ↔ méthode
+    - Routes non couvertes
+    - Changements Directus 11.1 → 12.5
+
 ## Services disponibles
 
 | Service | Description | Documentation |
@@ -91,27 +101,30 @@ Bienvenue dans la documentation complète de la librairie fcs_directus.
 | `assets` | Transformation images | [Guide Files](09-files-assets.md) |
 | `folders` | Organisation fichiers | [Guide Files](09-files-assets.md) |
 | `websocket` | Temps réel | [Guide WebSocket](08-websocket.md) |
-| `collections` | Schéma collections | API Reference |
-| `fields` | Gestion des champs | API Reference |
-| `relations` | Gestion des relations | API Reference |
-| `activity` | Logs d'activité | API Reference |
-| `revisions` | Historique | API Reference |
-| `comments` | Commentaires | API Reference |
-| `notifications` | Notifications | API Reference |
-| `presets` | Préférences | API Reference |
-| `dashboards` | Tableaux de bord | API Reference |
-| `panels` | Panneaux | API Reference |
-| `flows` | Automatisation | API Reference |
-| `operations` | Opérations flows | API Reference |
-| `shares` | Partage | API Reference |
-| `versions` | Versioning | API Reference |
-| `translations` | Traductions | API Reference |
-| `extensions` | Extensions | API Reference |
-| `schema` | Snapshot schéma | API Reference |
-| `settings` | Paramètres | API Reference |
-| `server` | Info serveur | API Reference |
-| `utilities` | Utilitaires | API Reference |
-| `metrics` | Métriques | API Reference |
+| `access` | Attribution des policies | [Guide Users](10-users.md) |
+| `collections` | Schéma collections | [Couverture API](13-api-coverage.md) |
+| `fields` | Gestion des champs | [Couverture API](13-api-coverage.md) |
+| `relations` | Relations (typées) | [Services système](12-system-services.md) |
+| `activity` | Logs d'activité (typés) | [Services système](12-system-services.md) |
+| `revisions` | Historique (typé) | [Services système](12-system-services.md) |
+| `comments` | Commentaires (typés) | [Services système](12-system-services.md) |
+| `notifications` | Notifications (typées) | [Services système](12-system-services.md) |
+| `presets` | Préférences (typées) | [Services système](12-system-services.md) |
+| `dashboards` | Tableaux de bord (typés) | [Services système](12-system-services.md) |
+| `panels` | Panneaux (typés) | [Services système](12-system-services.md) |
+| `flows` | Automatisation (typée) | [Services système](12-system-services.md) |
+| `operations` | Opérations flows (typées) | [Services système](12-system-services.md) |
+| `shares` | Partage (typé) | [Services système](12-system-services.md) |
+| `versions` | Versioning (typé) | [Services système](12-system-services.md) |
+| `translations` | Traductions (typées) | [Services système](12-system-services.md) |
+| `extensions` | Extensions et marketplace | [Couverture API](13-api-coverage.md) |
+| `schema` | Snapshot / diff / apply | [Couverture API](13-api-coverage.md) |
+| `settings` | Paramètres (typés) | [Services système](12-system-services.md) |
+| `server` | Ping, santé, infos, specs, setup | [Couverture API](13-api-coverage.md) |
+| `utilities` | Random, cache, tri, import/export, revert | [Couverture API](13-api-coverage.md) |
+| `metrics` | Métriques Prometheus | [Couverture API](13-api-coverage.md) |
+| `license` | Licence Directus | [Couverture API](13-api-coverage.md) |
+| `deployments` | Déploiements (Vercel, Netlify...) | [Couverture API](13-api-coverage.md) |
 
 ## Liens utiles
 
@@ -122,8 +135,9 @@ Bienvenue dans la documentation complète de la librairie fcs_directus.
 
 ## Ressources externes
 
-- [Documentation Directus](https://directus.io/docs)
-- [API Reference Directus](https://directus.io/docs/api)
+- [Documentation Directus](https://directus.com/docs)
+- [API Reference Directus](https://directus.com/docs/api)
+- [Breaking changes Directus](https://directus.com/docs/releases/breaking-changes/version-12)
 - [Communauté Directus](https://directus.io/community)
 
 ## Support

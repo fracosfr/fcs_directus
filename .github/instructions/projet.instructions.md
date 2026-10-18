@@ -2,8 +2,8 @@
 applyTo: '**'
 ---
 Ce projet est une librairie DART destinée à être utilisée dans des applications Flutter. Elle fournit des fonctionnalités pour dialoguer avec un serveur Directus via des requêtes HTTP.
-La liste des entrées API de Directus est disponible ici : https://docs.directus.io/reference/api/.
-Dans le dossier openapi, vous trouverez tous les fichiers de point d'entrée de l'API Directus au format OpenAPI.
+La liste des entrées API de Directus est disponible ici : https://directus.com/docs/api (cible actuelle : Directus 12.x).
+Le dossier openapi contient la spécification OpenAPI de Directus 11.1 (historique, non à jour) ; la correspondance à jour route ↔ méthode est dans docs/13-api-coverage.md.
 
 ## Fonctionnalités
 La librairie Directus doit permettre de gérer toutes les fonctionnalités principales de Directus et également en WebSocket.

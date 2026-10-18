@@ -6,7 +6,7 @@ Ce guide vous accompagne dans l'installation et la configuration de la librairie
 
 - **Dart SDK** : 3.0 ou supérieur
 - **Flutter** : 3.0 ou supérieur (pour les applications Flutter)
-- **Serveur Directus** : v11.1.0 ou supérieur (recommandé)
+- **Serveur Directus** : v11.1 minimum, testé avec l'API 12.x (12.5). Voir [Couverture de l'API](13-api-coverage.md).
 
 ## Installation
 

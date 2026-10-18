@@ -2,10 +2,10 @@
 
 [![Pub Version](https://img.shields.io/pub/v/fcs_directus)](https://pub.dev/packages/fcs_directus)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Directus](https://img.shields.io/badge/Directus-v11.1.0-blue)](https://directus.io)
+[![Directus](https://img.shields.io/badge/Directus-v12.5-blue)](https://directus.io)
 [![Dart](https://img.shields.io/badge/Dart-3.0+-blue)](https://dart.dev)
 
-Une librairie Dart/Flutter complète pour interagir avec l'API Directus. Fournit une interface type-safe, orientée objet avec support REST et WebSocket pour tous les endpoints Directus v11.1+.
+Une librairie Dart/Flutter complète pour interagir avec l'API Directus. Fournit une interface type-safe, orientée objet avec support REST et WebSocket pour les endpoints REST et WebSocket de Directus 11.1 à 12.5 ([couverture détaillée](docs/13-api-coverage.md)).
 
 ## ✨ Fonctionnalités
 
@@ -72,9 +72,12 @@ print('Expire dans: ${response.expiresIn} secondes');
 // Connexion avec token statique
 await client.auth.loginWithToken('votre-token-statique');
 
-// Connexion OAuth
+// Connexion SSO (OAuth2 / OpenID / SAML) : ouvrir l'URL, puis refresh en mode cookie
 final providers = await client.auth.listOAuthProviders();
-final url = client.auth.getOAuthUrl('google', redirect: 'myapp://callback');
+final url = client.auth.getOAuthUrl('google', redirect: 'https://myapp.com/callback');
+
+// Connexion LDAP
+await client.auth.loginWithProvider(provider: 'ldap', identifier: 'jdoe', password: 'secret');
 
 // Déconnexion
 await client.auth.logout();
@@ -660,9 +663,14 @@ await client.users.addPoliciesToUser(
 | `schema` | Snapshot/Apply du schéma |
 | `settings` | Paramètres globaux |
 | `server` | Info serveur (ping, health, specs) |
-| `utilities` | Hash, random, cache, sort, import/export |
+| `utilities` | Random, cache, tri, import/export, revert |
 | `metrics` | Métriques Prometheus |
-| `websocket` | Mises à jour temps réel |
+| `access` | Attribution des policies aux rôles / utilisateurs |
+| `license` | Gestion de la licence Directus |
+| `deployments` | Déploiements (Vercel, Netlify...) |
+| `websocket` | Temps réel (souscriptions, CRUD) |
+
+Les services système (`comments`, `files`, `flows`, `versions`...) exposent aussi une API orientée objet : `readMany`, `readOne`, `createOne`, `updateOne`, `deleteOne` sur des modèles typés. Voir [Services système](docs/12-system-services.md).
 
 ## 🚨 Gestion des erreurs
 
